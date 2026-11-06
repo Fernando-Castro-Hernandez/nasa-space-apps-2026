@@ -1,6 +1,6 @@
-# Equipo
+# Equipo Nóstos
 
-Somos seis personas. **No hay roles asignados**: cualquiera puede proponer ideas, revisar y meter cambios. Los agentes no deben asumir quién se encarga de qué; si hace falta saberlo, se pregunta.
+El equipo se llama **Nóstos** y somos seis personas. **No hay roles asignados**: cualquiera puede proponer ideas, revisar y meter cambios. Los agentes no deben asumir quién se encarga de qué; si hace falta saberlo, se pregunta.
 
 | Integrante      | Formación y experiencia                                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -14,5 +14,6 @@ Somos seis personas. **No hay roles asignados**: cualquiera puede proponer ideas
 ## Cómo colaboramos
 
 - Al menos dos personas estarán programando en el repo al mismo tiempo, y hasta las seis pueden proponer o meter cambios.
+- Cada rama lleva como prefijo las iniciales de quien la crea (ver [WORKFLOW.md](WORKFLOW.md)).
 - Cada quien trabaja con su propio agente. El contexto compartido vive en este repo (`AGENTS.md` y `docs/`), no en la máquina de nadie.
 - No todo el equipo viene de desarrollo de software. Si alguien pide una explicación, el agente debe darla en lenguaje claro y sin dar por hecho conocimientos técnicos previos.

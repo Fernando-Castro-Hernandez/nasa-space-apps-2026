@@ -6,7 +6,7 @@ const commit = import.meta.env.VITE_COMMIT_SHA?.slice(0, 7) ?? "dev";
 export function App() {
   return (
     <main className="shell">
-      <p className="eyebrow">NASA Space Apps Challenge 2026</p>
+      <p className="eyebrow">Equipo Nóstos · NASA Space Apps Challenge 2026</p>
       <h1>Health Monitor</h1>
       <p className="lead">
         Plantilla lista. El producto aún no está definido: revisa{" "}

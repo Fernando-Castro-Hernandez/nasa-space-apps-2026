@@ -4,7 +4,7 @@ Este archivo es la fuente de verdad para cualquier agente de código (Claude Cod
 
 ## Qué es este repo
 
-Proyecto de un equipo de seis personas para el **NASA Space Apps Challenge 2026** (14 y 15 de noviembre de 2026). El reto elegido es **Create Health Monitoring Software for Astronauts on Space Missions**: una herramienta visual para que un astronauta evalúe su propia salud durante una misión y reciba guía sobre qué hacer.
+Proyecto del equipo **Nóstos**, de seis personas, para el **NASA Space Apps Challenge 2026** (14 y 15 de noviembre de 2026). El reto elegido es **Create Health Monitoring Software for Astronauts on Space Missions**: una herramienta visual para que un astronauta evalúe su propia salud durante una misión y reciba guía sobre qué hacer.
 
 Lee también, en este orden:
 
@@ -41,6 +41,7 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto to
 ## Cómo se trabaja
 
 - Cada cambio va en una rama propia creada **desde `staging`** y entra por PR **a `staging`**.
+- El nombre de la rama empieza con las iniciales de quien la crea: `fc/descripcion-corta`. Si no sabes las iniciales de la persona con la que trabajas, pregúntaselas.
 - `main` solo recibe PRs desde `staging`. Nunca hagas push directo a `main` ni a `staging`.
 - Un cambio está terminado cuando `pnpm check` pasa en local y el PR tiene el CI en verde.
 - No hagas commit, push ni abras PRs sin que la persona con la que trabajas te lo pida.

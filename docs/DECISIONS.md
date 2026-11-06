@@ -14,6 +14,8 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-06 | Ramas: features desde `staging`, PR a `staging`, y PR de `staging` a `main` cuando esté validado. | Mantener `main` siempre estable para el demo.                                               |
 | 2026-11-06 | Sin issues y sin previews por PR, por ahora.                                                      | Ahorrar tiempo.                                                                             |
 | 2026-11-06 | Playwright se usa con la versión 1.64.1.                                                          | La 1.65.0 salió el 5 de noviembre y pnpm bloquea por defecto versiones tan recientes.       |
+| 2026-11-06 | El equipo se llama Nóstos.                                                                        | Elección del equipo.                                                                        |
+| 2026-11-06 | Las ramas de trabajo empiezan con las iniciales de quien las crea: `fc/descripcion-corta`.        | Saber de un vistazo de quién es cada rama.                                                  |
 
 ## Abierto
 
@@ -21,7 +23,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 - **IA dentro del producto.** Se quiere usar, pero falta decidir para qué. Nota técnica: una llave de API no puede vivir en el navegador, así que cualquier llamada a un modelo necesitará una función pequeña del lado del servidor en Cloudflare.
 - **Dónde viven los datos.** La propuesta es que se guarden en el navegador y no haya backend ni cuentas de usuario. Falta confirmarlo cuando se defina el producto.
 - **Interfaz.** Falta elegir librería de estilos, componentes y gráficas.
-- **Nombre del proyecto y del equipo.** "Health Monitor" es provisional.
+- **Nombre del producto.** "Health Monitor" es provisional.
 
 ## Para más adelante
 

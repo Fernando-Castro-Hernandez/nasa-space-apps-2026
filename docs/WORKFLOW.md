@@ -1,14 +1,27 @@
 # Flujo de trabajo
 
+![Flujo de ramas](diagrams/flujo-git.png)
+
 ## Ramas
 
-| Rama       | Para qué sirve                                                          | Cómo recibe cambios                 |
-| ---------- | ----------------------------------------------------------------------- | ----------------------------------- |
-| `main`     | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
-| `staging`  | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
-| `feat/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
+| Rama              | Para qué sirve                                                          | Cómo recibe cambios                 |
+| ----------------- | ----------------------------------------------------------------------- | ----------------------------------- |
+| `main`            | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
+| `staging`         | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
+| `<iniciales>/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
 
 `staging` es la rama por defecto del repo: al clonar quedas en ella y los PRs nuevos apuntan a ella.
+
+### Nombres de rama
+
+Cada rama de trabajo empieza con las iniciales de quien la crea, en minúsculas y sin acentos, seguidas de una descripción corta con guiones:
+
+```
+<iniciales>/<descripcion-corta>
+fc/pantalla-inicio
+```
+
+Se usan las iniciales de nombre y apellido, no solo la del nombre: Ariff y Angie compartirían la `a`.
 
 ## Paso a paso
 
@@ -17,7 +30,7 @@
    ```bash
    git switch staging
    git pull
-   git switch -c feat/nombre-corto
+   git switch -c fc/nombre-corto
    ```
 
 2. Trabaja y haz commits pequeños. Antes de subir, corre `pnpm check`.
@@ -25,7 +38,7 @@
 3. Sube la rama y abre el PR hacia `staging`:
 
    ```bash
-   git push -u origin feat/nombre-corto
+   git push -u origin fc/nombre-corto
    gh pr create --base staging
    ```
 
@@ -42,6 +55,8 @@
 Son el mismo evento. Al hacer merge de un PR, GitHub hace un push a la rama destino, y el workflow se dispara con ese push. Nadie hace push directo a `main` ni a `staging`: todo entra por PR.
 
 ## CI/CD
+
+![CI/CD](diagrams/ci-cd.png)
 
 Hay un solo workflow, [.github/workflows/ci.yml](../.github/workflows/ci.yml), con un solo job:
 
