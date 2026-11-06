@@ -1,0 +1,37 @@
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        // Nombre provisional: cambiar cuando el equipo defina el producto.
+        name: "Space Apps 2026 — Health Monitor",
+        short_name: "Health Monitor",
+        description:
+          "Prototipo para el reto de monitoreo de salud de astronautas (NASA Space Apps 2026).",
+        lang: "es",
+        display: "standalone",
+        theme_color: "#0b1026",
+        background_color: "#0b1026",
+        icons: [
+          { src: "icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "icon-512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+    }),
+  ],
+  test: {
+    environment: "jsdom",
+    include: ["src/**/*.test.{ts,tsx}"],
+  },
+});

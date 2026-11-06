@@ -1,0 +1,6 @@
+dist
+dev-dist
+pnpm-lock.yaml
+test-results
+playwright-report
+.wrangler

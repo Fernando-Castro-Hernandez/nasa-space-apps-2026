@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [staging, main]
+  push:
+    branches: [staging, main]
+
+# En PRs, una corrida nueva cancela la anterior. En staging y main no se
+# cancela nada para no cortar un despliegue a la mitad.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      VITE_APP_ENV: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      VITE_COMMIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Formato, lint, tipos, pruebas y build
+        run: pnpm check
+
+      # Apagado hasta configurar Cloudflare (ver docs/WORKFLOW.md).
+      - name: Desplegar
+        if: github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+        run: pnpm dlx wrangler@4 deploy ${{ github.ref_name == 'staging' && '--env staging' || '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

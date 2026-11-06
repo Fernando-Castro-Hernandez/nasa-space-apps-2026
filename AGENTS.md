@@ -1,0 +1,64 @@
+# Contexto para agentes
+
+Este archivo es la fuente de verdad para cualquier agente de código (Claude Code, Cursor, Codex u otro) que trabaje en este repo. Léelo completo antes de proponer o cambiar algo.
+
+## Qué es este repo
+
+Proyecto de un equipo de seis personas para el **NASA Space Apps Challenge 2026** (14 y 15 de noviembre de 2026). El reto elegido es **Create Health Monitoring Software for Astronauts on Space Missions**: una herramienta visual para que un astronauta evalúe su propia salud durante una misión y reciba guía sobre qué hacer.
+
+Lee también, en este orden:
+
+1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
+2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
+3. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
+4. [docs/TEAM.md](docs/TEAM.md): quiénes somos.
+5. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+
+## Estado actual
+
+El repo es una **plantilla**: app mínima, checks y despliegue. **El producto todavía no está definido.** Mientras `docs/DECISIONS.md` no diga qué se construye:
+
+- No inventes funcionalidades, pantallas ni modelos de datos del producto por tu cuenta.
+- Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.
+
+## Stack
+
+- Node 24 y pnpm (versión fijada en `package.json`). No uses npm, yarn ni bun.
+- Vite, React y TypeScript estricto. Se entrega como web instalable (PWA), no como app nativa.
+- Prettier (formato), Oxlint (lint), Vitest (unitarias e integración), Playwright (E2E).
+- Despliegue en Cloudflare Workers como sitio estático (`wrangler.jsonc`).
+
+## Comandos
+
+| Comando       | Qué hace                                                      |
+| ------------- | ------------------------------------------------------------- |
+| `pnpm dev`    | Servidor de desarrollo.                                       |
+| `pnpm check`  | Formato, lint, tipos, pruebas y build. Es lo mismo que el CI. |
+| `pnpm format` | Aplica Prettier.                                              |
+| `pnpm test`   | Pruebas con Vitest.                                           |
+| `pnpm e2e`    | Prueba de humo con Playwright sobre el build.                 |
+
+## Cómo se trabaja
+
+- Cada cambio va en una rama propia creada **desde `staging`** y entra por PR **a `staging`**.
+- `main` solo recibe PRs desde `staging`. Nunca hagas push directo a `main` ni a `staging`.
+- Un cambio está terminado cuando `pnpm check` pasa en local y el PR tiene el CI en verde.
+- No hagas commit, push ni abras PRs sin que la persona con la que trabajas te lo pida.
+- Detalle completo en [docs/WORKFLOW.md](docs/WORKFLOW.md).
+
+## Convenciones
+
+- Documentación, commits, PRs y textos de la interfaz en español. Código (nombres de variables, funciones, archivos) en inglés.
+- Cambios pequeños y enfocados: un PR resuelve una sola cosa.
+- La lógica que no sea de interfaz va en funciones puras con su prueba en Vitest (`*.test.ts` junto al archivo).
+- Antes de agregar una dependencia, comprueba que haga falta y anótala en `docs/DECISIONS.md`.
+- No subas secretos ni llaves de API al repo. Las variables `VITE_*` terminan en el navegador y son públicas.
+
+## Reglas del dominio
+
+- Es un prototipo de hackatón, no un dispositivo médico. La interfaz no debe presentarse como diagnóstico.
+- Cualquier umbral, rango o recomendación de salud que aparezca en el producto debe tener una fuente citada (NASA Human Research Program u otra agencia espacial o fuente médica reconocida). Si no hay fuente, no lo inventes: márcalo como pendiente de validar.
+
+## Mantén este contexto al día
+
+Cuando el equipo tome una decisión (qué se construye, una librería nueva, un cambio de flujo), actualiza `docs/DECISIONS.md` en el mismo PR. Así el agente de cada integrante parte del mismo contexto.

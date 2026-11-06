@@ -1,0 +1,17 @@
+node_modules
+dist
+dev-dist
+.wrangler
+.env
+.env.*
+!.env.example
+*.local
+.DS_Store
+
+# Playwright
+test-results
+playwright-report
+blob-report
+
+# Configuración personal de Claude Code (la compartida sí se versiona)
+.claude/settings.local.json
