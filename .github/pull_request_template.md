@@ -11,3 +11,4 @@
 - [ ] El PR apunta a `staging` (o es la promoción de `staging` a `main`).
 - [ ] `pnpm check` pasa en local.
 - [ ] Si tomé una decisión nueva, la anoté en `docs/DECISIONS.md`.
+- [ ] Si alguien me corrigió algo que podría repetirse, lo anoté en `docs/LESSONS.md`.

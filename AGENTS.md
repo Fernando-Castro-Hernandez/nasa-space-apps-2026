@@ -11,8 +11,9 @@ Lee también, en este orden:
 1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
 2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
 3. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
-4. [docs/TEAM.md](docs/TEAM.md): quiénes somos.
-5. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+4. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
+5. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
+6. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
 
 ## Estado actual
 
@@ -41,7 +42,8 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto to
 ## Cómo se trabaja
 
 - Cada cambio va en una rama propia creada **desde `staging`** y entra por PR **a `staging`**.
-- El nombre de la rama empieza con las iniciales de quien la crea: `fc/descripcion-corta`. Si no sabes las iniciales de la persona con la que trabajas, pregúntaselas.
+- El nombre de la rama empieza con el prefijo de quien la crea, en mayúscula: `F/descripcion-corta`. Los prefijos están en [docs/TEAM.md](docs/TEAM.md).
+- Antes de empezar un cambio, lee [docs/LESSONS.md](docs/LESSONS.md). Si alguien del equipo te corrige algo que podría repetirse, agrega una línea ahí en el mismo PR.
 - `main` solo recibe PRs desde `staging`. Nunca hagas push directo a `main` ni a `staging`.
 - Un cambio está terminado cuando `pnpm check` pasa en local y el PR tiene el CI en verde.
 - No hagas commit, push ni abras PRs sin que la persona con la que trabajas te lo pida.

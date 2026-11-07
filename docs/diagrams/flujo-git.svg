@@ -43,7 +43,7 @@
   </text>
   <text x="645" y="536" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
     <tspan x="645" dy="0">1 · Crea tu rama</tspan>
-    <tspan x="645" dy="20">fc/descripcion-corta</tspan>
+    <tspan x="645" dy="20">F/descripcion-corta</tspan>
   </text>
   <text x="955" y="536" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
     <tspan x="955" dy="0">2 · PR a staging</tspan>
@@ -73,6 +73,6 @@
     <tspan x="800" dy="0">staging sigue recibiendo los PRs de todo el equipo</tspan>
   </text>
   <text x="0" y="661" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#495057" text-anchor="start">
-    <tspan x="0" dy="0">Prefijo de rama: iniciales de nombre y apellido de quien la crea (ejemplo: fc/). Nadie hace push directo a staging ni a main: todo entra por PR.</tspan>
+    <tspan x="0" dy="0">Prefijo de rama: iniciales en mayúscula de quien la crea (M, F, AR, AN, V, J). Nadie hace push directo a staging ni a main: todo entra por PR.</tspan>
   </text>
 </svg>

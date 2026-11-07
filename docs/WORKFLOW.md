@@ -4,24 +4,33 @@
 
 ## Ramas
 
-| Rama              | Para qué sirve                                                          | Cómo recibe cambios                 |
-| ----------------- | ----------------------------------------------------------------------- | ----------------------------------- |
-| `main`            | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
-| `staging`         | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
-| `<iniciales>/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
+| Rama            | Para qué sirve                                                          | Cómo recibe cambios                 |
+| --------------- | ----------------------------------------------------------------------- | ----------------------------------- |
+| `main`          | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
+| `staging`       | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
+| `<prefijo>/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
 
 `staging` es la rama por defecto del repo: al clonar quedas en ella y los PRs nuevos apuntan a ella.
 
 ### Nombres de rama
 
-Cada rama de trabajo empieza con las iniciales de quien la crea, en minúsculas y sin acentos, seguidas de una descripción corta con guiones:
+Cada rama de trabajo empieza con el prefijo de quien la crea, en mayúscula, seguido de una descripción corta en minúsculas, sin acentos y con guiones:
 
 ```
-<iniciales>/<descripcion-corta>
-fc/pantalla-inicio
+<prefijo>/<descripcion-corta>
+F/pantalla-inicio
 ```
 
-Se usan las iniciales de nombre y apellido, no solo la del nombre: Ariff y Angie compartirían la `a`.
+| Integrante | Prefijo |
+| ---------- | ------- |
+| Mateo      | `M/`    |
+| Fernando   | `F/`    |
+| Ariff      | `AR/`   |
+| Angie      | `AN/`   |
+| Viridiana  | `V/`    |
+| Jenni      | `J/`    |
+
+Ariff y Angie usan dos letras porque comparten la `A`.
 
 ## Paso a paso
 
@@ -30,17 +39,17 @@ Se usan las iniciales de nombre y apellido, no solo la del nombre: Ariff y Angie
    ```bash
    git switch staging
    git pull
-   git switch -c fc/nombre-corto
+   git switch -c F/nombre-corto
    ```
 
-2. Trabaja y haz commits pequeños. Antes de subir, corre `pnpm check`.
-
-3. Sube la rama y abre el PR hacia `staging`:
+2. Sube la rama y abre el PR **en borrador** hacia `staging`, con dos líneas de qué vas a hacer. Así todo el equipo ve en qué trabaja cada quien sin necesitar issues:
 
    ```bash
-   git push -u origin fc/nombre-corto
-   gh pr create --base staging
+   git push -u origin F/nombre-corto
+   gh pr create --base staging --draft
    ```
+
+3. Trabaja y haz commits pequeños. Antes de pedir revisión, corre `pnpm check`, revisa [LESSONS.md](LESSONS.md) y marca el PR como listo (`gh pr ready`).
 
 4. Cuando el CI esté en verde y alguien más lo haya revisado, se hace merge con **squash**. Eso despliega el sitio de staging.
 
