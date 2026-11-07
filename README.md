@@ -28,7 +28,8 @@ pnpm check
 | [docs/BRIEF.md](docs/BRIEF.md)         | El hackatón y el reto, resumidos.                   |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Qué está decidido y qué sigue abierto.              |
 | [docs/WORKFLOW.md](docs/WORKFLOW.md)   | Ramas, PRs, CI y despliegue.                        |
-| [docs/TEAM.md](docs/TEAM.md)           | El equipo.                                          |
+| [docs/TEAM.md](docs/TEAM.md)           | El equipo y el prefijo de rama de cada quien.       |
+| [docs/LESSONS.md](docs/LESSONS.md)     | Errores que ya nos pasaron y no queremos repetir.   |
 | [docs/CHALLENGE.md](docs/CHALLENGE.md) | Enunciado oficial del reto, en inglés.              |
 | [AGENTS.md](AGENTS.md)                 | Contexto y reglas para los agentes de cada persona. |
 
