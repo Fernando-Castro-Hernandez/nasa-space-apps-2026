@@ -15,6 +15,7 @@ Lee también, en este orden:
 5. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
 6. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
 7. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+8. [docs/resources/](docs/resources/README.md): extractos de las fuentes oficiales del reto. Consúltalos antes de buscar en internet.
 
 ## Estado actual
 
@@ -61,7 +62,7 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya
 ## Reglas del dominio
 
 - Es un prototipo de hackatón, no un dispositivo médico. La interfaz no debe presentarse como diagnóstico.
-- Cualquier umbral, rango o recomendación de salud que aparezca en el producto debe tener una fuente citada (NASA Human Research Program u otra agencia espacial o fuente médica reconocida). Si no hay fuente, no lo inventes: márcalo como pendiente de validar.
+- Cualquier umbral, rango o recomendación de salud que aparezca en el producto debe tener una fuente citada (NASA Human Research Program u otra agencia espacial o fuente médica reconocida). Primero busca en [docs/FUENTES.md](docs/FUENTES.md), donde están las reglas ya citadas, y después en [docs/resources/](docs/resources/README.md). Si no hay fuente, no lo inventes: márcalo como pendiente de validar.
 
 ## Mantén este contexto al día
 

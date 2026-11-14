@@ -27,6 +27,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | Requisitos en `docs/PRD.md` e historias de usuario en `docs/HISTORIAS.md`.                                                                                         | Punto de partida común para construir.                                                      |
 | 2026-11-14 | Las dosis del botiquín salen de la lista de la ISS publicada por NASA en 2015, que tomamos como vigente.                                                           | Es la única lista oficial pública.                                                          |
 | 2026-11-14 | Un rojo por SpO2 o pulso se confirma con dos lecturas seguidas de 60 s; el pulso bajo (≤ 40) solo es rojo si además está por debajo de la línea base.              | Evitar alertas falsas por el sensor y por astronautas entrenados con pulso bajo normal.     |
+| 2026-11-14 | Las fuentes oficiales del reto viven como extractos en `docs/resources/`; los agentes las consultan antes de buscar fuera.                                         | Que todos los agentes partan de las mismas fuentes y no investiguen de más.                 |
 
 ## Abierto
 
