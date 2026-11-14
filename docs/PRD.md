@@ -95,7 +95,7 @@ Las reglas completas, con cita, están en [FUENTES.md](FUENTES.md). En resumen:
 
 - **Amarillo por desviación personal:** un indicador pasa a amarillo cuando su promedio de varios días se aleja más de 0.5 desviaciones estándar de la línea base personal (método _smallest worthwhile change_). Se usa desviación estándar y no un porcentaje fijo porque cada persona tiene distinta variabilidad diaria; no encontramos fuente que respalde un porcentaje fijo.
 - **Umbrales absolutos con fuente:** CO2 de cabina ≤ 3 mmHg (1 h), radiación ≤ 600 mSv en la carrera, SpO2 < 94 % o caída de 3 puntos.
-- **Rojo:** solo por una bandera roja con fuente (por ejemplo, las del protocolo de dolor de cabeza) o porque el oficial médico lo marca. Del sensor, solo SpO2 ≤ 91 % o pulso ≤ 40 / ≥ 131 lpm (escala NEWS2), confirmados en dos lecturas seguidas.
+- **Rojo:** solo por una bandera roja con fuente (por ejemplo, las del protocolo de dolor de cabeza) o porque el oficial médico lo marca. Del sensor, solo SpO2 ≤ 91 %, pulso ≥ 131 lpm, o pulso ≤ 40 lpm cuando además está por debajo de su línea base (escala NEWS2), confirmados en dos lecturas seguidas.
 - **Línea base:** 7 días previos al vuelo como mínimo (14 en misiones largas); con menos no hay amarillo.
 - **Botiquín:** dosis máximas del botiquín de la ISS publicado por NASA, con la referencia de venta libre como dosis por toma.
 
@@ -130,5 +130,4 @@ El plan gratuito de Workers AI da 10,000 neurons al día; cada check-in (transcr
 
 ## 12. Preguntas abiertas
 
-1. Si la lista del botiquín de la ISS (2015) sigue vigente.
-2. Cuántas lecturas confirman un rojo: hoy son 2, pendiente de validar.
+Ninguna bloquea el MVP. Decidido: la lista del botiquín de la ISS de 2015 se toma como vigente y el rojo se confirma con dos lecturas. Lo que falta verificar está en [FUENTES.md §5](FUENTES.md).

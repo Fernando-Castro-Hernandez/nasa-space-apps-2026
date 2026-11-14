@@ -25,6 +25,8 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | El semáforo pasa a amarillo cuando un indicador se aleja más de 0.5 DE de la línea base personal. Reglas y fuentes en `docs/FUENTES.md`.                           | Hay fuente para la regla de 0.5 DE y no para un porcentaje fijo.                            |
 | 2026-11-14 | Meta de autonomía: 100 % de situaciones bien atendidas a bordo en todas las fases (resueltas o escaladas correctamente).                                           | Decisión del equipo: autonomía para actuar ante cualquier situación.                        |
 | 2026-11-14 | Requisitos en `docs/PRD.md` e historias de usuario en `docs/HISTORIAS.md`.                                                                                         | Punto de partida común para construir.                                                      |
+| 2026-11-14 | Las dosis del botiquín salen de la lista de la ISS publicada por NASA en 2015, que tomamos como vigente.                                                           | Es la única lista oficial pública.                                                          |
+| 2026-11-14 | Un rojo por SpO2 o pulso se confirma con dos lecturas seguidas de 60 s; el pulso bajo (≤ 40) solo es rojo si además está por debajo de la línea base.              | Evitar alertas falsas por el sensor y por astronautas entrenados con pulso bajo normal.     |
 
 ## Abierto
 

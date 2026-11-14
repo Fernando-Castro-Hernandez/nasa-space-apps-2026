@@ -247,7 +247,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - El estado se basa en la tendencia de varios días, no en una sola lectura.
 - Cada color muestra el motivo en texto ("Amarillo · G: 3 días sin ARED y recuperación más lenta") y la fuente de la regla, o "pendiente de validar".
 - Una regla sin fuente puede dar amarillo pero nunca rojo (C7, C15).
-- SpO2 ≤ 91 % o pulso ≤ 40 / ≥ 131 lpm en reposo dan rojo solo si una segunda lectura de 60 s lo confirma; si no, se muestra "lectura dudosa, repite" (NEWS2).
+- SpO2 ≤ 91 %, pulso ≥ 131 lpm, o pulso ≤ 40 lpm por debajo de la línea base − 0.5 DE, en reposo, dan rojo solo si una segunda lectura de 60 s lo confirma; si no, se muestra "lectura dudosa, repite" (NEWS2).
 - El motor del semáforo es una función pura con pruebas en Vitest para cada regla.
 
 **Prioridad:** P1 · **Dependencias:** HU-11 · **Notas:** amarillo cuando el indicador se aleja más de 0.5 DE de la línea base. Reglas por indicador y fuentes en [FUENTES.md](FUENTES.md).
@@ -477,10 +477,9 @@ Resueltas con el equipo y la investigación:
 
 Siguen abiertas:
 
-- Si la lista del botiquín de la ISS (2015) sigue vigente.
-- Cuántas lecturas confirman un rojo (hoy 2, pendiente de validar).
+- Ninguna bloquea historias. Lo que falta verificar está en [FUENTES.md §5](FUENTES.md).
 
-Resueltas en la segunda ronda: dosis (botiquín de la ISS, NASA 2015), línea base de 7 días previos al vuelo y rojo por SpO2 y pulso (NEWS2). Ver [FUENTES.md](FUENTES.md).
+Resueltas en la segunda ronda: dosis (botiquín de la ISS, NASA 2015), línea base de 7 días previos al vuelo y rojo por SpO2 y pulso (NEWS2). Decisiones del equipo: la lista del botiquín de 2015 se toma como vigente, el rojo se confirma con 2 lecturas y el pulso bajo se compara con la línea base. Ver [FUENTES.md](FUENTES.md).
 
 ## 5. Supuestos
 
