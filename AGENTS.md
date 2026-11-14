@@ -10,16 +10,17 @@ Lee también, en este orden:
 
 1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
 2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
-3. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
-4. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
-5. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
-6. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+3. [docs/SISTEMA.md](docs/SISTEMA.md): el sistema que vamos a construir.
+4. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
+5. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
+6. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
+7. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
 
 ## Estado actual
 
-El repo es una **plantilla**: app mínima, checks y despliegue. **El producto todavía no está definido.** Mientras `docs/DECISIONS.md` no diga qué se construye:
+El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya está definido** en [docs/SISTEMA.md](docs/SISTEMA.md), pero todavía no está construido.
 
-- No inventes funcionalidades, pantallas ni modelos de datos del producto por tu cuenta.
+- Construye lo que describe `docs/SISTEMA.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
 - Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.
 
 ## Stack
