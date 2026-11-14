@@ -12,6 +12,28 @@ Una app que junta todo lo que se sabe de la salud de cada astronauta (**lo que d
 
 **Pitch:** "No reinventamos los sensores de la nave; los conectamos con lo que la tripulación siente y mide, y lo convertimos en acciones organizadas por los 5 peligros de NASA".
 
+### Lunito: un agente por astronauta
+
+Cada astronauta tiene a **Lunito**, un personaje que es la cara de su agente. En vez de un panel de números, lo primero que ves es a tu Lunito: **su pancita es tu semáforo** (verde, ámbar o rojo) y su expresión acompaña tu estado. Hablarle es el check-in por voz; poner el dedo en el sensor es "darle la mano". Él te recuerda tus tareas y te propone acciones. Diseño visual en [DISENO.md](DISENO.md).
+
+**Por qué:** un recordatorio genérico se ignora; "Lunito está cansado, ¿hacemos tu check-in?" no tanto. El vínculo sube la adherencia y pone la salud mental, punto destacado de los comentarios, en el centro.
+
+**Tres capas**
+
+1. **Mi Lunito** (inicio): Lunito, tu estado en palabras, el motivo y el botón de check-in.
+2. **La constelación** (tripulación): los Lunitos de todos. Ves cómo está cada quien a grandes rasgos, le mandas ánimo y ves al compañero del día.
+3. **El detalle** (Mi estado): el dashboard con números, gráficas de 7 días y línea base. Siempre a un toque de Lunito.
+
+**Reglas para que Lunito no se vuelva en contra**
+
+1. **Lunito refleja, nunca sufre.** No se enferma ni se muere cuando estás mal: si fuera así, aprenderías a mentirle en el check-in para "protegerlo". Cuando estás mal, te cuida.
+2. **Se premian acciones, no valores.** Tu pulso no lo controlas; hacer la respiración guiada, el check-in o el ejercicio, sí. Los premios salen de completar tareas.
+3. **El estado nunca va solo en la cara.** Siempre color más una palabra ("Revisar · sueño").
+4. **Privacidad en la constelación.** Los demás ven el ánimo general que tú decidas compartir, nunca números. Un rojo no se muestra a la tripulación: va al oficial médico.
+5. **Lunito habla, pero no diagnostica.** Es la misma IA del sistema: transcribe, resume y guía protocolos ya cargados.
+
+**En una emergencia** (ver 7.5) desaparece todo lo lúdico. El Lunito del afectado se vuelve una baliza calma en rojo con su nombre y la hora, sin gesto de sufrimiento, y los demás Lunitos de la constelación giran hacia él. RIDGE sigue vivo en la vista del comandante y del oficial médico, y como etiqueta de "por qué importa" en cada indicador.
+
 ---
 
 ## 2. Criterios de diseño (de nuestras notas)
@@ -83,6 +105,10 @@ NASA, a través de su Human Research Program, agrupa los riesgos de los vuelos e
 - **Semáforo:** estado de cada persona (verde, amarillo o rojo), siempre con el motivo y el peligro que lo encendió.
 - **Panel RIDGE:** cinco luces, una por peligro, que muestran el estado de la tripulación completa.
 - **Cirujano de vuelo:** médico en Tierra responsable de la salud de la tripulación.
+- **Lunito:** el personaje que representa al agente de cada astronauta; su pancita muestra el semáforo.
+- **Constelación:** la vista de la tripulación, con el Lunito de cada quien.
+- **Oficial médico (CMO):** tripulante entrenado para atender emergencias a bordo; casi nunca es médico.
+- **SBAR:** formato para pasar un caso: Situación, Antecedentes, Evaluación y qué se pide (Recomendación).
 
 ---
 
@@ -115,6 +141,18 @@ La IA **transcribe, estructura, resume y guía protocolos ya cargados**. No diag
 | Uso de medicamentos e inventario                                   | Botiquín                                                 | D       |
 
 **Clave:** el sistema evalúa **tendencias de varios días**, no lecturas aisladas.
+
+### ¿Basta un check-in de 60 s?
+
+Es la primera pregunta que nos harán. Respuesta corta: **sí para tendencias, no para eventos agudos**, y así lo decimos.
+
+- **Así se monitorea hoy la ISS.** Exámenes mensuales entre tripulantes y una conferencia médica privada semanal con el cirujano ([Roden & Ewert, NASA 2006](https://ntrs.nasa.gov/api/citations/20060051792/downloads/20060051792.pdf); [NASA, podcast de consolas médicas](https://www.nasa.gov/podcasts/houston-we-have-a-podcast/mission-control-crew-health-consoles)). Los cuestionarios de sueño son mensuales y las pruebas cognitivas, en fechas fijas ([Standard Measures](https://ntrs.nasa.gov/api/citations/20180002943/downloads/20180002943.pdf)). Nuestro check-in diario es **más frecuente** que eso.
+- **Una medición corta y estandarizada es válida para ver tendencias.** 60 s de HRV en reposo equivalen a 5 min ([Esco & Flatt 2014](https://www.jssm.org/jssm-13-535.xml-abst)); con 3 lecturas válidas por semana basta ([Plews 2014](https://doi.org/10.1123/ijspp.2013-0455)). La prueba de reacción de 3 min está validada ([Basner 2011](https://pmc.ncbi.nlm.nih.gov/articles/PMC3197786)). La FDA dice que la SpO2 sirve más para tendencias que para valores aislados.
+- **Hasta en un hospital el monitoreo continuo se reserva para los graves.** Con NEWS2, a un paciente estable se le toman signos cada 12 h; el monitoreo continuo empieza con un puntaje de 7 o más ([RCP, NEWS2](https://www.rcp.ac.uk/media/mrllczrj/news2-chart-4_clinical-response-to-news-trigger-thresholds_0.pdf)).
+- **El monitoreo continuo tiene costos.** Entre 72 % y 99 % de las alarmas del monitoreo continuo son falsas ([AHRQ](https://www.ncbi.nlm.nih.gov/books/NBK555522/)), y la PPG de muñeca falla con el movimiento ([revisión](https://pmc.ncbi.nlm.nih.gov/articles/PMC6387309)).
+- **Lo que no hacemos y lo decimos:** el check-in no detecta eventos agudos ni nocturnos (arritmias, desaturación al dormir, desmayos). Para eso existen wearables como el Bio-Monitor de la CSA, que mide ECG, presión, respiración, temperatura y SpO2 ([CSA](https://www.asc-csa.gc.ca/eng/sciences/astroskin.asp)). Nuestro sistema **los complementa, no los reemplaza**: si existe ese feed, entra igual que el de los dosímetros. No encontramos una vía oficial de integración, así que en la demo es una posibilidad futura.
+- **Lo que el wearable no da y nosotros sí:** cómo se siente la persona (voz), su fatiga (prueba de reacción), el contexto de la nave y una acción concreta. Un número sin interpretación no ayuda a nadie a actuar.
+- **Límite del sensor:** el MAX30102 no está validado para HRV ni SpO2; mostramos tendencias, nunca diagnósticos.
 
 ---
 
@@ -159,11 +197,12 @@ La IA **transcribe, estructura, resume y guía protocolos ya cargados**. No diag
 
 ### 7.4 Escalamiento: cuándo alertar a Tierra
 
-| Nivel       | Quién atiende               | Qué pasa                              |
-| ----------- | --------------------------- | ------------------------------------- |
-| 🟢 Verde    | El propio astronauta        | Autocuidado con instrucciones         |
-| 🟡 Amarillo | Oficial médico a bordo      | Aviso, acciones y repetir la medición |
-| 🔴 Rojo     | Cirujano de vuelo en Tierra | Se envía el paquete del caso          |
+| Nivel         | Quién atiende                              | Qué pasa                                       |
+| ------------- | ------------------------------------------ | ---------------------------------------------- |
+| 🟢 Verde      | El propio astronauta                       | Autocuidado con instrucciones                  |
+| 🟡 Amarillo   | Oficial médico a bordo                     | Aviso, acciones y repetir la medición          |
+| 🔴 Rojo       | Cirujano de vuelo en Tierra                | Se envía el paquete del caso                   |
+| 🚨 Emergencia | Oficial médico a bordo + cirujano de vuelo | Alguien no puede valerse por sí mismo; ver 7.5 |
 
 **Modo retraso de comunicación**
 
@@ -171,7 +210,45 @@ La IA **transcribe, estructura, resume y guía protocolos ya cargados**. No diag
 - Muestra un contador del retraso ("respuesta estimada en 14:32") y las instrucciones provisionales del protocolo.
 - Al llegar la respuesta, se convierte en checklist con seguimiento.
 
-### 7.5 Seguimiento
+### 7.5 Emergencia: cuando alguien no puede hacer su check-in
+
+**Cómo funciona hoy de verdad.** En la ISS hay al menos dos oficiales médicos a bordo (CMO). Casi nunca son médicos: tienen unas 25 h de entrenamiento y actúan como "extensión" del cirujano de vuelo ([Hailey, NASA 2011](https://ntrs.nasa.gov/api/citations/20110010924/downloads/20110010924.pdf); [Hurst, NASA](https://ntrs.nasa.gov/api/citations/20070030123/downloads/20070030123.pdf)). En Tierra atienden el cirujano de vuelo y un ingeniero biomédico (BME), que baja los datos fisiológicos ([NASA, BME](https://www.nasa.gov/directorates/esdmd/hhp/biomedical-flight-controllers/)). El CMO sigue la ISS Medical Checklist con el equipo de soporte vital avanzado.
+
+**Lo que falla hoy, según NASA** ([Smith, AsMA 2025](https://ntrs.nasa.gov/api/citations/20250004859/downloads/CHP-IDSP_AsMA%202025.pdf)):
+
+- La tripulación le cuenta el caso al cirujano **de palabra**, y el cirujano lo apunta en Word u OneNote para transcribirlo después.
+- En Tierra **no siempre saben que hay datos nuevos** listos para bajar, sobre todo en eventos no programados.
+- La tripulación **no tiene a bordo** su historial médico.
+- La evaluación depende de comunicación casi en tiempo real, que hacia Marte no existe (4 a 24 min de retraso).
+
+Nuestro flujo ataca esos cuatro puntos. Sigue el flujo que NASA propone para su futuro expediente médico de exploración (mismo documento): abrir el caso avisa a Tierra, los signos se cargan solos, el CMO completa y envía, y el cirujano responde sobre el mismo caso.
+
+**El flujo**
+
+1. **Disparo (un toque).** Cualquier tripulante pulsa **Emergencia** y elige a quién le pasa. El sensor no detecta desmayos solo, así que siempre lo dispara una persona. Un rojo del check-in también puede abrir el caso.
+2. **Aviso inmediato a Tierra.** Al abrirse el caso sale un primer paquete sin esperar a nadie: quién, qué pasó, hora, último check-in, tendencia de 7 días, línea base, medicamentos tomados, alergias y antecedentes. En Tierra aparece como caso nuevo, no como un archivo que hay que ir a buscar.
+3. **Guía para el CMO.** La app muestra el protocolo cargado como checklist paso a paso. Los pasos clínicos salen de la checklist médica oficial; los nuestros van marcados **pendiente de validar** hasta tener fuente.
+4. **Registro del caso.** Cada paso marcado, cada lectura del sensor y cada medicamento quedan con hora, por toque o por voz ("le di oxígeno a las 14:05"). El CMO no escribe notas: atiende, y la app arma el registro. Esto reemplaza el "te lo cuento y tú lo apuntas".
+5. **Resumen para Tierra en formato SBAR.** Situación, antecedentes, evaluación y qué se pide. Se actualiza solo con cada cambio y se reenvía. SBAR es el formato con mejor evidencia para pasar un caso a distancia, como por teléfono ([revisión, BMJ Open 2018](https://pmc.ncbi.nlm.nih.gov/articles/PMC6112409)).
+6. **Respuesta de Tierra.** El cirujano responde sobre el mismo caso; su indicación llega como checklist nueva y el CMO recibe aviso. Mientras tanto se ve el contador del retraso.
+7. **Sin comunicación.** El CMO sigue con el protocolo cargado y todo queda registrado. El paquete se envía cuando vuelve el enlace (almacenar y reenviar, que NASA-STD-3001 contempla para misiones con retraso: [NASA, Medical Operations](https://www.nasa.gov/reference/6-0-medical-operations/)).
+8. **Cierre y seguimiento.** El caso pasa a seguimiento con recordatorios, y cuenta para la meta de autonomía como caso **escalado correctamente**.
+
+**Qué ve el cirujano de vuelo**
+
+| Bloque            | Contenido                                                                 |
+| ----------------- | ------------------------------------------------------------------------- |
+| Resumen SBAR      | Una tarjeta, legible en 30 s                                              |
+| Línea de tiempo   | Cada evento, lectura y acción con hora y quién la hizo                    |
+| Contexto          | Tendencia de 7 días, línea base, check-ins recientes, ambiente de la nave |
+| Recursos a bordo  | Qué hay en el botiquín y qué ya se usó                                    |
+| Estado del enlace | Cuándo se envió cada actualización y si ya llegó                          |
+
+**Privacidad.** Los demás tripulantes ven que hay una emergencia y a quién ayudar, no los datos médicos. NASA protege la privacidad médica incluso en emergencias reales (caso Crew-8, 2024).
+
+**Lo que no hace:** no diagnostica, no decide tratamientos y no detecta el evento por su cuenta.
+
+### 7.6 Seguimiento
 
 - Notificaciones proactivas ("hace 4 h tomaste el analgésico, ¿cómo sigue el dolor?").
 - Reporte diario y semanal por persona y por tripulación, agrupado por peligro y redactado por la IA.
@@ -200,34 +277,42 @@ La IA **transcribe, estructura, resume y guía protocolos ya cargados**. No diag
 
 ## 9. Pantallas de la app
 
-Navegación con barra inferior. Estética: modo oscuro tipo consola de nave, acentos verde, ámbar y rojo, tipografía grande (se usa flotando y con prisa).
+Navegación con barra inferior: Lunito, Mi estado, Tripulación y Botiquín. Estética: noche espacial oscura, Lunito como única ilustración, verde, ámbar y rojo solo para estados, tipografía grande (se usa flotando y con prisa). Detalle en [DISENO.md](DISENO.md).
 
-1. **Inicio (tripulación)**
-   - Indicador de **autonomía** con la meta de la fase actual.
-   - **Panel RIDGE**: cinco luces de la tripulación.
-   - Tarjeta por astronauta con semáforo, motivo y peligro.
-   - Tarjeta del compañero del día.
-   - Botón fijo **"Mi check-in"**.
+1. **Inicio (Mi Lunito)**
+   - Lunito sobre una luna, con la pancita del color de tu estado.
+   - Estado en palabras y el motivo en una línea ("Revisar · sueño: dormiste menos 3 noches").
+   - Botón **"Hacer mi check-in"**.
+   - Botón **Emergencia** siempre visible, en todas las pantallas (ver 7.5).
 2. **Check-in**
+   - Lunito pregunta: "Cuéntame cómo dormiste y cómo te sientes".
    - Micrófono grande con onda animada y contador de 30 s.
-   - Estado del sensor MAX30102 en vivo.
+   - Estado del sensor MAX30102 en vivo (segundos, pulso y SpO2).
    - Chips editables con los campos extraídos por la IA.
    - Prueba de reacción.
    - Cierre: semáforo e instrucción concreta.
-3. **Mi estado**
-   - Semáforo con motivo.
-   - Cinco secciones R, I, D, G, E con gráficas de 7 días y línea punteada de la línea base.
+3. **Mi estado (el dashboard)**
+   - Lunito pequeño con el semáforo y el motivo.
    - "Qué hacer hoy": 1 a 3 acciones marcables.
-4. **Botiquín**
+   - Una tarjeta por indicador: valor, gráfica de 7 días, línea punteada de la línea base, estado en palabras y el peligro que lo afecta como etiqueta.
+   - Al tocar una tarjeta: gráfica grande y explicación simple.
+4. **Tripulación (la constelación)**
+   - Los Lunitos de todos con nombre y estado en palabras, sin números.
+   - Indicador de **autonomía** con la meta de la fase.
+   - Compañero del día con su acción y el botón "Enviar ánimo".
+   - Para el comandante: panel RIDGE y el balanceador ("¿Intercambiar la caminata espacial de A con B?").
+5. **Botiquín**
    - Buscador de síntomas con íconos.
    - Asistente paso a paso.
    - Pestaña de inventario con barras de stock y alertas.
-5. **Casos y Tierra**
-   - Lista de casos abiertos por color y peligro.
-   - Caso rojo: paquete enviado, contador del retraso e instrucciones provisionales.
-   - Respuesta del cirujano convertida en checklist.
-
-**Solo para el comandante:** notificación del balanceador ("¿Intercambiar la caminata espacial de A con B?") con botones de aprobar o rechazar.
+6. **Emergencia a bordo** (la ve el oficial médico)
+   - Banner rojo con el nombre, qué pasó y la hora.
+   - "Caso enviado a Tierra" con el contador del retraso.
+   - Checklist del protocolo y registro del caso con hora.
+   - Botón grande para dictar.
+7. **Consola del cirujano de vuelo** (en Tierra, pantalla de escritorio)
+   - Resumen SBAR, línea de tiempo, tendencia de 7 días, recursos a bordo y estado del enlace.
+   - Caja para responder; la respuesta llega a la nave como checklist.
 
 ---
 
@@ -249,7 +334,7 @@ Navegación con barra inferior. Estética: modo oscuro tipo consola de nave, ace
 2. Hace 20 sentadillas, se mide otra vez, el pulso sube y la app lo detecta (**G**).
 3. Hace la respiración guiada viendo su pulso bajar en pantalla (**I**).
 4. Se dispara un evento simulado de CO2 alto: la luz **E** cambia, la tripulación lo resuelve y sube la autonomía.
-5. Se muestra un caso **rojo** simulado con el paquete para Tierra y el contador de retraso (**D**).
+5. Emergencia simulada: un integrante "se desmaya", otro pulsa **Emergencia** y el caso llega a la vista del cirujano de vuelo con resumen SBAR, línea de tiempo y contador de retraso (**D**).
 
 Los datos del feed de la nave (dosímetros, ejercicio y ambiente) y el historial de días previos van **simulados y etiquetados**. El MAX30102 es el único sensor real, lo que refuerza el mensaje: no reinventamos sensores, los conectamos.
 
@@ -266,7 +351,7 @@ Los datos del feed de la nave (dosímetros, ejercicio y ambiente) y el historial
 | 5         | Panel RIDGE e indicador de autonomía en Inicio                       |
 | 6         | Respiración guiada con pulso en vivo                                 |
 | 7         | Un flujo completo del botiquín (por ejemplo, dolor de cabeza)        |
-| 8         | Caso rojo con paquete para Tierra y contador de retraso              |
+| 8         | Emergencia: registro del caso, resumen SBAR y vista del cirujano     |
 | Extra     | Compañero del día y balanceador (pueden ir como pantallas simuladas) |
 
 ---

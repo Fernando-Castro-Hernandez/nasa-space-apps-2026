@@ -10,7 +10,7 @@ Lee también, en este orden:
 
 1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
 2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
-3. [docs/SISTEMA.md](docs/SISTEMA.md): el sistema que vamos a construir.
+3. [docs/SISTEMA.md](docs/SISTEMA.md): el sistema que vamos a construir. Su propuesta visual está en [docs/DISENO.md](docs/DISENO.md).
 4. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
 5. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
 6. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.

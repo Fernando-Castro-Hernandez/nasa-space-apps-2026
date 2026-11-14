@@ -28,6 +28,9 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | Las dosis del botiquín salen de la lista de la ISS publicada por NASA en 2015, que tomamos como vigente.                                                           | Es la única lista oficial pública.                                                          |
 | 2026-11-14 | Un rojo por SpO2 o pulso se confirma con dos lecturas seguidas de 60 s; el pulso bajo (≤ 40) solo es rojo si además está por debajo de la línea base.              | Evitar alertas falsas por el sensor y por astronautas entrenados con pulso bajo normal.     |
 | 2026-11-14 | Las fuentes oficiales del reto viven como extractos en `docs/resources/`; los agentes las consultan antes de buscar fuera.                                         | Que todos los agentes partan de las mismas fuentes y no investiguen de más.                 |
+| 2026-11-14 | Modo emergencia y respuesta a "¿basta un check-in de 60 s?" en `docs/SISTEMA.md` (sección 6 y 7.5).                                                                | Sigue el flujo que NASA documentó (AsMA 2025).                                              |
+| 2026-11-14 | Cada astronauta tiene un agente con cara: Lunito. Su pancita es el semáforo. Concepto y reglas en `docs/SISTEMA.md`.                                               | Vínculo que sube la adherencia y pone la salud mental al centro.                            |
+| 2026-11-14 | Propuesta visual en `docs/DISENO.md`: noche espacial, Lunito como única ilustración.                                                                               | Limpio y profesional; el estado se lee de un vistazo.                                       |
 
 ## Abierto
 
