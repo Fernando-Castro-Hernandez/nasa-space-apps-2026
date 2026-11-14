@@ -26,7 +26,7 @@ Cada cambio indica quién lo propone (perspectiva), por qué, qué cambia y qué
 | C12 | Producto (decisión del equipo) | §7.1: una estación de check-in                                    | Perfiles tipo Netflix: cada quien entra desde su dispositivo y todos ven los mismos datos. Hay una sola estación con sensor                                                               | Decisión del equipo. Obliga a sincronizar datos: D1 en el mismo Worker                                                          | HU-01, HU-15, HU-29        |
 | C13 | Arquitectura                   | §7.3: la respiración guiada muestra la HRV antes y después        | La métrica principal es el pulso antes y después; la HRV aparece como "estimada"                                                                                                          | Una HRV de 60 s con un sensor de dedo es ruidosa; el pulso es más confiable para la demo                                        | HU-18                      |
 | C14 | Reglas de dominio              | §7.3: el botiquín sigue "el protocolo cargado"                    | El flujo de dolor de cabeza sale de [FUENTES.md §3](FUENTES.md): banderas rojas SNNOOP10, tratamiento en la ISS y CO2. Dosis pendiente de validar                                         | Una recomendación de tratamiento sin fuente viola AGENTS.md; la lista médica de la ISS no es pública                            | HU-19                      |
-| C15 | Reglas de dominio              | §7.4: no define qué vuelve rojo un caso                           | Rojo solo por una bandera roja con fuente o porque el oficial médico lo marca. Los signos vitales del sensor no encienden rojo por sí solos                                               | Evita inventar criterios clínicos                                                                                               | HU-12, HU-19, HU-21        |
+| C15 | Reglas de dominio              | §7.4: no define qué vuelve rojo un caso                           | Rojo solo por una bandera roja con fuente o porque el oficial médico lo marca. Del sensor, solo SpO2 ≤ 91 % o pulso ≤ 40 / ≥ 131 (NEWS2), confirmados en 2 lecturas                       | Evita inventar criterios clínicos                                                                                               | HU-12, HU-19, HU-21        |
 | C16 | Seguridad                      | §7.3: el compañero "no ve los datos privados"                     | Se vuelve criterio de aceptación verificable                                                                                                                                              | Privacidad entre tripulantes                                                                                                    | HU-26                      |
 | C17 | Reglas de dominio              | §3: "unos 600 min por semana" de ejercicio; Marte "más de 20 min" | Confirmadas: 600 min por semana en promedio (OCHMO-TB-031) y retraso Tierra–Marte de 4 a 24 min (NASA)                                                                                    | Cifras sin cita en SISTEMA.md                                                                                                   | HU-02, HU-22               |
 | C18 | Producto (decisión del equipo) | §7.1: "WiFi/Bluetooth"                                            | Bluetooth (Web Bluetooth)                                                                                                                                                                 | Decisión del equipo; funciona en Chrome de escritorio y Android, no en iOS                                                      | HU-03, HU-04               |
@@ -230,12 +230,12 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- La línea base de cada indicador (pulso en reposo, HRV, SpO2, sueño, ánimo, estrés) se calcula como media y desviación estándar de los primeros 7 días disponibles.
+- La línea base de cada indicador (pulso en reposo, HRV, SpO2, sueño, ánimo, estrés) se calcula como media y desviación estándar de los 7 días previos al vuelo (14 en misiones largas).
 - La HRV se calcula en la app como RMSSD a partir de los intervalos entre latidos (C1).
-- Con menos de 3 días de datos, el indicador muestra "línea base en construcción" y no cambia el semáforo.
+- Con menos de 7 días de datos (6 noches para el sueño), el indicador muestra "línea base insuficiente" y no cambia el semáforo.
 - Las funciones de línea base y RMSSD son puras y tienen pruebas en Vitest, incluidas listas vacías y valores atípicos.
 
-**Prioridad:** P1 · **Dependencias:** HU-02 · **Notas:** los 7 días salen de SISTEMA.md (§4, "primeros días de misión"). Son pocos para una desviación estándar estable: pendiente de validar.
+**Prioridad:** P1 · **Dependencias:** HU-02 · **Notas:** NASA toma la línea base antes del vuelo; mínimos y fuentes en [FUENTES.md §1](FUENTES.md). En la demo, los días previos al vuelo van simulados.
 
 #### HU-12 · Semáforo por peligro con motivo
 
@@ -247,6 +247,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - El estado se basa en la tendencia de varios días, no en una sola lectura.
 - Cada color muestra el motivo en texto ("Amarillo · G: 3 días sin ARED y recuperación más lenta") y la fuente de la regla, o "pendiente de validar".
 - Una regla sin fuente puede dar amarillo pero nunca rojo (C7, C15).
+- SpO2 ≤ 91 % o pulso ≤ 40 / ≥ 131 lpm en reposo dan rojo solo si una segunda lectura de 60 s lo confirma; si no, se muestra "lectura dudosa, repite" (NEWS2).
 - El motor del semáforo es una función pura con pruebas en Vitest para cada regla.
 
 **Prioridad:** P1 · **Dependencias:** HU-11 · **Notas:** amarillo cuando el indicador se aleja más de 0.5 DE de la línea base. Reglas por indicador y fuentes en [FUENTES.md](FUENTES.md).
@@ -345,7 +346,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - El contenido sale de un protocolo cargado como datos, con su fuente visible.
 - Antes de recomendar un medicamento, el asistente revisa si el CO2 de cabina está alto y lo sugiere primero (cruce con HU-13).
 
-**Prioridad:** P1 · **Dependencias:** HU-13 · protocolo en [FUENTES.md §3](FUENTES.md); dosis pendiente de validar · **Notas:** requiere diseño de UX del asistente.
+**Prioridad:** P1 · **Dependencias:** HU-13 · protocolo, preguntas de contraindicación y dosis del botiquín de la ISS en [FUENTES.md §3](FUENTES.md) · **Notas:** requiere diseño de UX del asistente.
 
 #### HU-20 · Inventario del botiquín
 
@@ -476,9 +477,10 @@ Resueltas con el equipo y la investigación:
 
 Siguen abiertas:
 
-- Dosis de los analgésicos: la lista médica de la ISS no es pública.
-- Tamaño de la ventana de la línea base.
-- Criterio de rojo para signos vitales del sensor.
+- Si la lista del botiquín de la ISS (2015) sigue vigente.
+- Cuántas lecturas confirman un rojo (hoy 2, pendiente de validar).
+
+Resueltas en la segunda ronda: dosis (botiquín de la ISS, NASA 2015), línea base de 7 días previos al vuelo y rojo por SpO2 y pulso (NEWS2). Ver [FUENTES.md](FUENTES.md).
 
 ## 5. Supuestos
 

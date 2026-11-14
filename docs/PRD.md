@@ -95,7 +95,9 @@ Las reglas completas, con cita, están en [FUENTES.md](FUENTES.md). En resumen:
 
 - **Amarillo por desviación personal:** un indicador pasa a amarillo cuando su promedio de varios días se aleja más de 0.5 desviaciones estándar de la línea base personal (método _smallest worthwhile change_). Se usa desviación estándar y no un porcentaje fijo porque cada persona tiene distinta variabilidad diaria; no encontramos fuente que respalde un porcentaje fijo.
 - **Umbrales absolutos con fuente:** CO2 de cabina ≤ 3 mmHg (1 h), radiación ≤ 600 mSv en la carrera, SpO2 < 94 % o caída de 3 puntos.
-- **Rojo:** solo por una bandera roja con fuente (por ejemplo, las del protocolo de dolor de cabeza) o porque el oficial médico lo marca. Los signos vitales del sensor no encienden rojo por sí solos.
+- **Rojo:** solo por una bandera roja con fuente (por ejemplo, las del protocolo de dolor de cabeza) o porque el oficial médico lo marca. Del sensor, solo SpO2 ≤ 91 % o pulso ≤ 40 / ≥ 131 lpm (escala NEWS2), confirmados en dos lecturas seguidas.
+- **Línea base:** 7 días previos al vuelo como mínimo (14 en misiones largas); con menos no hay amarillo.
+- **Botiquín:** dosis máximas del botiquín de la ISS publicado por NASA, con la referencia de venta libre como dosis por toma.
 
 ## 9. Decisiones técnicas
 
@@ -128,5 +130,5 @@ El plan gratuito de Workers AI da 10,000 neurons al día; cada check-in (transcr
 
 ## 12. Preguntas abiertas
 
-1. Dosis de los analgésicos del protocolo: la lista médica de la ISS no es pública. Queda "pendiente de validar".
-2. Tamaño de la ventana de la línea base: 7 días son pocos para una desviación estándar estable. Queda "pendiente de validar".
+1. Si la lista del botiquín de la ISS (2015) sigue vigente.
+2. Cuántas lecturas confirman un rojo: hoy son 2, pendiente de validar.
