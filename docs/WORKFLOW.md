@@ -51,7 +51,7 @@ Ariff y Angie usan dos letras porque comparten la `A`.
 
 3. Trabaja y haz commits pequeños. Antes de pedir revisión, corre `pnpm check`, revisa [LESSONS.md](LESSONS.md) y marca el PR como listo (`gh pr ready`).
 
-4. Cuando el CI esté en verde y alguien más lo haya revisado, se hace merge con **squash**. Eso despliega el sitio de staging.
+4. Cuando el CI esté en verde y Fernando lo haya aprobado, se hace merge con **squash**. Eso despliega el sitio de staging. Fernando es el dueño del código en [CODEOWNERS](../.github/CODEOWNERS): GitHub le pide revisión en cada PR y no deja hacer merge sin su aprobación. Si subes cambios después de la aprobación, hay que volver a aprobar.
 
 5. Para publicar, se abre un PR de `staging` a `main`. Antes de aprobarlo:
    - Se prueba a mano el sitio de staging.
