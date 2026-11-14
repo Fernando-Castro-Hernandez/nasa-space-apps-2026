@@ -34,6 +34,34 @@ Cada astronauta tiene a **Lunito**, un personaje que es la cara de su agente. En
 
 **En una emergencia** (ver 7.5) desaparece todo lo lúdico. El Lunito del afectado se vuelve una baliza calma en rojo con su nombre y la hora, sin gesto de sufrimiento, y los demás Lunitos de la constelación giran hacia él. RIDGE sigue vivo en la vista del comandante y del oficial médico, y como etiqueta de "por qué importa" en cada indicador.
 
+### Qué hace Lunito como agente
+
+Lunito no es un chatbot: **percibe** (check-in, sensor, feed de la nave), **recuerda** (línea base, tendencias, lo que tomaste), **actúa con herramientas** (agenda, notificaciones, botiquín, caso para Tierra) y **toma la iniciativa**: te habla él primero, no espera a que abras la app.
+
+**Principio: la IA habla, las reglas deciden.** El color del semáforo, las alertas y cuándo escalar salen de reglas fijas con fuente ([FUENTES.md](FUENTES.md)), escritas como funciones puras con pruebas. La IA solo hace lenguaje: entiende lo que dictas, redacta resúmenes y le da voz a Lunito. Así un modelo pequeño nunca toma una decisión de salud.
+
+**🟢 Lo hace solo**
+
+- Recordatorios en el momento justo (7.6).
+- Conecta datos: "dormiste mal 3 noches y mañana tienes caminata espacial" (7.2).
+- Instrucción del día (7.3).
+- Registra lo que dictas, descuenta el botiquín y redacta el reporte diario (7.3 y 7.6).
+- Prepara la conferencia médica privada semanal con el resumen de tu semana, para que el cirujano no gaste el tiempo preguntando.
+- Arma y envía el caso a Tierra ante un rojo confirmado (7.4) o una emergencia (7.5).
+
+**🟡 Propone y un humano aprueba**
+
+- Compañero del día (7.3).
+- Balanceador de carga; aprueba el comandante (7.3).
+
+**🔴 Nunca**
+
+- Diagnosticar, decidir tratamientos o inventar dosis.
+- Compartir tus datos con otro Lunito.
+- Ocultar un rojo.
+
+**Los Lunitos se coordinan sin compartir datos.** Tu Lunito no le cuenta al de Luis que dormiste 5 h; solo le avisa que "Ana necesita apoyo hoy" (compañero del día). Y si tres Lunitos registran dolor de cabeza a la vez, el sistema no ve tres casos médicos sino un evento de ambiente (cruce de datos, 7.2).
+
 ---
 
 ## 2. Criterios de diseño (de nuestras notas)

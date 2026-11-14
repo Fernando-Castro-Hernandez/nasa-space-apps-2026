@@ -31,6 +31,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | Modo emergencia y respuesta a "¿basta un check-in de 60 s?" en `docs/SISTEMA.md` (sección 6 y 7.5).                                                                | Sigue el flujo que NASA documentó (AsMA 2025).                                              |
 | 2026-11-14 | Cada astronauta tiene un agente con cara: Lunito. Su pancita es el semáforo. Concepto y reglas en `docs/SISTEMA.md`.                                               | Vínculo que sube la adherencia y pone la salud mental al centro.                            |
 | 2026-11-14 | Propuesta visual en `docs/DISENO.md`: noche espacial, Lunito como única ilustración.                                                                               | Limpio y profesional; el estado se lee de un vistazo.                                       |
+| 2026-11-14 | Lunito es agente: actúa solo, propone o nunca actúa según el caso. La IA habla, las reglas deciden.                                                                | Que un modelo pequeño nunca tome una decisión de salud.                                     |
 
 ## Abierto
 
