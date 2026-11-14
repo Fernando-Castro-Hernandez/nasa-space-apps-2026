@@ -376,7 +376,7 @@ Los datos del feed de la nave (dosímetros, ejercicio y ambiente) y el historial
 | 2         | Bitácora por voz → campos estructurados                              |
 | 3         | Clasificación por peligro + semáforo con línea base y motivo         |
 | 4         | Feed de la nave simulado (dosímetro, ejercicio, ambiente)            |
-| 5         | Panel RIDGE e indicador de autonomía en Inicio                       |
+| 5         | Mi Lunito y Constelación con panel RIDGE e indicador de autonomía    |
 | 6         | Respiración guiada con pulso en vivo                                 |
 | 7         | Un flujo completo del botiquín (por ejemplo, dolor de cabeza)        |
 | 8         | Emergencia: registro del caso, resumen SBAR y vista del cirujano     |

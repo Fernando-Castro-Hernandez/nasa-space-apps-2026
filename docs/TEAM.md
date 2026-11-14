@@ -1,6 +1,6 @@
 # Equipo Nóstos
 
-El equipo se llama **Nóstos** y somos seis personas. **No hay roles asignados**: cualquiera puede proponer ideas, revisar y meter cambios. Los agentes no deben asumir quién se encarga de qué; si hace falta saberlo, se pregunta.
+El equipo se llama **Nóstos** y somos seis personas. Cualquiera puede proponer y revisar; la propiedad de implementación vigente está en [REPARTO.md](REPARTO.md).
 
 | Integrante      | Prefijo de rama | Formación y experiencia                                                                                                   |
 | --------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------- |

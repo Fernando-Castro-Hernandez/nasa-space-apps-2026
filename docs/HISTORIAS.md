@@ -31,6 +31,10 @@ Cada cambio indica quién lo propone (perspectiva), por qué, qué cambia y qué
 | C17 | Reglas de dominio              | §3: "unos 600 min por semana" de ejercicio; Marte "más de 20 min" | Confirmadas: 600 min por semana en promedio (OCHMO-TB-031) y retraso Tierra–Marte de 4 a 24 min (NASA)                                                                                    | Cifras sin cita en SISTEMA.md                                                                                                   | HU-02, HU-22               |
 | C18 | Producto (decisión del equipo) | §7.1: "WiFi/Bluetooth"                                            | Bluetooth (Web Bluetooth)                                                                                                                                                                 | Decisión del equipo; funciona en Chrome de escritorio y Android, no en iOS                                                      | HU-03, HU-04               |
 | C19 | Producto (decisión del equipo) | §8: la meta sube por fases                                        | Meta de 100 % de situaciones bien atendidas en todas las fases; la fase solo cambia el retraso                                                                                            | Decisión del equipo: autonomía para actuar ante cualquier situación                                                             | HU-17                      |
+| C20 | Producto                       | §9: Inicio muestra panel RIDGE y tarjetas por astronauta          | Inicio pasa a ser Mi Lunito; la vista colectiva pasa a la Constelación y los datos detallados quedan en Mi estado                                                                         | Lunito es la cara del agente y separa estado personal, contexto colectivo y detalle clínico                                     | HU-15, HU-16, HU-17, HU-30 |
+| C21 | Producto y seguridad           | §7.4: un caso rojo envía un paquete a Tierra                      | Emergencia completa: disparo manual, aviso inmediato, registro del CMO, SBAR, trabajo sin enlace y consola del cirujano                                                                   | Sigue el flujo futuro de expediente médico de exploración documentado por NASA y cubre a quien no puede hacer check-in          | HU-21, HU-22, HU-23, HU-28 |
+| C22 | Privacidad                     | La tripulación ve tarjetas con motivo y peligro                   | La Constelación solo muestra estado general compartido; en emergencia, solo el CMO y el cirujano ven datos médicos                                                                        | El estado colectivo debe orientar sin exponer información clínica                                                               | HU-21, HU-30               |
+| C23 | Seguridad y producto           | Lunito reacciona cuando la persona abre la app                    | Lunito inicia recordatorios y prepara resúmenes, pero las reglas puras deciden estado, alertas y escalamiento                                                                             | Un agente debe tomar la iniciativa sin permitir que un modelo pequeño tome decisiones de salud                                  | HU-12, HU-14, HU-24, HU-25 |
 
 **Cambios que tocan varias historias:** C1 (contrato de datos del sensor), C7 (motor del semáforo) y C11 (función de IA) conviene resolverlos primero, porque cambiarlos después obliga a rehacer varias historias.
 
@@ -54,25 +58,26 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 | 10    | HU-08    | Worker                  | Prioridad 2 de §12.                                                   |
 | 11    | HU-09    | Worker                  | Completa la bitácora.                                                 |
 | 12    | HU-14    | Interpretación          | Cierra el ciclo del check-in con una acción.                          |
-| 13    | HU-15    | Pantallas               | Prioridad 5 de §12; primera pantalla que ve el jurado.                |
-| 14    | HU-17    | Pantallas               | Completa Inicio con la meta común.                                    |
-| 15    | HU-18    | Sensor en la app        | Prioridad 6 de §12; paso 3 de la demo.                                |
-| 16    | HU-13    | Interpretación          | Paso 4 de la demo (evento de CO2).                                    |
-| 17    | HU-28    | Botiquín y escalamiento | Dispara los pasos 4 y 5 de la demo.                                   |
-| 18    | HU-19    | Botiquín y escalamiento | Prioridad 7 de §12; protocolo en FUENTES.md.                          |
-| 19    | HU-21    | Botiquín y escalamiento | Prioridad 8 de §12; paso 5 de la demo.                                |
-| 20    | HU-22    | Botiquín y escalamiento | Completa el caso rojo.                                                |
-| 21    | HU-16    | Pantallas               | Muestra el cambio en el tiempo (C10).                                 |
-| 22    | HU-20    | Botiquín y escalamiento | P2: completa el botiquín.                                             |
-| 23    | HU-23    | Botiquín y escalamiento | P2: cierra el ciclo del caso rojo.                                    |
-| 24    | HU-10    | Pantallas               | P2 (C3).                                                              |
-| 25    | HU-06    | Hardware                | P2: pulido de la estación.                                            |
-| 26    | HU-26    | Pantallas               | P3: extra de §12.                                                     |
-| 27    | HU-27    | Pantallas               | P3: extra de §12.                                                     |
-| 28    | HU-24    | Worker                  | P3.                                                                   |
-| 29    | HU-25    | Worker                  | P3.                                                                   |
+| 13    | HU-15    | Pantallas               | Primera pantalla que ve el astronauta y el jurado.                    |
+| 14    | HU-17    | Pantallas               | Define la meta común de autonomía.                                    |
+| 15    | HU-30    | Pantallas               | Reúne el estado colectivo, RIDGE y la autonomía.                      |
+| 16    | HU-18    | Sensor en la app        | Prioridad 6 de §12; paso 3 de la demo.                                |
+| 17    | HU-13    | Interpretación          | Paso 4 de la demo (evento de CO2).                                    |
+| 18    | HU-28    | Botiquín y escalamiento | Dispara los pasos 4 y 5 de la demo.                                   |
+| 19    | HU-19    | Botiquín y escalamiento | Prioridad 7 de §12; protocolo en FUENTES.md.                          |
+| 20    | HU-21    | Botiquín y escalamiento | Abre y envía el caso de emergencia.                                   |
+| 21    | HU-22    | Botiquín y escalamiento | Permite al CMO actuar durante el retraso o sin enlace.                |
+| 22    | HU-23    | Botiquín y escalamiento | Completa la demo con la consola de Tierra y la respuesta.             |
+| 23    | HU-16    | Pantallas               | Muestra el cambio en el tiempo (C10).                                 |
+| 24    | HU-20    | Botiquín y escalamiento | P2: completa el botiquín.                                             |
+| 25    | HU-10    | Pantallas               | P2 (C3).                                                              |
+| 26    | HU-06    | Hardware                | P2: pulido de la estación.                                            |
+| 27    | HU-26    | Pantallas               | P3: extra de §12.                                                     |
+| 28    | HU-27    | Pantallas               | P3: extra de §12.                                                     |
+| 29    | HU-24    | Worker                  | P3.                                                                   |
+| 30    | HU-25    | Worker                  | P3.                                                                   |
 
-**Primer acuerdo del equipo (antes de escribir código):** el contrato de datos de una lectura del sensor y de un check-in, para que los carriles de hardware, sensor, interpretación y pantallas no se bloqueen entre sí.
+**Primer acuerdo del equipo (antes de escribir código):** los contratos de una lectura del sensor, un check-in y un caso de emergencia, para que los carriles no se bloqueen entre sí.
 
 ---
 
@@ -249,6 +254,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - Una regla sin fuente puede dar amarillo pero nunca rojo (C7, C15).
 - SpO2 ≤ 91 %, pulso ≥ 131 lpm, o pulso ≤ 40 lpm por debajo de la línea base − 0.5 DE, en reposo, dan rojo solo si una segunda lectura de 60 s lo confirma; si no, se muestra "lectura dudosa, repite" (NEWS2).
 - El motor del semáforo es una función pura con pruebas en Vitest para cada regla.
+- La IA no decide el color, las alertas ni el escalamiento; solo convierte datos y decisiones en lenguaje (C23).
 
 **Prioridad:** P1 · **Dependencias:** HU-11 · **Notas:** amarillo cuando el indicador se aleja más de 0.5 DE de la línea base. Reglas por indicador y fuentes en [FUENTES.md](FUENTES.md).
 
@@ -280,18 +286,18 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 ### Pantallas
 
-#### HU-15 · Inicio con el panel RIDGE
+#### HU-15 · Mi Lunito
 
-**Como** oficial médico a bordo **quiero** ver de un vistazo el estado de toda la tripulación por peligro **para** saber dónde actuar primero.
+**Como** astronauta **quiero** ver mi estado a través de Lunito **para** entender cómo estoy y empezar mi check-in sin leer un panel clínico.
 
 **Criterios de aceptación**
 
-- Inicio muestra cinco luces (R, I, D, G, E) con el peor estado de la tripulación en cada peligro.
-- Debajo, una tarjeta por astronauta con semáforo, motivo y peligro.
-- Un botón fijo "Mi check-in" abre el check-in desde cualquier parte de Inicio.
-- Cada luz tiene texto además del color.
+- Inicio muestra a Lunito con la pancita verde, ámbar o roja y el estado en palabras; nunca usa solo color o expresión.
+- Muestra el motivo en una línea y de 1 a 3 acciones de HU-14.
+- El botón "Hacer mi check-in" abre el check-in y el botón "Emergencia" permanece visible en todas las pantallas.
+- Hablarle a Lunito inicia la bitácora y la medición se presenta como "darle la mano".
 
-**Prioridad:** P1 · **Dependencias:** HU-12 · **Notas:** modo oscuro tipo consola, acentos verde, ámbar y rojo (§9). Puede requerir diseño de UI antes de construir.
+**Prioridad:** P1 · **Dependencias:** HU-12, HU-14 · **Notas:** sigue [DISENO.md](DISENO.md); Lunito refleja el estado, nunca sufre ni diagnostica (C20).
 
 #### HU-16 · Mi estado con tendencia de 7 días
 
@@ -299,11 +305,12 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- Hay cinco secciones R, I, D, G y E; I aparece primero (C9).
-- Cada indicador tiene una gráfica de 7 días con la línea base punteada.
+- Lunito aparece pequeño con el semáforo y el motivo; I aparece primero (C9).
+- Cada indicador tiene una tarjeta con valor, estado en palabras, etiqueta RIDGE y gráfica de 7 días con la línea base punteada.
+- Al abrir una tarjeta se muestra la gráfica grande y una explicación simple.
 - "Qué hacer hoy" muestra las acciones de HU-14 con casilla para marcar.
 
-**Prioridad:** P2 · **Dependencias:** HU-11, HU-14 · **Notas:** requiere elegir librería de gráficas (abierto en DECISIONS.md). Requiere diseño de UI.
+**Prioridad:** P2 · **Dependencias:** HU-11, HU-14 · **Notas:** requiere elegir librería de gráficas (abierto en DECISIONS.md) y sigue [DISENO.md](DISENO.md).
 
 #### HU-17 · Indicador de autonomía de la tripulación
 
@@ -311,13 +318,26 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- Inicio muestra el porcentaje de autonomía, la meta de 100 %, la fase actual (órbita baja, tránsito o Marte) y el desglose por peligro ("E: 4 de 4 resueltos a bordo").
+- La Constelación muestra el porcentaje de autonomía, la meta de 100 %, la fase actual (órbita baja, tránsito o Marte) y el desglose por peligro ("E: 4 de 4 resueltos a bordo").
 - Un caso amarillo cerrado a bordo suma a la autonomía.
 - Un caso rojo escalado correctamente a Tierra también cuenta como éxito; nunca resta.
 - No hay métricas individuales ni rankings.
 - El cálculo es una función pura con pruebas en Vitest, incluido el caso rojo escalado.
 
 **Prioridad:** P1 · **Dependencias:** HU-12; cuenta los casos de HU-13 y HU-21 cuando existan (mientras tanto, casos simulados) · **Notas:** la meta de 100 % de situaciones bien atendidas en todas las fases es decisión del equipo (C19, [FUENTES.md §4](FUENTES.md)), no umbral de salud.
+
+#### HU-30 · Constelación de la tripulación
+
+**Como** tripulante **quiero** ver el estado general del equipo **para** saber a quién apoyar sin invadir su privacidad.
+
+**Criterios de aceptación**
+
+- Muestra el Lunito y nombre de cada tripulante con el estado general que decidió compartir, sin cifras ni motivos médicos; cada persona puede dejarlo privado.
+- Incluye la autonomía de HU-17 y el compañero del día cuando exista.
+- El comandante ve además el panel RIDGE y las propuestas del balanceador; el resto de la tripulación no ve esos controles.
+- Un estado rojo no se publica en la Constelación: se avisa al CMO mediante el caso correspondiente.
+
+**Prioridad:** P1 · **Dependencias:** HU-12, HU-17 · **Notas:** es la capa colectiva de Lunito y reemplaza las tarjetas clínicas del Inicio anterior (C20, C22).
 
 ### Acciones
 
@@ -362,55 +382,61 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 ### Escalamiento
 
-#### HU-21 · Armar el paquete del caso para Tierra
+#### HU-21 · Abrir una emergencia y avisar a Tierra
 
-**Como** cirujano de vuelo **quiero** recibir un paquete completo y ordenado de cada caso rojo **para** decidir sin pedir más datos y perder otro ciclo de comunicación.
-
-**Criterios de aceptación**
-
-- Un caso pasa a rojo por una regla con fuente o porque el oficial médico lo marca (C15).
-- El paquete agrupa por peligro: síntomas, tendencia de 7 días, lo ya administrado y el stock disponible.
-- El paquete se puede ver en pantalla y descargar como archivo.
-
-**Prioridad:** P1 · **Dependencias:** HU-12, HU-16 o los datos de HU-02 · **Notas:** el envío a Tierra es simulado.
-
-#### HU-22 · Modo retraso de comunicación
-
-**Como** astronauta **quiero** ver cuánto tardará la respuesta de Tierra y qué hacer mientras tanto **para** no quedarme sin guía durante la espera.
+**Como** tripulante **quiero** abrir una emergencia para otra persona con un toque **para** avisar al CMO y a Tierra aunque esa persona no pueda hacer su check-in.
 
 **Criterios de aceptación**
 
-- Al enviar el paquete, se muestra un contador "respuesta estimada en mm:ss" según la fase de la misión.
-- Debajo aparecen las instrucciones provisionales del protocolo cargado.
-- El retraso de cada fase es configurable.
+- El botón global "Emergencia" permite elegir al afectado y registrar qué pasó; un rojo confirmado también puede abrir el caso.
+- Al abrirse, el CMO recibe el aviso y sale un primer paquete con persona, hora, motivo, último check-in, tendencia de 7 días, línea base, medicamentos, alergias y antecedentes.
+- Si no hay enlace, el caso se guarda a bordo y se envía automáticamente cuando vuelve la conexión.
+- La tripulación solo ve a quién ayudar; los datos médicos quedan limitados al CMO y al cirujano.
 
-**Prioridad:** P1 · **Dependencias:** HU-21 · **Notas:** retraso Tierra–Marte de 4 a 24 min en un sentido ([NASA](https://www.nasa.gov/centers-and-facilities/goddard/space-communications-7-things-you-need-to-know/)).
+**Prioridad:** P1 · **Dependencias:** HU-12, HU-16 o los datos de HU-02, HU-29 · **Notas:** el disparo siempre es manual; el sensor no detecta desmayos (C21, C22).
 
-#### HU-23 · Respuesta del cirujano como checklist
+#### HU-22 · Atender la emergencia a bordo
 
-**Como** astronauta **quiero** que la respuesta de Tierra se convierta en una lista de pasos marcables **para** seguirla sin perder ningún paso.
+**Como** oficial médico a bordo **quiero** seguir el protocolo y registrar lo que hago **para** atender al afectado sin dejar de cuidarlo para escribir notas.
 
 **Criterios de aceptación**
 
-- Al llegar la respuesta (simulada), se muestra como checklist dentro del caso.
-- El caso se cierra cuando todos los pasos están marcados y cuenta para la autonomía (HU-17).
+- La pantalla muestra un banner con persona, motivo y hora, un checklist del protocolo cargado y el contador de respuesta de Tierra.
+- Cada paso, lectura y medicamento queda en una línea de tiempo con hora y autor, por toque o dictado.
+- El caso genera y actualiza un resumen SBAR con los datos registrados, sin inventar evaluaciones ni tratamientos.
+- Sin comunicación, el checklist y el registro siguen funcionando y quedan pendientes de envío.
 
-**Prioridad:** P2 · **Dependencias:** HU-22 · **Notas:** la respuesta viene precargada en la demo.
+**Prioridad:** P1 · **Dependencias:** HU-21 · **Notas:** los pasos clínicos sin fuente se marcan "pendiente de validar"; retraso Tierra–Marte de 4 a 24 min en un sentido ([NASA](https://www.nasa.gov/centers-and-facilities/goddard/space-communications-7-things-you-need-to-know/)).
+
+#### HU-23 · Consola y respuesta del cirujano de vuelo
+
+**Como** cirujano de vuelo **quiero** revisar el caso en una sola vista y responder sobre él **para** decidir sin pedir datos en otro ciclo de comunicación.
+
+**Criterios de aceptación**
+
+- La consola de escritorio muestra resumen SBAR, línea de tiempo, tendencia de 7 días, línea base, recursos a bordo y estado del enlace.
+- Cada actualización indica cuándo se envió y si llegó.
+- La respuesta simulada del cirujano llega al CMO como checklist nueva y una notificación.
+- Al completar el seguimiento, el caso se cierra y cuenta para la autonomía (HU-17).
+
+**Prioridad:** P1 · **Dependencias:** HU-22 · **Notas:** la consola, el envío y la respuesta son simulados en la demo (C21).
 
 ### Seguimiento
 
-#### HU-24 · Notificaciones proactivas
+#### HU-24 · Iniciar recordatorios proactivos
 
 **Como** astronauta **quiero** que el sistema me pregunte cómo sigo después de una acción **para** que mi caso tenga seguimiento sin tener que acordarme.
 
 **Criterios de aceptación**
 
+- Lunito inicia el recordatorio del check-in o de una acción pendiente sin esperar a que la persona abra la app.
+- El momento y el mensaje salen de reglas precargadas; la IA puede redactarlo, pero no decide cuándo alertar.
 - 4 h después de usar un medicamento del botiquín llega "¿Cómo sigue el dolor?" con respuestas rápidas.
 - La respuesta se guarda en el caso.
 
 **Prioridad:** P3 · **Dependencias:** HU-19 · **Notas:** en la demo el tiempo de espera se puede acortar desde el panel de demo.
 
-#### HU-25 · Reporte diario por peligro
+#### HU-25 · Reportes diario y semanal por peligro
 
 **Como** cirujano de vuelo **quiero** un reporte diario de la tripulación agrupado por peligro **para** revisar el día en un minuto.
 
@@ -419,8 +445,9 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - El reporte agrupa por peligro los cambios de semáforo, casos abiertos y cerrados y acciones completadas.
 - La IA redacta el resumen solo con los datos del día; cada afirmación se puede rastrear a un dato.
 - Si la IA no responde, el reporte se muestra en forma de lista sin redacción.
+- El resumen semanal prepara la conferencia médica privada con tendencias y asuntos pendientes de esa persona, sin compartirlo con otros tripulantes.
 
-**Prioridad:** P3 · **Dependencias:** HU-12, función de IA (C11) · **Notas:** el reporte semanal queda fuera del MVP.
+**Prioridad:** P3 · **Dependencias:** HU-12, función de IA (C11) · **Notas:** la IA redacta; las reglas y los datos deciden qué entra (C23).
 
 ### Trabajo en equipo
 
@@ -432,7 +459,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 - Cuando alguien queda en amarillo por I, se asigna a un tripulante en verde con una acción simple ("toma el café con Ana").
 - El compañero ve la acción y el nombre, nunca los datos de salud ni el motivo del semáforo.
-- Inicio muestra la tarjeta del compañero del día.
+- La Constelación muestra la tarjeta del compañero del día.
 
 **Prioridad:** P3 · **Dependencias:** HU-12, HU-15 · **Notas:** puede ir como pantalla simulada (§12).
 
@@ -456,7 +483,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- Un panel oculto (por ejemplo, en `/demo`) tiene botones para: subir el CO2 de un módulo, crear un caso rojo y reiniciar los datos de la demo.
+- Un panel oculto (por ejemplo, en `/demo`) tiene botones para: subir el CO2 de un módulo, simular la emergencia de un tripulante y reiniciar los datos de la demo.
 - Cada evento se marca como "simulado" en la interfaz.
 - Reiniciar deja la app en el estado inicial de la demo de §11.
 

@@ -11,17 +11,21 @@ Lee también, en este orden:
 1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
 2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
 3. [docs/SISTEMA.md](docs/SISTEMA.md): el sistema que vamos a construir. Su propuesta visual está en [docs/DISENO.md](docs/DISENO.md).
-4. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
-5. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
-6. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
-7. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
-8. [docs/resources/](docs/resources/README.md): extractos de las fuentes oficiales del reto. Consúltalos antes de buscar en internet.
+4. [docs/PRD.md](docs/PRD.md): requisitos y alcance del MVP.
+5. [docs/HISTORIAS.md](docs/HISTORIAS.md): historias de usuario y criterios de aceptación.
+6. [docs/REPARTO.md](docs/REPARTO.md): responsables, módulos, pantallas y límites de integración.
+7. [docs/FUENTES.md](docs/FUENTES.md): reglas de salud y sus fuentes.
+8. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
+9. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
+10. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
+11. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+12. [docs/resources/](docs/resources/README.md): extractos de las fuentes oficiales del reto. Consúltalos antes de buscar en internet.
 
 ## Estado actual
 
 El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya está definido** en [docs/SISTEMA.md](docs/SISTEMA.md), pero todavía no está construido.
 
-- Construye lo que describe `docs/SISTEMA.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
+- Construye lo que describen `docs/PRD.md` y `docs/HISTORIAS.md`, respetando la propiedad de `docs/REPARTO.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
 - Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.
 
 ## Stack
