@@ -18,10 +18,10 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-07 | Las ramas de trabajo empiezan con el prefijo en mayúscula de quien las crea: `F/descripcion-corta` (tabla en TEAM.md). | Saber de un vistazo de quién es cada rama.                                                  |
 | 2026-11-07 | `docs/LESSONS.md` guarda los errores a no repetir; los agentes lo leen antes de cada cambio.                           | Evitar repetir correcciones entre seis personas y seis agentes.                             |
 | 2026-11-07 | Sin sistema de tareas con índice y archivo; el PR en borrador hace de tarea.                                           | Un índice compartido se desfasa en horas y genera conflictos de merge.                      |
+| 2026-11-14 | Qué construimos: el sistema descrito en `docs/SISTEMA.md`, organizado por los 5 peligros de NASA (RIDGE).              | Resultado de la lluvia de ideas del equipo.                                                 |
 
 ## Abierto
 
-- **Qué vamos a construir.** El equipo sigue planeando. Hasta que se defina, no se agregan funcionalidades del producto.
 - **IA dentro del producto.** Se quiere usar, pero falta decidir para qué. Nota técnica: una llave de API no puede vivir en el navegador, así que cualquier llamada a un modelo necesitará una función pequeña del lado del servidor en Cloudflare.
 - **Dónde viven los datos.** La propuesta es que se guarden en el navegador y no haya backend ni cuentas de usuario. Falta confirmarlo cuando se defina el producto.
 - **Interfaz.** Falta elegir librería de estilos, componentes y gráficas.
