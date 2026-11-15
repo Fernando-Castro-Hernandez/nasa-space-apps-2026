@@ -60,7 +60,6 @@ export function StatusSummary({
             key={s}
             className={cn(
               "flex items-center gap-2 transition-colors duration-500",
-              s === status && "font-semibold text-foreground",
             )}
           >
             <span

@@ -75,16 +75,13 @@ export function plotPoints(
 const month = (d: Date) =>
   new Intl.DateTimeFormat("es", { month: "long" }).format(d);
 
-/** Semana en curso de lunes a domingo: "9–15 de noviembre" y el día de hoy (0 = L). */
-export function weekInfo(now: Date) {
-  const todayIndex = (now.getDay() + 6) % 7;
+/** Semana en curso de lunes a domingo: "9–15 de noviembre". */
+export function weekRange(now: Date) {
   const start = new Date(now);
-  start.setDate(now.getDate() - todayIndex);
+  start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
-  const range =
-    start.getMonth() === end.getMonth()
-      ? `${start.getDate()}–${end.getDate()} de ${month(end)}`
-      : `${start.getDate()} de ${month(start)} – ${end.getDate()} de ${month(end)}`;
-  return { range, todayIndex };
+  return start.getMonth() === end.getMonth()
+    ? `${start.getDate()}–${end.getDate()} de ${month(end)}`
+    : `${start.getDate()} de ${month(start)} – ${end.getDate()} de ${month(end)}`;
 }

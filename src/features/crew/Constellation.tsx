@@ -1,15 +1,10 @@
 // La constelación: los Lunitos de la tripulación con nombre y estado en
 // palabras, nunca números (regla 4 de Lunito, SISTEMA.md §1).
 import { CREW, type CrewMember } from "@/data/crew";
-import type { Status } from "@/domain/vitals";
 import { STATUS_TOKEN } from "@/domain/status";
+import { STATUS_VIEW } from "@/features/lunito/theme";
 import { cn } from "@/lib/utils";
 import { publicStatus, type Shared } from "./privacy";
-import ambar from "./assets/lunito-ambar.png";
-import rojo from "./assets/lunito-rojo.png";
-import verde from "./assets/lunito-verde.png";
-
-const IMG: Record<Status, string> = { verde, ambar, rojo };
 
 // Posiciones en % del contenedor, en el orden de CREW.
 const POS = [
@@ -112,7 +107,7 @@ function Star({ member, shared, isMe, x, y, active, onClick }: StarProps) {
       style={{ left: `${x}%`, top: `${y}%` }}
     >
       <img
-        src={IMG[status ?? "verde"]}
+        src={STATUS_VIEW[status ?? "verde"].image}
         alt=""
         className={cn("h-16 w-auto md:h-20", !status && "opacity-40 grayscale")}
       />

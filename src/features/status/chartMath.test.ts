@@ -4,7 +4,7 @@ import {
   plotPoints,
   smoothPath,
   ticks,
-  weekInfo,
+  weekRange,
 } from "./chartMath";
 
 describe("smoothPath", () => {
@@ -62,20 +62,18 @@ describe("plotPoints", () => {
   });
 });
 
-describe("weekInfo", () => {
-  it("domingo 15 de noviembre de 2026: semana 9–15 y hoy es el día 7", () => {
-    expect(weekInfo(new Date(2026, 10, 15))).toEqual({
-      range: "9–15 de noviembre",
-      todayIndex: 6,
-    });
+describe("weekRange", () => {
+  it("domingo 15 de noviembre de 2026: semana 9–15", () => {
+    expect(weekRange(new Date(2026, 10, 15))).toBe("9–15 de noviembre");
   });
 
-  it("lunes es el día 1 de la semana", () => {
-    expect(weekInfo(new Date(2026, 10, 9)).todayIndex).toBe(0);
+  it("cualquier día de la semana da el mismo rango", () => {
+    expect(weekRange(new Date(2026, 10, 9))).toBe("9–15 de noviembre");
+    expect(weekRange(new Date(2026, 10, 12))).toBe("9–15 de noviembre");
   });
 
   it("una semana que cruza de mes nombra ambos meses", () => {
-    expect(weekInfo(new Date(2026, 10, 30)).range).toBe(
+    expect(weekRange(new Date(2026, 10, 30))).toBe(
       "30 de noviembre – 6 de diciembre",
     );
   });

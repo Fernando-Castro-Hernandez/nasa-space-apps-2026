@@ -7,7 +7,7 @@ import type { IndicatorView } from "@/features/lunito/dashboardData";
 import { STATUS_VIEW } from "@/features/lunito/theme";
 import { cn } from "@/lib/utils";
 import { EvolutionChart } from "./EvolutionChart";
-import { weekInfo } from "./chartMath";
+import { weekRange } from "./chartMath";
 
 type Mode = "week" | "month";
 
@@ -20,9 +20,9 @@ const LOOK = {
   spo2: { icon: Droplet, line: "var(--dash-line)" },
 } as const;
 
-/** Semana en curso hasta hoy, con el valor de hoy tomado de la lectura. */
-function weekValues(key: EvolutionKey, today: number, todayIndex: number) {
-  return [...EVOLUTION[key].week.slice(0, todayIndex), today];
+/** La semana completa (L a D); el último punto es la lectura actual. */
+function weekValues(key: EvolutionKey, today: number) {
+  return [...EVOLUTION[key].week.slice(0, 6), today];
 }
 
 export function EvolutionPanel({
@@ -34,7 +34,7 @@ export function EvolutionPanel({
   image: string;
 }) {
   const [mode, setMode] = useState<Mode>("week");
-  const [{ range, todayIndex }] = useState(() => weekInfo(new Date()));
+  const [range] = useState(() => weekRange(new Date()));
 
   return (
     <section aria-labelledby="evolucion-titulo" className="flex flex-col gap-3">
@@ -85,7 +85,7 @@ export function EvolutionPanel({
             unit={it.unit}
             values={
               mode === "week"
-                ? weekValues(it.key, it.value, todayIndex)
+                ? weekValues(it.key, it.value)
                 : EVOLUTION[it.key].month
             }
             slots={mode === "week" ? 7 : 4}
