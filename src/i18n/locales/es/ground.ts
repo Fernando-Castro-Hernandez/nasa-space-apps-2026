@@ -65,8 +65,10 @@ export const ground: Messages<typeof source> = {
       breathing: "{name}: dificultad para respirar a las {time}.",
       hardHit: "{name}: golpe fuerte a las {time}.",
       other: "{name}: otra urgencia a las {time}.",
+      redStatus: "{name}: alerta del monitoreo a las {time}.",
       custom: "{name}: {what} a las {time}.",
     },
+    reason: "Motivo: {reason}",
     lastNote: "Última nota: {note}",
     trend: {
       below: "{label} bajo su normal los últimos días.",
@@ -76,6 +78,8 @@ export const ground: Messages<typeof source> = {
     },
     meds: "Sin medicamentos registrados hoy. Alergias: ninguna registrada.",
     vitals: "{time} · {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2.",
+    vitalsSimulated:
+      "{time} · muestra simulada, sensor sin conectar: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2.",
     noVitals: "Aún sin signos registrados.",
     prototype:
       "Sensor de prototipo, no médico. El diagnóstico lo decide el cirujano.",

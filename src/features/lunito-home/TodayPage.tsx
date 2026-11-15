@@ -5,12 +5,13 @@ import { ArrowRight, Droplet, Heart, HeartPulse, Mic } from "lucide-react";
 import { useState } from "react";
 import type { LunitoDashboard, MetricKey } from "@/data/lunitoDashboard";
 import { STATUS_LABEL } from "@/domain/status";
-import pregunta from "@/features/day-checkin/assets/lunito-pregunta.webp";
+import { EscalationCard } from "@/features/emergency/EscalationCard";
 import { LunitoAvatar } from "@/features/lunito/LunitoAvatar";
 import { metricParts, metricText } from "@/features/lunito/metricFormat";
 import { LunitoTalkSheet } from "@/features/lunito/LunitoTalkSheet";
 import { StatusMark } from "@/features/lunito/StatusMark";
 import { StatusMeaning } from "@/features/lunito/StatusMeaning";
+import { STATUS_VIEW } from "@/features/lunito/theme";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
 import { statusHref } from "@/features/status/initialMetric";
 import { useTodayVoiceLog } from "@/features/voice/voiceLogStore";
@@ -60,6 +61,7 @@ export function TodayPage({
           {data.reason}
         </p>
       )}
+      <EscalationCard />
       <div className="today-scene">
         <div className="today-stage">
           <Marea />
@@ -68,7 +70,7 @@ export function TodayPage({
             status={data.status}
             reading={data.reading}
             baseline={data.baseline}
-            fallbackSrc={pregunta}
+            fallbackSrc={STATUS_VIEW[data.status].image}
             label={t("home.today.lunito", { status })}
             onTap={() => setTalking(true)}
           />

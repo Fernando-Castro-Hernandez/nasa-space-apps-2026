@@ -13,9 +13,7 @@ import { SYMPTOM_LABEL } from "@/api/symptomLabels";
 import { NumberStepper } from "@/components/ui/number-stepper";
 import { t } from "@/i18n";
 import { cn } from "@/lib/utils";
-
-const MOOD_LEVELS = ["veryLow", "low", "okay", "good", "veryGood"] as const;
-const STRESS_LEVELS = ["none", "little", "some", "quiteABit", "aLot"] as const;
+import { MOOD_LEVELS, STRESS_LEVELS } from "./levels";
 
 type Props = {
   fields: CheckInFields;

@@ -7,6 +7,7 @@ import {
   type EmergencyCase,
   eventText,
   latestVitals,
+  isSimulatedVitals,
   vitalsOf,
   whatCode,
 } from "./caseLogic";
@@ -36,20 +37,30 @@ export function trendNote(h: IndicatorHistory) {
 function situation(c: EmergencyCase, name: string) {
   const time = formatTime(c.openedAt);
   const code = whatCode(c.what);
-  return code
+  const line = code
     ? t(`ground.sbar.situation.${code}`, { name, time })
     : t("ground.sbar.situation.custom", { name, what: c.what, time });
+  // Un caso abierto por una alerta del monitoreo trae su motivo.
+  const reason = c.events.find((e) => e.kind === "open")?.params?.reason;
+  return reason === undefined
+    ? line
+    : `${line} ${t("ground.sbar.reason", { reason: String(reason) })}`;
 }
 
 function assessment(c: EmergencyCase) {
   const event = latestVitals(c);
   const vitals = event && vitalsOf(event);
   return vitals
-    ? t("ground.sbar.vitals", {
-        time: formatTime(event.at),
-        bpm: formatNumber(vitals.bpm),
-        spo2: formatNumber(vitals.spo2),
-      })
+    ? t(
+        isSimulatedVitals(event)
+          ? "ground.sbar.vitalsSimulated"
+          : "ground.sbar.vitals",
+        {
+          time: formatTime(event.at),
+          bpm: formatNumber(vitals.bpm),
+          spo2: formatNumber(vitals.spo2),
+        },
+      )
     : t("ground.sbar.noVitals");
 }
 

@@ -209,3 +209,55 @@
     opacity: 0;
   }
 }
+/* "Tu check-in de hoy": lo que la persona contó, entre la gráfica y Tu misión. */
+.checkin-summary {
+  position: relative;
+  z-index: 1;
+  margin-top: 6cqw;
+  border: 1px solid var(--reference-line);
+  border-radius: 5.8cqw;
+  padding: 3.4cqw 4cqw;
+  background: var(--reference-lavender-50);
+}
+.checkin-summary-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6cqw 3cqw;
+}
+.checkin-summary h2 {
+  font-size: max(17px, 4.65cqw);
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.checkin-summary-head p,
+.checkin-summary-note {
+  font-size: max(15px, 3.4cqw);
+  line-height: 1.4;
+  color: var(--reference-ink-muted);
+}
+.checkin-summary dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.4cqw 3cqw;
+  margin: 2.6cqw 0;
+}
+/* Los síntomas pueden ser varios: su fila ocupa todo el ancho. */
+.checkin-summary dl > div:last-child {
+  grid-column: 1 / -1;
+}
+.checkin-summary dt {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: max(15px, 2.8cqw);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.checkin-summary dd {
+  margin: 0;
+  font-size: max(15px, 3.9cqw);
+  font-weight: 700;
+  color: var(--reference-ink-strong);
+}

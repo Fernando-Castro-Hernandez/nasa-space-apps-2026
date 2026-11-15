@@ -58,10 +58,13 @@ export const WHAT_HAPPENED = [
   "hardHit",
   "other",
 ] as const;
-export type WhatCode = (typeof WHAT_HAPPENED)[number];
+/** Con `redStatus`, que no se elige a mano: lo abre la propuesta de avisar a
+ *  Tierra cuando el estado llega a Atención (`escalation.ts`). */
+const WHAT_CODES = [...WHAT_HAPPENED, "redStatus"] as const;
+export type WhatCode = (typeof WHAT_CODES)[number];
 
 const isWhatCode = (value: string): value is WhatCode =>
-  (WHAT_HAPPENED as readonly string[]).includes(value);
+  (WHAT_CODES as readonly string[]).includes(value);
 
 /** Código de "qué pasó": acepta el código o su texto en cualquier idioma
  *  ("Se desmayó", "Fainted"). null si es otro texto. */
@@ -69,7 +72,7 @@ export function whatCode(what: string): WhatCode | null {
   if (isWhatCode(what)) return what;
   const clean = what.trim().toLocaleLowerCase();
   return (
-    WHAT_HAPPENED.find((code) =>
+    WHAT_CODES.find((code) =>
       LOCALES.some(
         (locale) =>
           translate(locale, `emergency.what.${code}`).toLocaleLowerCase() ===
@@ -105,8 +108,13 @@ export const PROTOCOL: ProtocolStep[] = [
   step("oxygen"),
 ];
 
-/** Lectura simulada del sensor de prototipo para la demo. */
+/** Lectura simulada para la demo: solo se usa si la estación no está
+ *  conectada, y el registro la marca como simulada. */
 export const SENSOR_SAMPLE = { bpm: 58, spo2: 97 };
+
+/** Los signos de este evento no salieron de la estación. */
+export const isSimulatedVitals = (e: CaseEvent) =>
+  e.params?.simulated !== undefined;
 
 /** Pulso y SpO2 de un evento de signos. Un caso guardado antes de `params`
  *  solo tiene la frase: sus dos primeros números son el pulso y la SpO2. */
@@ -127,6 +135,11 @@ export function eventText(e: CaseEvent): string {
   if (!p) return e.text;
   switch (e.kind) {
     case "open":
+      if (p.reason !== undefined)
+        return t("emergency.log.openedAlert", {
+          name: asText(p.name),
+          reason: asText(p.reason),
+        });
       return t("emergency.log.opened", {
         name: asText(p.name),
         what: whatLabel(asText(p.what)),
@@ -138,10 +151,15 @@ export function eventText(e: CaseEvent): string {
     case "vitals": {
       const v = vitalsOf(e);
       return v
-        ? t("emergency.log.vitals", {
-            bpm: formatNumber(v.bpm),
-            spo2: formatNumber(v.spo2),
-          })
+        ? t(
+            isSimulatedVitals(e)
+              ? "emergency.log.vitalsSimulated"
+              : "emergency.log.vitals",
+            {
+              bpm: formatNumber(v.bpm),
+              spo2: formatNumber(v.spo2),
+            },
+          )
         : e.text;
     }
     case "note":
@@ -191,16 +209,65 @@ export function openCase(
   return withEvent(base, now, "open", { name: personName, what: code });
 }
 
+/**
+ * Caso abierto por una alerta del monitoreo (estado Atención), no por una
+ * persona: lleva el motivo y la última lectura de signos, para que Tierra no
+ * tenga que pedirlos. `simulated`: los signos no salieron de la estación.
+ */
+export function openRedCase(
+  personId: string,
+  personName: string,
+  reason: string,
+  vitals: { bpm: number; spo2: number; simulated: boolean },
+  now: number,
+): EmergencyCase {
+  const base: EmergencyCase = {
+    id: `caso-${now}`,
+    personId,
+    what: "redStatus",
+    openedAt: now,
+    steps: {},
+    events: [],
+    orders: [],
+  };
+  const opened = withEvent(base, now, "open", {
+    name: personName,
+    what: "redStatus",
+    reason,
+  });
+  const { bpm, spo2, simulated } = vitals;
+  return withEvent(
+    opened,
+    now,
+    "vitals",
+    simulated ? { bpm, spo2, simulated: 1 } : { bpm, spo2 },
+  );
+}
+
 export function checkStep(
   c: EmergencyCase,
   stepId: string,
   now: number,
+  /**
+   * Lo que la estación mide en ese momento. `null`: está conectada pero aún
+   * no tiene una señal estable, y el paso no registra signos. Sin este dato
+   * (estación sin conectar) se registra la muestra simulada de la demo.
+   */
+  live?: { bpm: number; spo2: number } | null,
 ): EmergencyCase {
   const found = PROTOCOL.find((s) => s.id === stepId);
   if (!found || c.steps[stepId] !== undefined || isClosed(c)) return c;
   let next = withEvent(c, now, "step", { step: stepId });
   next = { ...next, steps: { ...next.steps, [stepId]: now } };
-  if (found.vitals) next = withEvent(next, now, "vitals", { ...SENSOR_SAMPLE });
+  if (found.vitals && live !== null)
+    next = withEvent(
+      next,
+      now,
+      "vitals",
+      live
+        ? { bpm: live.bpm, spo2: live.spo2 }
+        : { ...SENSOR_SAMPLE, simulated: 1 },
+    );
   return next;
 }
 

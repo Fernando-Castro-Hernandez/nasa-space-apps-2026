@@ -8,8 +8,8 @@
 import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { crewMember, MISSION } from "@/data/crew";
+import { STATUS_VIEW } from "@/features/lunito/theme";
 import { t } from "@/i18n";
-import lunitoRojo from "./assets/lunito-rojo.png";
 import { closeCase, type EmergencyCase, whatLabel } from "./caseLogic";
 import { updateCase, useCase, useNow } from "./caseStore";
 import { CaseTimeline } from "./CaseTimeline";
@@ -175,7 +175,7 @@ export function EmergencyScreen() {
         data-closed={closed || undefined}
         aria-labelledby="em-headline"
       >
-        <img src={lunitoRojo} alt="" />
+        <img src={STATUS_VIEW.rojo.image} alt="" />
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="em-eyebrow">
             {closed

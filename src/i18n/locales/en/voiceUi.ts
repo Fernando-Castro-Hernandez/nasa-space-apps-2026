@@ -17,6 +17,13 @@ export const voiceUi = {
     required: "Choose your mood and stress to finish.",
     confirm: "Done",
   },
+  // Lo que Lunito pregunta en voz alta cuando la persona no lo dijo.
+  followUp: {
+    sleep: "How many hours did you sleep?",
+    mood: "And your mood, from 1 to 5?",
+    stress: "And how stressed are you, from 1 to 5?",
+    symptoms: "Is anything bothering you, like a headache or dizziness?",
+  },
   fields: {
     sleep: "Sleep",
     sleepHours: "Hours of sleep",

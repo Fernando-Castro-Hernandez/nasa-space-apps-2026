@@ -4,6 +4,7 @@
 // resultado → Inicio. Funciones puras: la pantalla solo despacha eventos.
 import type { StatusCode } from "@/api/contract";
 import type { LunitoPose } from "@/features/lunito/poses";
+import { STATUS_VIEW } from "@/features/lunito/theme";
 import type { VoiceLogState } from "@/features/voice/useVoiceLog";
 import type { VoiceStatus } from "@/features/voice/useVoiceInput";
 import saludo from "./assets/lunito-saludo.webp";
@@ -29,6 +30,8 @@ export type PhaseEvent =
   | "think"
   /** Ya hay texto (y campos, o el aviso de llenarlos a mano). */
   | "heard"
+  /** Falta ánimo o estrés: Lunito vuelve a preguntar, con voz. */
+  | "followUp"
   /** No se pudo escuchar: vuelve a preguntar, con el aviso. */
   | "failed"
   /** "Escribir respuesta": la misma hoja, con lo que haya. */
@@ -58,6 +61,7 @@ export function nextPhase(phase: Phase, event: PhaseEvent): Phase {
       return phase === "escucha" ? "pensando" : phase;
     case "heard":
       return phase === "escucha" || phase === "pensando" ? "revisar" : phase;
+    case "followUp":
     case "failed":
       return phase === "escucha" || phase === "pensando" ? "pregunta" : phase;
     case "write":
@@ -81,11 +85,13 @@ export type VoiceSnapshot = {
   error: string | null;
   log: VoiceLogState["phase"];
   organizing: VoiceLogState["organizing"];
+  followUp: VoiceLogState["followUp"];
 };
 
 /**
  * Mientras se escucha y se piensa, la voz lleva la conversación: al soltar el
- * micrófono, Lunito piensa; con el texto ordenado, abre "Esto entendí"; si no
+ * micrófono, Lunito piensa; con el texto ordenado, repite lo que entendió (o
+ * pregunta lo que falte); si no
  * oyó nada o no hay micrófono, vuelve a preguntar. Nunca se queda atascado.
  */
 export function voiceEvent(
@@ -97,6 +103,7 @@ export function voiceEvent(
   if (voice.status === "transcribing" || voice.organizing === "working")
     return phase === "escucha" ? "think" : null;
   if (voice.log === "review") return "heard";
+  if (voice.followUp) return "followUp";
   return voice.error ? "failed" : null;
 }
 
@@ -139,11 +146,13 @@ export function resultPose(
   return status === "verde" ? "idle" : "caring";
 }
 
-/** Imagen de respaldo de la pose del resultado. */
-export const resultImage = (pose: LunitoPose) =>
-  pose === "celebrating" ? saludo : pregunta;
+/** Imagen de respaldo de la pose del resultado: la pancita del color del estado. */
+export const resultImage = (pose: LunitoPose, status: StatusCode) =>
+  pose === "celebrating" ? saludo : STATUS_VIEW[status].image;
 
 /** El saludo dura lo que tarda en leerse; después, la pregunta. */
 export const GREETING_MS = 2600;
+/** Lo que entendió se ve al menos este tiempo antes de guardarse solo. */
+export const READBACK_MS = 2500;
 /** "¡Listo!" se ve este tiempo antes de pasar a Inicio. */
 export const DONE_MS = 1200;

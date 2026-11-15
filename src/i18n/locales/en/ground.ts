@@ -62,8 +62,10 @@ export const ground = {
       breathing: "{name}: trouble breathing at {time}.",
       hardHit: "{name}: hard blow at {time}.",
       other: "{name}: other emergency at {time}.",
+      redStatus: "{name}: monitoring alert at {time}.",
       custom: "{name}: {what} at {time}.",
     },
+    reason: "Reason: {reason}",
     lastNote: "Last note: {note}",
     trend: {
       below: "{label} below their usual over the last few days.",
@@ -74,6 +76,9 @@ export const ground = {
     meds: "No medications logged today. Allergies: none logged.",
     // Entre el número y su unidad va un espacio duro (U+00A0): no se separan.
     vitals: "{time} · {bpm}\u00a0bpm, {spo2}%\u00a0SpO2.",
+    // Sin la estación conectada el paso registra una muestra: se dice.
+    vitalsSimulated:
+      "{time} · simulated sample, sensor not connected: {bpm}\u00a0bpm, {spo2}%\u00a0SpO2.",
     noVitals: "No vitals logged yet.",
     prototype:
       "Prototype sensor, not a medical device. The diagnosis is the surgeon's call.",

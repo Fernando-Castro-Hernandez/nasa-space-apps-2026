@@ -9,6 +9,7 @@ import {
   type VoiceEngine,
   type VoiceSession,
 } from "./session";
+import { silenceDetector } from "./silence";
 
 export type VoiceStatus = "idle" | "starting" | "listening" | "transcribing";
 
@@ -16,6 +17,8 @@ export type VoiceInput = {
   status: VoiceStatus;
   /** Segundos que lleva escuchando. */
   elapsed: number;
+  /** Texto que va entendiendo mientras habla (vacío con Whisper). */
+  live: string;
   /** null mientras se averigua; "none" si solo se puede escribir. */
   engine: VoiceEngine | null;
   error: string | null;
@@ -27,11 +30,21 @@ export type VoiceInput = {
   cancel: () => void;
 };
 
-type Options = { maxSeconds: number; onText: (text: string) => void };
+type Options = {
+  maxSeconds: number;
+  onText: (text: string) => void;
+  /** Manos libres: termina solo tras un silencio, sin tocar nada. */
+  autoStop?: boolean;
+};
 
-export function useVoiceInput({ maxSeconds, onText }: Options): VoiceInput {
+export function useVoiceInput({
+  maxSeconds,
+  onText,
+  autoStop = false,
+}: Options): VoiceInput {
   const [status, setStatus] = useState<VoiceStatus>("idle");
   const [elapsed, setElapsed] = useState(0);
+  const [live, setLive] = useState("");
   const [engine, setEngine] = useState<VoiceEngine | null>(null);
   const [error, setError] = useState<string | null>(null);
   const session = useRef<VoiceSession | null>(null);
@@ -68,6 +81,7 @@ export function useVoiceInput({ maxSeconds, onText }: Options): VoiceInput {
     }
     session.current = null;
     const id = run.current;
+    setLive("");
     setStatus("transcribing");
     current
       .stop()
@@ -95,6 +109,7 @@ export function useVoiceInput({ maxSeconds, onText }: Options): VoiceInput {
     const id = ++run.current;
     setError(null);
     setElapsed(0);
+    setLive("");
     setStatus("starting");
     void (async () => {
       try {
@@ -131,15 +146,19 @@ export function useVoiceInput({ maxSeconds, onText }: Options): VoiceInput {
   useEffect(() => {
     if (status !== "listening") return;
     const startedAt = performance.now();
+    const quiet = autoStop ? silenceDetector() : null;
     const id = window.setInterval(() => {
-      const seconds = (performance.now() - startedAt) / 1000;
+      const now = performance.now();
+      const seconds = (now - startedAt) / 1000;
       setElapsed(seconds);
-      if (seconds >= maxSeconds) stop();
+      setLive(session.current?.partial?.() ?? "");
+      if (seconds >= maxSeconds || quiet?.(session.current?.level() ?? 0, now))
+        stop();
     }, 200);
     return () => window.clearInterval(id);
-  }, [status, maxSeconds, stop]);
+  }, [status, maxSeconds, autoStop, stop]);
 
   const level = useCallback(() => session.current?.level() ?? 0, []);
 
-  return { status, elapsed, engine, error, level, start, stop, cancel };
+  return { status, elapsed, live, engine, error, level, start, stop, cancel };
 }

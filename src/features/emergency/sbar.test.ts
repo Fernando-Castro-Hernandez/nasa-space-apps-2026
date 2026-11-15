@@ -66,7 +66,7 @@ describe("resumen SBAR", () => {
     );
     expect(s.background).toContain("below their usual");
     expect(s.assessment).toBe(
-      "14:07 · 58\u00a0bpm, 97%\u00a0SpO2. Prototype sensor, not a medical device. The diagnosis is the surgeon's call.",
+      "14:07 · simulated sample, sensor not connected: 58\u00a0bpm, 97%\u00a0SpO2. Prototype sensor, not a medical device. The diagnosis is the surgeon's call.",
     );
     expect(s.request).toBe(
       "Guidance on rest, oxygen use and the next reading.",

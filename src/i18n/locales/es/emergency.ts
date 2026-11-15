@@ -23,6 +23,7 @@ export const emergency: Messages<typeof source> = {
     breathing: "Dificultad para respirar",
     hardHit: "Golpe fuerte",
     other: "Otro",
+    redStatus: "Alerta del monitoreo",
   },
   // Franja roja del caso.
   banner: {
@@ -52,6 +53,13 @@ export const emergency: Messages<typeof source> = {
       sensor: "Pon el sensor en su dedo",
       oxygen: "Revisar oxígeno del botiquín",
     },
+    sensor: {
+      live: "En vivo: {bpm}\u00a0lpm · {spo2}\u00a0%\u00a0SpO2",
+      waiting: "Sensor conectado · esperando una señal estable",
+      sample: "Sensor sin conectar · registra una muestra simulada",
+      connect: "Conectar sensor",
+      connecting: "Conectando…",
+    },
   },
   // Dictar una nota: un toque empieza, otro guarda.
   dictate: {
@@ -68,10 +76,19 @@ export const emergency: Messages<typeof source> = {
     title: "Registro del caso",
     opened: "Caso abierto: {name} · {what}",
     vitals: "Signos con sensor: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2",
+    vitalsSimulated:
+      "Signos simulados: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2",
     note: "“{text}”",
     groundOrder: "Indicación de Tierra: {text}",
     orderDone: "Hecho: {text}",
     closed: "Caso cerrado",
+    openedAlert: "Caso abierto por una alerta del monitoreo: {name} · {reason}",
+  },
+  escalation: {
+    title: "¿Avisar al cirujano de vuelo?",
+    body: "Tierra está a {minutes} min por vía. El reporte lleva quién, por qué, tu última lectura y tu tendencia de 7 días.",
+    send: "Enviar reporte a Tierra",
+    notNow: "Todavía no",
   },
   close: {
     button: "Cerrar caso",

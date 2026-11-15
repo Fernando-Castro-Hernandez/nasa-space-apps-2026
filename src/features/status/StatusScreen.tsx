@@ -48,7 +48,12 @@ export function StatusScreen() {
         </p>
         {data.reason && <p className="status-reason">{data.reason}</p>}
         <p className="status-time">
-          {t("status.lastReading", { time: data.reading.time })}
+          {t(
+            data.source === "sensor"
+              ? "status.sensorReading"
+              : "status.lastReading",
+            { time: data.reading.time },
+          )}
         </p>
       </section>
 

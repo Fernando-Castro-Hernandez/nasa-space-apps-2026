@@ -6,6 +6,7 @@
 import { api } from "@/api/client";
 import { localeTag } from "@/i18n";
 import { rmsLevel } from "./level";
+import { silenceDetector, VOICE_LEVEL } from "./silence";
 
 export type VoiceEngine = "worker" | "browser" | "none";
 
@@ -16,6 +17,9 @@ export type VoiceSession = {
   cancel(): void;
   /** Volumen del micrófono en este instante, de 0 a 1. */
   level(): number;
+  /** Lo que lleva entendido mientras habla. Solo el dictado del navegador lo
+   *  sabe; Whisper transcribe al terminar. */
+  partial?(): string;
 };
 
 type Capabilities = { ai: boolean; recorder: boolean; recognition: boolean };
@@ -73,20 +77,97 @@ export function startVoiceSession(
 
 const RECORDER_TYPES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"];
 
+/** Una pausa así de larga cierra un trozo: se transcribe mientras sigue hablando. */
+const PAUSE_MS = 700;
+/** Por debajo de esto un trozo es solo ruido y no vale una transcripción. */
+const FAINT_LEVEL = VOICE_LEVEL / 2;
+
+/**
+ * La vista previa palabra por palabra está apagada salvo que el build lleve
+ * `VITE_VOICE_PREVIEW=on`. Usa el dictado del navegador a la vez que Whisper,
+ * y en Chrome ese dictado manda el audio al servicio de voz de Google: con
+ * ella, la bitácora de salud sale de Cloudflare (DECISIONS.md, "un motor de
+ * voz a la vez"). Apagada, el texto se ve frase por frase, con Whisper.
+ */
+const previewEnabled = () => import.meta.env.VITE_VOICE_PREVIEW === "on";
+
+/** Errores del dictado que no se arreglan reintentando (sin permiso, sin red,
+ *  servicio no disponible). "no-speech" y "aborted" sí son pasajeros. */
+const TRANSIENT_ERRORS = new Set(["no-speech", "aborted"]);
+
+/**
+ * Texto en vivo mientras se habla: el dictado del navegador como vista previa
+ * (Whisper no transcribe palabra por palabra). El texto final sigue siendo el
+ * de Whisper. Si está apagada, el navegador no la tiene, o es Android (donde
+ * dos capturas del micrófono a la vez se pelean), se ve frase por frase.
+ */
+function livePreview(): { text(): string; stop(): void } | null {
+  const Ctor = recognitionCtor();
+  if (!previewEnabled() || !Ctor || /Android/i.test(navigator.userAgent))
+    return null;
+  try {
+    const recognition = new Ctor();
+    recognition.lang = localeTag();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    let text = "";
+    // Lo dicho antes de que el navegador reiniciara el dictado.
+    let carried = "";
+    let active = true;
+    recognition.addEventListener("result", (event) => {
+      text = [carried, ...Array.from(event.results, (r) => r[0].transcript)]
+        .join(" ")
+        .replace(/\s+/g, " ")
+        .trim();
+    });
+    // Un fallo que no es pasajero apaga la vista previa: reintentar sería
+    // un bucle de arranques fallidos mientras dura la grabación.
+    recognition.addEventListener("error", (event) => {
+      if (!TRANSIENT_ERRORS.has(event.error)) active = false;
+    });
+    // El navegador lo corta solo tras un silencio largo: se reanuda.
+    recognition.addEventListener("end", () => {
+      if (!active) return;
+      carried = text;
+      try {
+        recognition.start();
+      } catch {
+        active = false;
+      }
+    });
+    recognition.start();
+    return {
+      text: () => text,
+      stop() {
+        active = false;
+        recognition.abort();
+      },
+    };
+  } catch {
+    return null;
+  }
+}
+
+// Graba en trozos, uno por frase: cada pausa cierra el trozo y lo manda a
+// transcribir en segundo plano, y otra grabadora toma el micrófono sin hueco.
+// Así el texto aparece mientras habla (`partial`) y, al terminar, solo falta
+// la última frase. Cada trozo es un archivo completo: partir una sola
+// grabación no sirve, solo el primer pedazo trae el encabezado.
 async function record(): Promise<VoiceSession> {
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: { echoCancellation: true, noiseSuppression: true },
   });
+  try {
+    return recordFrom(stream);
+  } catch (error) {
+    // Sin esto, si algo falla después de abrir el micrófono, queda encendido.
+    stream.getTracks().forEach((track) => track.stop());
+    throw error;
+  }
+}
+
+function recordFrom(stream: MediaStream): VoiceSession {
   const mimeType = RECORDER_TYPES.find((t) => MediaRecorder.isTypeSupported(t));
-  // 32 kbps: 30 s de voz pesan unos 120 KB.
-  const recorder = new MediaRecorder(stream, {
-    mimeType,
-    audioBitsPerSecond: 32_000,
-  });
-  const chunks: Blob[] = [];
-  recorder.ondataavailable = (event) => {
-    if (event.data.size > 0) chunks.push(event.data);
-  };
 
   const context = new AudioContext();
   const analyser = context.createAnalyser();
@@ -94,32 +175,85 @@ async function record(): Promise<VoiceSession> {
   context.createMediaStreamSource(stream).connect(analyser);
   const samples = new Uint8Array(analyser.fftSize);
 
+  const startSegment = () => {
+    // 32 kbps: 30 s de voz pesan unos 120 KB.
+    const recorder = new MediaRecorder(stream, {
+      mimeType,
+      audioBitsPerSecond: 32_000,
+    });
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.push(event.data);
+    };
+    recorder.start();
+    return { recorder, chunks, spoke: false };
+  };
+  type Segment = ReturnType<typeof startSegment>;
+
+  const texts: string[] = [];
+  const pending: Promise<void>[] = [];
+  // `force`: el último trozo se transcribe aunque sea muy bajito si todavía
+  // no hay nada, para no perder a quien habla quedito.
+  const close = (segment: Segment, force: boolean) => {
+    const slot = texts.push("") - 1;
+    const job = new Promise<void>((resolve, reject) => {
+      segment.recorder.onstop = () => {
+        const audio = new Blob(segment.chunks, {
+          type: segment.recorder.mimeType,
+        });
+        if (audio.size === 0 || !(segment.spoke || force)) return resolve();
+        api.transcribe(audio).then((text) => {
+          texts[slot] = text.trim();
+          resolve();
+        }, reject);
+      };
+      if (segment.recorder.state !== "inactive") segment.recorder.stop();
+      else resolve();
+    });
+    // El error se entrega en `stop`; aquí no es una promesa sin atender.
+    job.catch(() => {});
+    pending.push(job);
+  };
+
+  const preview = livePreview();
+  let current = startSegment();
+  let quiet = silenceDetector(PAUSE_MS);
+  const timer = window.setInterval(() => {
+    const level = rmsLevel(analyser, samples);
+    if (level >= FAINT_LEVEL) current.spoke = true;
+    if (!quiet(level, performance.now())) return;
+    const finished = current;
+    current = startSegment();
+    quiet = silenceDetector(PAUSE_MS);
+    close(finished, false);
+  }, 100);
+
   const release = () => {
+    window.clearInterval(timer);
+    preview?.stop();
     stream.getTracks().forEach((track) => track.stop());
     void context.close();
   };
-  recorder.start();
 
   return {
     level: () => rmsLevel(analyser, samples),
+    partial: () => preview?.text() || texts.filter(Boolean).join(" "),
     cancel() {
-      recorder.onstop = null;
-      if (recorder.state !== "inactive") recorder.stop();
+      current.recorder.onstop = null;
+      if (current.recorder.state !== "inactive") current.recorder.stop();
       release();
     },
-    stop: () =>
-      new Promise<string>((resolve, reject) => {
-        recorder.onstop = () => {
-          release();
-          const audio = new Blob(chunks, { type: recorder.mimeType });
-          if (audio.size === 0) return resolve("");
-          api.transcribe(audio).then(resolve, (error: unknown) => {
-            workerFailed = true;
-            reject(error);
-          });
-        };
-        recorder.stop();
-      }),
+    async stop() {
+      release();
+      close(current, !texts.some(Boolean) && pending.length === 0);
+      try {
+        await Promise.all(pending);
+      } catch (error) {
+        workerFailed = true;
+        throw error;
+      }
+      return texts.filter(Boolean).join(" ");
+    },
   };
 }
 
@@ -160,8 +294,10 @@ function dictate(onEnd: () => void): Promise<VoiceSession> {
     recognition.addEventListener("start", () => {
       started = true;
       resolve({
-        // Sin acceso a la señal: la onda se mueve más cuando hay palabras.
-        level: () => (interim ? 0.7 : 0.25),
+        // Sin acceso a la señal: la onda se mueve más cuando hay palabras, y
+        // sin palabras queda por debajo del umbral de voz (silence.ts).
+        level: () => (interim ? 0.7 : 0.05),
+        partial: text,
         cancel() {
           cancelled = true;
           recognition.abort();

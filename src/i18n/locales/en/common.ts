@@ -9,6 +9,8 @@ export const common = {
   },
   emergency: "Emergency",
   simulated: "simulated",
+  // Un indicador que el sensor no midió hoy: se dice, no se rellena.
+  notMeasured: "not measured",
   comingSoon: "Coming soon",
   notShared: "Not shared",
   notDiagnosis: "Prototype. Not a diagnosis.",
