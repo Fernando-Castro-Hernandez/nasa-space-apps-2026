@@ -15,3 +15,6 @@ blob-report
 
 # Configuración personal de Claude Code (la compartida sí se versiona)
 .claude/settings.local.json
+
+# Archivos temporales del arte de Lunito
+art/lunito/out/

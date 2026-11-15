@@ -91,6 +91,7 @@ El semáforo vive en su pancita:
 - Nada se pinta encima del modelo: la pancita **gira su tono** (cian → verde, ámbar o rojo) y conserva su textura; las branquias se aclaran u oscurecen según el oxígeno.
 - Movimiento con sentido: la pancita late al ritmo del pulso, el cuerpo respira según la HRV. En reposo flota, se balancea y parpadea. Con `prefers-reduced-motion` se queda quieto.
 - Las imágenes 2D de `diseno/` se usan donde no conviene un canvas 3D (constelación, emergencia).
+- Lunito habla con voz: la boca sigue lo que dice, y tiene expresiones (nunca tristes ni enojadas) y gestos. Partes nuevas, formas de boca y cómo prepararlas en Blender: [LUNITO-ARTE.md](LUNITO-ARTE.md).
 
 ## Colores
 
