@@ -9,10 +9,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Status } from "@/domain/vitals";
-// Ilustraciones 2D de Lunito del repo, para vistas pequeñas donde no conviene un canvas 3D.
-import ambar from "@/features/crew/assets/lunito-ambar.png";
-import rojo from "@/features/crew/assets/lunito-rojo.png";
-import verde from "@/features/crew/assets/lunito-verde.png";
+// Lunito 2D (el modelo actual, con la pancita teñida como en el 3D) para
+// vistas pequeñas donde no conviene un canvas 3D y como respaldo del 3D.
+import ambar from "./assets/lunito-ambar.webp";
+import rojo from "./assets/lunito-rojo.webp";
+import verde from "./assets/lunito-verde.webp";
 
 export const DASH_VARS = {
   "--dash-ok": "var(--status-ok)",

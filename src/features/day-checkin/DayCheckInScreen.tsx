@@ -274,7 +274,11 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
             ref={lunito}
             pose={pose}
             status={phase === "resultado" ? result.status : undefined}
-            fallbackSrc={phase === "resultado" ? resultImage(pose) : view.image}
+            fallbackSrc={
+              phase === "resultado"
+                ? resultImage(pose, result.status)
+                : view.image
+            }
             label={t("dayCheckin.lunito")}
           />
         </div>
