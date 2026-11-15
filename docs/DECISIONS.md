@@ -39,6 +39,9 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | UI con shadcn/ui (Base UI, Tailwind 4) y componentes del catálogo del equipo; gráficas con Recharts.                                                                           | Componentes listos y consistentes.                                                          |
 | 2026-11-14 | Lunito en 3D con three.js y React Three Fiber; modelo de Meshy separado en partes con nombre.                                                                                  | Lunito es el centro del dashboard.                                                          |
 | 2026-11-14 | Router propio sobre el History API, sin librería.                                                                                                                              | Siete rutas; no justifican una dependencia.                                                 |
+| 2026-11-14 | En la Constelación cada persona decide si comparte su estado; un rojo nunca se publica y se ve igual que un estado privado ("Sin compartir").                                  | Que el rojo no se pueda deducir; el aviso va al CMO por el caso (HU-30).                    |
+| 2026-11-14 | El panel RIDGE y el balanceador los ve solo el comandante, según el perfil activo.                                                                                             | Privacidad y simplicidad de la Constelación (HU-30).                                        |
+| 2026-11-14 | Estado compartido en el navegador (perfil, privacidad, eventos de la demo) con `persistedStore` sobre localStorage hasta que exista D1.                                        | Un solo patrón en vez de copias; HU-29 lo sustituye.                                        |
 
 ## Abierto
 

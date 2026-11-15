@@ -3,6 +3,7 @@
 // ilustración.
 import { lazy, Suspense } from "react";
 import { ArrowRight, Mic } from "lucide-react";
+import { DAY_ACTIONS } from "@/data/actions";
 import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
 import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
 import { assessVitals } from "@/domain/vitals";
@@ -69,6 +70,11 @@ export function HomeScreen() {
         <p className="max-w-md text-base text-muted-foreground">
           {headline(vitals)}
         </p>
+        <ul className="flex max-w-md flex-col gap-1 text-sm">
+          {DAY_ACTIONS.slice(0, 3).map((a) => (
+            <li key={a.id}>· {a.text}</li>
+          ))}
+        </ul>
       </div>
 
       <div className="flex w-full max-w-md flex-col gap-3">
@@ -78,6 +84,15 @@ export function HomeScreen() {
         >
           <Mic className="size-5" aria-hidden="true" />
           Hacer mi check-in
+        </a>
+        <p className="text-center text-xs text-muted-foreground">
+          Dale la mano a Lunito: pon tu dedo en el sensor para medirte.
+        </p>
+        <a
+          href="/check-in"
+          className="flex h-11 items-center justify-center gap-2 rounded-full text-sm font-medium text-primary hover:bg-accent"
+        >
+          Hablarle a Lunito
         </a>
         <a
           href="/estado"

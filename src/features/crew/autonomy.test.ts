@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { autonomy, SAMPLE_CASES } from "./autonomy";
+import {
+  autonomy,
+  byHazard,
+  SAMPLE_CASES,
+  SAMPLE_HAZARD_CASES,
+} from "./autonomy";
 
 describe("autonomy", () => {
   test("resolver a bordo y escalar bien cuentan igual", () => {
@@ -28,5 +33,21 @@ describe("autonomy", () => {
     const a = autonomy(SAMPLE_CASES);
     expect(a.wellHandled).toBe(11);
     expect(a.closed).toBe(12);
+  });
+});
+
+describe("byHazard", () => {
+  test("E: 4 de 4 en la muestra de la demo", () => {
+    const e = byHazard(SAMPLE_HAZARD_CASES).find((h) => h.hazard === "E");
+    expect(e).toMatchObject({ wellHandled: 4, closed: 4 });
+  });
+
+  test("un rojo escalado cuenta como bien atendido y nunca resta", () => {
+    const d = byHazard(SAMPLE_HAZARD_CASES).find((h) => h.hazard === "D");
+    expect(d).toMatchObject({ wellHandled: 1, closed: 1, ratio: 1 });
+  });
+
+  test("omite los peligros sin casos cerrados", () => {
+    expect(byHazard([{ hazard: "R", outcome: "abierto" }])).toEqual([]);
   });
 });

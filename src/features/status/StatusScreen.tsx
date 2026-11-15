@@ -16,6 +16,7 @@ import { anchorsFor, halfWidthFor, isNarrow } from "./sceneLayout";
 import { motionFor } from "@/features/lunito/motion";
 import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
 import { ME } from "@/data/crew";
+import { IndicatorCards, INDICATORS } from "./IndicatorCards";
 import { ShipFeedCard } from "./ShipFeedCard";
 import { SideCards } from "./SideCards";
 import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
@@ -122,6 +123,13 @@ export function StatusScreen() {
 
       <SideCards sample={sample} onSample={setSample} />
 
+      <IndicatorCards
+        reading={reading}
+        vitals={vitals}
+        selected={tab}
+        onSelect={setTab}
+      />
+
       <Card className="col-span-12 lg:col-span-7">
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
           <div>
@@ -140,13 +148,16 @@ export function StatusScreen() {
             </TabsList>
           </Tabs>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-3">
           <WeekAreaChart
             label={history.label}
             unit={history.unit}
             data={history.days}
             baseline={history.baseline}
           />
+          <p className="text-sm text-muted-foreground">
+            {INDICATORS.find((i) => i.key === tab)!.explain}
+          </p>
         </CardContent>
       </Card>
 
