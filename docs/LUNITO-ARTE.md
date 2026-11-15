@@ -114,14 +114,14 @@ Todo lo que se haga por MCP se guarda también como script en `art/lunito/blende
 
 ### 6.1 Orden de trabajo
 
-| #   | Paso                                                                | Listo cuando…                                                   |
-| --- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | Importar `public/lunito.glb` y guardar el `.blend` (fuera del repo) | Se ve igual que en la app, con las 10 partes por nombre         |
-| 2   | Crear `mouth` y sus shape keys (§3)                                 | Las 8 formas y las 2 expresiones se ven bien solas y combinadas |
-| 3   | Shape keys de los ojos (§4)                                         | `eyeBlink` cierra el ojo completo                               |
-| 4   | Materiales: `metallic = 0`                                          | Ya no se ve metálico                                            |
-| 5   | Separar `arm_L`, `arm_R` y `tail` (§5)                              | Rotar cada parte 30° no deja huecos                             |
-| 6   | Exportar, optimizar y validar (§7)                                  | El script de revisión pasa y la app carga el modelo             |
+| #   | Paso                                                                           | Listo cuando…                                                   |
+| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| 1   | Importar el GLB original (`01_import.py` lo saca de git) y guardar el `.blend` | Se ve igual que en la app, con las 10 partes por nombre         |
+| 2   | Crear `mouth` y sus shape keys (§3)                                            | Las 8 formas y las 2 expresiones se ven bien solas y combinadas |
+| 3   | Shape keys de los ojos (§4)                                                    | `eyeBlink` cierra el ojo completo                               |
+| 4   | Materiales: `metallic = 0`                                                     | Ya no se ve metálico                                            |
+| 5   | Separar `arm_L`, `arm_R` y `tail` (§5)                                         | Rotar cada parte 30° no deja huecos                             |
+| 6   | Exportar, optimizar y validar (§7)                                             | El script de revisión pasa y la app carga el modelo             |
 
 ## 7. Exportar, optimizar y validar
 
