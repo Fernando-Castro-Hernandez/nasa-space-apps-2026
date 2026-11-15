@@ -15,17 +15,8 @@ afterEach(() => {
   window.history.replaceState(null, "", "/");
 });
 
-test("abre en Mi Lunito con la información del build", () => {
-  render(<App />);
-
-  expect(
-    screen.getByRole("heading", { level: 1, name: "Mi Lunito" }),
-  ).toBeDefined();
-  expect(screen.getByTestId("build-info").textContent).toContain("Entorno:");
-});
-
 test.each(ROUTES.filter((r) => r.shell))(
-  "la ruta $path muestra el título $title",
+  "la ruta $path muestra el título $title y la información del build",
   ({ path, title }) => {
     render(<App />);
     act(() => navigate(path));
@@ -33,6 +24,7 @@ test.each(ROUTES.filter((r) => r.shell))(
     expect(
       screen.getByRole("heading", { level: 1, name: title }),
     ).toBeDefined();
+    expect(screen.getByTestId("build-info").textContent).toContain("Entorno:");
   },
 );
 
@@ -44,31 +36,41 @@ test("el botón de emergencia está en todas las pantallas menos en la emergenci
   expect(screen.queryByRole("link", { name: "Emergencia" })).toBeNull();
 });
 
-test("una ruta desconocida cae en Mi Lunito", () => {
+test("un día nuevo empieza con el saludo antes de Inicio", () => {
   render(<App />);
-  act(() => navigate("/no-existe"));
 
-  expect(
-    screen.getByRole("heading", { level: 1, name: "Mi Lunito" }),
-  ).toBeDefined();
-});
-
-test("el inicio del día solo intercepta el Inicio de referencia", () => {
-  render(<App />);
-  expect(
-    screen.getByRole("heading", { level: 1, name: "Mi Lunito" }),
-  ).toBeDefined();
-
-  act(() => navigate("/referencia"));
   expect(
     screen.getByRole("heading", { name: /Qué gusto verte/ }),
   ).toBeDefined();
 });
 
-test("con el día ya iniciado, /referencia abre Así estás hoy", () => {
+test("con el día ya iniciado, Inicio abre Así estás hoy", () => {
   finishDayStart();
   render(<App />);
-  act(() => navigate("/referencia"));
+
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+});
+
+test.each([
+  ["/tripulacion", "Tu tripulación", "Equipo"],
+  ["/tareas", "Hoy", "Tareas"],
+  ["/ajustes", "Configuración", "Ajustes"],
+])("%s abre %s con su pestaña activa", (path, heading, tab) => {
+  render(<App />);
+  act(() => navigate(path));
+
+  expect(
+    screen.getByRole("heading", { level: 1, name: heading }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("link", { name: tab }).getAttribute("aria-current"),
+  ).toBe("page");
+});
+
+test("una ruta desconocida cae en Inicio", () => {
+  finishDayStart();
+  render(<App />);
+  act(() => navigate("/no-existe"));
 
   expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
 });

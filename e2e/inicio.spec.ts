@@ -1,11 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
 
-// Inicio de las referencias PNG, montado aparte de Órbita en /referencia.
+// Inicio, Equipo, Tareas y Configuración según las referencias Marea.
 
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
 async function completeStart(page: Page) {
-  await page.goto("/referencia");
+  await page.goto("/");
   await page.getByRole("button", { name: "Escribir respuesta" }).click();
   await page.getByRole("textbox").fill("Dormí bien y me siento tranquilo");
   await page.getByRole("button", { name: "Continuar", exact: true }).click();
@@ -133,19 +133,57 @@ test("el selector real de perfiles concede RIDGE solo al comandante", async ({
   await completeStart(page);
   await page.getByRole("button", { name: "Tus datos", exact: true }).click();
   await expect(page.getByRole("list", { name: "Panel RIDGE" })).toHaveCount(0);
-  await page.getByRole("link", { name: "Ajustes", exact: true }).click();
-  await page.getByRole("button", { name: /Mei Comandante/ }).click();
-  await page.goto("/referencia");
+  await choose(page, /Mei Comandante/);
   await page.getByRole("button", { name: "Tus datos", exact: true }).click();
   const ridge = page.getByRole("list", { name: "Panel RIDGE" });
   await ridge.scrollIntoViewIfNeeded();
   await expect(ridge.getByRole("listitem")).toHaveCount(5);
   await expect(page.getByText(/Sueño bajo en Ana/)).toHaveCount(0);
-  await page.goto("/ajustes");
-  await page
-    .getByRole("button", { name: /Ana Especialista de misión/ })
-    .click();
-  await page.goto("/referencia");
+  await choose(page, /Ana Especialista de misión/);
   await page.getByRole("button", { name: "Tus datos", exact: true }).click();
   await expect(page.getByRole("list", { name: "Panel RIDGE" })).toHaveCount(0);
 });
+
+// Choosing a profile in Configuración returns to Inicio (ProfilesScreen).
+async function choose(page: Page, profile: RegExp) {
+  await page.getByRole("link", { name: "Ajustes", exact: true }).click();
+  await page.getByRole("button", { name: /Cambiar perfil/ }).click();
+  await page.getByRole("button", { name: profile }).click();
+  await expect(
+    page.getByRole("heading", { name: "Así estás hoy" }),
+  ).toBeVisible();
+}
+
+for (const width of [390, 768, 1440]) {
+  test(`la barra inferior recorre las cuatro áreas sin desbordes a ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await completeStart(page);
+    for (const [tab, heading] of [
+      ["Equipo", "Tu tripulación"],
+      ["Tareas", "Hoy"],
+      ["Ajustes", "Configuración"],
+      ["Inicio", "Así estás hoy"],
+    ]) {
+      const nav = page.getByRole("navigation", {
+        name: "Navegación principal",
+      });
+      await nav.getByRole("link", { name: tab, exact: true }).click();
+      await expect(
+        nav.getByRole("link", { name: tab, exact: true }),
+      ).toHaveAttribute("aria-current", "page");
+      await expect(
+        page.getByRole("heading", { level: 1, name: heading }),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      await expect(
+        page.getByRole("link", { name: "Emergencia", exact: true }),
+      ).toBeVisible();
+    }
+  });
+}
