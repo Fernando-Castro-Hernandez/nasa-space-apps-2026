@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DAY_ACTIONS } from "@/data/actions";
 import { SAMPLE_READINGS } from "@/data/sample";
 
 type Props = { sample: number; onSample: (i: number) => void };
@@ -21,14 +22,15 @@ export function SideCards({ sample, onSample }: Props) {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <label className="flex min-h-11 items-center gap-3 text-sm">
-            <input type="checkbox" className="size-5 accent-primary" />
-            Respiración guiada · 5 min
-          </label>
-          <label className="flex min-h-11 items-center gap-3 text-sm">
-            <input type="checkbox" className="size-5 accent-primary" />
-            Apagar pantallas a las 22:00
-          </label>
+          {DAY_ACTIONS.map((a) => (
+            <label
+              key={a.id}
+              className="flex min-h-11 items-center gap-3 text-sm"
+            >
+              <input type="checkbox" className="size-5 accent-primary" />
+              {a.text}
+            </label>
+          ))}
         </CardContent>
       </Card>
       <Card>
