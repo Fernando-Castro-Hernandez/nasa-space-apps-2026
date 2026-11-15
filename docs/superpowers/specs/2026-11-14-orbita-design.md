@@ -20,7 +20,7 @@ La app actual se ve como un dashboard genérico de shadcn: tarjetas blancas, lil
 
 - Tema oscuro. El ícono de sol se quita hasta que exista.
 - Funcionalidad nueva. Se rediseña lo que ya existe en `SISTEMA.md` §9 y `HISTORIAS.md`.
-- Montar el Lunito 3D. El escenario queda listo para recibirlo, pero vacío.
+- Crear o reemplazar el modelo 3D. Inicio reutiliza `public/lunito.glb` mediante `LunitoScene`; el escenario vacío queda únicamente como fallback si el modelo no carga.
 
 ## Anti-metas: sería un fracaso aunque funcione si…
 
@@ -99,11 +99,11 @@ Ya no se usan el lila ni el verde.
 - Las cifras cuentan hacia su valor una sola vez, al entrar.
 - La emergencia no tiene animaciones decorativas.
 
-## El escenario de Lunito (vacío por ahora)
+## El escenario de Lunito
 
 - Un disco al centro con un degradado radial de marfil a superficie, dos anillos de órbita alrededor y un halo suave del color del estado (8 % de opacidad).
-- En el centro, un contorno punteado del tamaño de Lunito y el texto "Lunito está llegando" en tinta suave, 15 px.
-- Un solo componente `LunitoStage` con un hueco para el 3D: cuando el modelo esté listo, Fernando monta `LunitoScene` ahí sin tocar el diseño.
+- En el centro se monta `LunitoScene` con `public/lunito.glb`. Si WebGL o el modelo fallan, aparece un contorno punteado con el texto "Lunito está llegando" en tinta suave, 15 px.
+- `TodayHero` reserva el hueco del escenario; Fernando mantiene `LunitoScene` y su animación sin cambiar el diseño de Inicio.
 - Tamaño:
   - tablet: 420 px de diámetro, con órbitas de hasta 600 px;
   - celular: 260 px de diámetro, con órbitas de hasta 360 px.
@@ -188,7 +188,7 @@ Candidatos por revisar en la implementación: `tabs-10` (Semana/Mes), `tooltip-*
 ## Implementación por dueño
 
 1. **Tokens, tipografía y estructura global** (`src/index.css`, `src/App.tsx`, `src/app/`, de Ariff). Va primero porque todo depende de esto.
-2. **Pantallas de Mateo:** Inicio, Tu evolución, Equipo, Ajustes (perfiles) y Demo, además de `LunitoStage`.
+2. **Pantallas de Mateo:** Inicio, Tu evolución, Equipo, Ajustes (perfiles) y Demo, además de la integración de `LunitoScene` en `TodayHero`.
 3. **Pantallas de los demás:** Check-in (Jenni), Tareas y Botiquín (Ariff), Emergencia y Tierra (Fernando). Cada dueño las adapta con este documento, o da su permiso explícito en su PR para que Mateo lo haga.
 
 `DISENO.md` se reescribe con este sistema en el primer PR, y `DECISIONS.md` registra el cambio de dirección y la dependencia de fuentes.

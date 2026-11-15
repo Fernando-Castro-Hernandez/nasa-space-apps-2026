@@ -14,7 +14,7 @@ La referencia integral del rediseño está en [diseno/prototipos/orbita.html](di
 
 ## Referencias finales (modelo exacto del frontend)
 
-Estas imágenes son **la referencia exacta** de cómo se ve la app. Si algo de este documento o del código actual las contradice, mandan las imágenes. Los puntos donde chocaban con reglas anteriores ya están decididos abajo. Las demás pantallas todavía no tienen referencia final; se diseñarán después siguiendo este mismo estilo.
+Estas imágenes fijan **el contenido y el flujo exactos de Inicio**. La maqueta Órbita fija la estructura y el lenguaje visual integral; si existe una diferencia puramente visual, manda Órbita. Los puntos donde las imágenes chocaban con reglas funcionales anteriores ya están decididos abajo.
 
 ### Flujo del día
 
