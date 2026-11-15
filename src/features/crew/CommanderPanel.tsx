@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { STATUS_TOKEN } from "@/domain/status";
+import { CO2_MODULE, useCo2Raised } from "@/features/demo/demoStore";
 import type { Status } from "@/domain/vitals";
 
 type Hazard = { letter: string; name: string; status: Status; word: string };
@@ -30,8 +31,17 @@ const RIDGE: Hazard[] = [
 
 type Decision = "pendiente" | "aprobado" | "rechazado";
 
+/** El evento de CO2 de la demo (HU-28) cambia la luz E. */
+const withCo2 = (hazards: Hazard[]): Hazard[] =>
+  hazards.map((h) =>
+    h.letter === "E"
+      ? { ...h, status: "ambar", word: `CO2 alto: ${CO2_MODULE}` }
+      : h,
+  );
+
 export function CommanderPanel() {
   const [decision, setDecision] = useState<Decision>("pendiente");
+  const hazards = useCo2Raised() ? withCo2(RIDGE) : RIDGE;
 
   return (
     <Card>
@@ -43,7 +53,7 @@ export function CommanderPanel() {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <ul className="grid grid-cols-5 gap-2" aria-label="Panel RIDGE">
-          {RIDGE.map((h) => (
+          {hazards.map((h) => (
             <li
               key={h.letter}
               className="flex flex-col items-center gap-1 text-center"
