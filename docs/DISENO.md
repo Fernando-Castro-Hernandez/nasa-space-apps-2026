@@ -2,21 +2,9 @@
 
 Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTEMA.md](SISTEMA.md) (sección 1); las pantallas, en la sección 9.
 
-## Maqueta integral aprobada · Órbita
-
-La aplicación React implementa la paleta Marea, las fuentes locales Unbounded/Nunito/Atkinson, el escenario orbital con Lunito 3D y navegación inferior. Las rutas principales son `/`, `/tripulacion`, `/tareas` y `/ajustes`; se conservan las direcciones previas. Tocar una luna abre su evolución y Ajustes reúne perfiles, privacidad y acceso a Tierra/Demo. Las ilustraciones y cifras de la maqueta se sustituyen por los datos y controles funcionales del producto.
-
-La referencia integral del rediseño está en [diseno/prototipos/orbita.html](diseno/prototipos/orbita.html). Se abre directamente en un navegador y reúne Inicio, Equipo, Tareas, Ajustes, Check-in, Emergencia y Tierra en los tamaños de escritorio, tablet y celular.
-
-- La maqueta fija la estructura, jerarquía, lenguaje visual, movimiento y adaptación responsive.
-- Las imágenes de abajo siguen fijando el contenido y el flujo de Inicio; cuando haya una diferencia puramente visual, manda la maqueta Órbita.
-- Es una referencia de diseño, no sustituye la aplicación React ni duplica sus datos o reglas de salud.
-- Cada responsable porta su pantalla según [REPARTO.md](REPARTO.md). Ariff conserva en exclusiva la estructura global, navegación y tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
-- El selector de paleta, voz y estado de la esquina es una herramienta de comparación de la maqueta y no forma parte del producto final.
-
 ## Pantallas Marea de la app (2026-11-15)
 
-Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la barra inferior. Mandan sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
+**Esta es la referencia visual vigente.** Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la barra inferior. Donde otra sección de este documento diga que manda Órbita, mandan estas pantallas y sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
 
 - **Inicio (`/`):** carrusel de dos páginas en celular (Así estás hoy y Tus datos, que sigue hasta Tu misión); desde 768 px las dos se ven lado a lado. Una sola gráfica con pestañas por métrica y una sola etiqueta de valor.
 - **Equipo (`/tripulacion`):** un Lunito por compañero; tocarlo abre una hoja con su estado público. Quien no comparte (o está en rojo) se ve como "Sin compartir". Debajo, la autonomía de la tripulación y, solo para el comandante, el balanceador.
@@ -26,9 +14,13 @@ Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la bar
 - Sin la fuente exacta ni originales limpios del personaje: Nunito variable como aproximación y las tres poses recreadas con autorización.
 - El inicio del día (`/buenos-dias`) antecede a Inicio una vez por día.
 
+## Maqueta Órbita (anterior)
+
+Órbita fue la referencia visual entre los PR #27 y #32; hoy ya no manda. Se conserva como archivo en [diseno/prototipos/orbita.html](diseno/prototipos/orbita.html), y su código React (de Mateo) sigue en el repo, fuera de las rutas. Ariff conserva la estructura global, la navegación y los tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
+
 ## Referencias finales (modelo exacto del frontend)
 
-Estas imágenes fijan **el contenido y el flujo exactos de Inicio**. La maqueta Órbita fija la estructura y el lenguaje visual integral; si existe una diferencia puramente visual, manda Órbita. Los puntos donde las imágenes chocaban con reglas funcionales anteriores ya están decididos abajo.
+Estas imágenes fijan **el contenido y el flujo exactos de Inicio**, junto con las pantallas Marea de arriba. Los puntos donde las imágenes chocaban con reglas funcionales anteriores ya están decididos abajo.
 
 ### Flujo del día
 
