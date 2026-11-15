@@ -189,6 +189,54 @@
   font-weight: 800;
   text-decoration: none;
 }
+/* Proposal to alert Ground on a red status (EscalationCard): same card as
+   the emergency notice, with the send button and "Not now". */
+.escalation-card h2 {
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+.escalation-card h2 svg {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+.escalation-card {
+  gap: 8px;
+  padding: 12px 14px;
+}
+.escalation-card p {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.escalation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.escalation-send,
+.escalation-later {
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 99px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.escalation-send {
+  background: var(--reference-emergency);
+  color: var(--reference-on-solid);
+}
+.escalation-later {
+  border: 2px solid var(--reference-emergency);
+  background: transparent;
+  color: var(--reference-alert-ink);
+}
 /* Active case: a fixed red strip under the header, on every screen but
    Emergency and Ground. It lives outside the scrolling area. */
 .case-banner-slot {

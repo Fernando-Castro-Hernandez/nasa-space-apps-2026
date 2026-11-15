@@ -65,8 +65,10 @@ export const ground: Messages<typeof source> = {
       breathing: "{name}: dificultad para respirar a las {time}.",
       hardHit: "{name}: golpe fuerte a las {time}.",
       other: "{name}: otra urgencia a las {time}.",
+      redStatus: "{name}: alerta del monitoreo a las {time}.",
       custom: "{name}: {what} a las {time}.",
     },
+    reason: "Motivo: {reason}",
     lastNote: "Última nota: {note}",
     trend: {
       below: "{label} bajo su normal los últimos días.",

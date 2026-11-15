@@ -4,6 +4,7 @@
 // Si la bitácora habló de una emergencia, eso va primero, con su acceso.
 import { Check, OctagonAlert, TriangleAlert } from "lucide-react";
 import { EmergencyNotice } from "@/components/emergency-access";
+import { EscalationCard } from "@/features/emergency/EscalationCard";
 import { STATUS_LABEL } from "@/domain/status";
 import { t } from "@/i18n";
 import type { CheckInResult } from "./result";
@@ -25,6 +26,7 @@ export function ResultView({ result, leaving, onHome }: Props) {
   return (
     <div className="checkin-step">
       {result.emergency && <EmergencyNotice line={result.emergency} />}
+      <EscalationCard />
       <div className="result-today">
         <p>{t("checkin.result.today")}</p>
         <p className="result-status" data-status={result.status}>

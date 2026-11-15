@@ -62,8 +62,10 @@ export const ground = {
       breathing: "{name}: trouble breathing at {time}.",
       hardHit: "{name}: hard blow at {time}.",
       other: "{name}: other emergency at {time}.",
+      redStatus: "{name}: monitoring alert at {time}.",
       custom: "{name}: {what} at {time}.",
     },
+    reason: "Reason: {reason}",
     lastNote: "Last note: {note}",
     trend: {
       below: "{label} below their usual over the last few days.",
