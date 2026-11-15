@@ -33,7 +33,7 @@ type Props = {
 
 export function Constellation({ selected, onSelect, pair, shared, me }: Props) {
   return (
-    <div className="relative h-80 w-full md:h-96">
+    <div className="orbita-constellation relative h-96 w-full md:h-[520px]">
       <svg
         className="absolute inset-0 size-full"
         viewBox="0 0 100 100"

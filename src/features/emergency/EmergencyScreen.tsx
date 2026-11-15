@@ -23,7 +23,7 @@ export function EmergencyScreen() {
   const closed = c.closedAt !== undefined;
 
   return (
-    <div className="flex flex-col">
+    <div className="orbita-emergency flex flex-col">
       <section
         className={`flex flex-wrap items-center gap-4 px-4 py-4 text-white md:px-6 ${
           closed ? "bg-muted-foreground" : "bg-status-alert"

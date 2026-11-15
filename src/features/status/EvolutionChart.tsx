@@ -80,7 +80,7 @@ export function EvolutionChart(p: Props) {
   return (
     <section
       className={cn(
-        "flex flex-col gap-2 py-4 transition-opacity duration-200",
+        "orbita-chart flex flex-col gap-2 py-4 transition-opacity duration-200",
         p.dimmed && "opacity-45",
       )}
       aria-label={p.name}

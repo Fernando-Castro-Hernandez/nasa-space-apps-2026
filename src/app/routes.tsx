@@ -1,14 +1,7 @@
 // Mapa de pantallas (SISTEMA.md §9) y la navegación lateral que sale de él.
 // Cada pantalla vive en la carpeta de su responsable (REPARTO.md).
 import type { ComponentType } from "react";
-import {
-  Activity,
-  BriefcaseMedical,
-  Mic,
-  Moon,
-  Radio,
-  Users,
-} from "lucide-react";
+import { ListChecks, Orbit, Settings, Users } from "lucide-react";
 import type { NavItem } from "@/components/premium/dashboard-shell-03/app-sidebar";
 import { CREW, ME, MISSION } from "@/data/crew";
 import { CheckInScreen } from "@/features/check-in/CheckInScreen";
@@ -18,6 +11,9 @@ import { GroundConsoleScreen } from "@/features/emergency/GroundConsoleScreen";
 import { HomeScreen } from "@/features/lunito/HomeScreen";
 import { MedicineScreen } from "@/features/medicine/MedicineScreen";
 import { StatusScreen } from "@/features/status/StatusScreen";
+import { SettingsScreen } from "@/features/profiles/SettingsScreen";
+import { TasksScreen } from "@/features/medicine/TasksScreen";
+import { DemoScreen } from "@/features/demo/DemoScreen";
 
 export type Route = {
   path: string;
@@ -31,6 +27,9 @@ const me = CREW.find((c) => c.id === ME)!;
 export const SUBTITLE = `${me.name} · Día ${MISSION.day} · ${MISSION.phase}`;
 
 export const ROUTES: Route[] = [
+  { path: "/ajustes", title: "Ajustes", Screen: SettingsScreen, shell: true },
+  { path: "/tareas", title: "Qué hacer hoy", Screen: TasksScreen, shell: true },
+  { path: "/demo", title: "Panel de la demo", Screen: DemoScreen, shell: true },
   { path: "/", title: "Mi Lunito", Screen: HomeScreen, shell: true },
   { path: "/estado", title: "Mi estado", Screen: StatusScreen, shell: true },
   { path: "/check-in", title: "Check-in", Screen: CheckInScreen, shell: true },
@@ -56,16 +55,11 @@ export const ROUTES: Route[] = [
 ];
 
 export const findRoute = (path: string) =>
-  ROUTES.find((r) => r.path === path) ?? ROUTES[0]!;
+  ROUTES.find((r) => r.path === path) ?? ROUTES.find((r) => r.path === "/")!;
 
 export const NAV: NavItem[] = [
-  { label: "Mi salud", isSection: true },
-  { title: "Lunito", icon: Moon, href: "/" },
-  { title: "Mi estado", icon: Activity, href: "/estado" },
-  { title: "Check-in", icon: Mic, href: "/check-in" },
-  { label: "Misión", isSection: true },
-  { title: "Tripulación", icon: Users, href: "/tripulacion" },
-  { title: "Botiquín", icon: BriefcaseMedical, href: "/botiquin" },
-  { label: "Tierra", isSection: true },
-  { title: "Consola del cirujano", icon: Radio, href: "/tierra" },
+  { title: "Inicio", icon: Orbit, href: "/" },
+  { title: "Equipo", icon: Users, href: "/tripulacion" },
+  { title: "Tareas", icon: ListChecks, href: "/tareas" },
+  { title: "Ajustes", icon: Settings, href: "/ajustes" },
 ];

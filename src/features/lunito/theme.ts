@@ -10,11 +10,11 @@ import rojo from "@/features/crew/assets/lunito-rojo.png";
 import verde from "@/features/crew/assets/lunito-verde.png";
 
 export const DASH_VARS = {
-  "--dash-ok": "oklch(0.72 0.12 205)",
-  "--dash-warn": "oklch(0.74 0.15 85)",
-  "--dash-alert": "oklch(0.65 0.19 22)",
-  "--dash-ink": "oklch(0.42 0.06 295)",
-  "--dash-line": "oklch(0.62 0.15 295)",
+  "--dash-ok": "var(--status-ok)",
+  "--dash-warn": "var(--status-warn)",
+  "--dash-alert": "var(--status-alert)",
+  "--dash-ink": "var(--foreground)",
+  "--dash-line": "var(--primary)",
 } as CSSProperties;
 
 export const STATUS_VIEW: Record<Status, { color: string; image: string }> = {

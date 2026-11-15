@@ -1,6 +1,6 @@
 // "Tu evolución" (referencia 3): selector Semana / Mes y una gráfica por
 // indicador. El valor de hoy sale de la lectura actual, así que cambia con ella.
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Droplet, Heart, HeartPulse } from "lucide-react";
 import { EVOLUTION, type EvolutionKey } from "@/data/dashboard";
 import type { Status } from "@/domain/vitals";
@@ -50,14 +50,18 @@ export function EvolutionPanel({
   onLook: (key: IndicatorView["key"] | null) => void;
 }) {
   const [mode, setMode] = useState<Mode>("week");
+  const titleId = useId();
   const [range] = useState(() => weekRange(new Date()));
 
   return (
-    <section aria-labelledby="evolucion-titulo" className="flex flex-col gap-3">
+    <section
+      aria-labelledby={titleId}
+      className="orbita-evolution flex flex-col gap-3"
+    >
       <header className="flex items-start justify-between gap-3">
         <div>
           <h2
-            id="evolucion-titulo"
+            id={titleId}
             className="text-3xl font-semibold"
             style={{ color: "var(--dash-ink)" }}
           >

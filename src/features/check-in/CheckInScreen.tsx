@@ -5,6 +5,7 @@ import { ReactionTest } from "./ReactionTest";
 import { ResultCard } from "./ResultCard";
 import { SensorCard } from "./SensorCard";
 import { VoiceCard } from "./VoiceCard";
+import lunito from "@/features/crew/assets/lunito-verde.png";
 
 const STEPS = ["Voz y sensor", "Prueba de reacción", "Resultado"];
 
@@ -15,7 +16,19 @@ export function CheckInScreen() {
   const [reactionDone, setReactionDone] = useState(false);
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-5 p-4 md:p-6">
+    <div className="orbita-checkin-page mx-auto flex max-w-3xl flex-col gap-5 p-4 md:p-6">
+      <header className="py-6 text-center">
+        <img
+          src={lunito}
+          alt="Lunito te acompaña durante el check-in"
+          className="mx-auto mb-6 h-40 rounded-full bg-accent p-4"
+        />
+        <p className="orbita-kicker">Un momento para ti</p>
+        <h2 className="mt-3 text-4xl">¿Cómo amaneciste hoy?</h2>
+        <p className="mt-2 text-muted-foreground">
+          Cuéntame cómo te sientes. Estoy aquí contigo.
+        </p>
+      </header>
       <ol className="grid grid-cols-3 gap-2" aria-label="Pasos del check-in">
         {STEPS.map((s, i) => (
           <li

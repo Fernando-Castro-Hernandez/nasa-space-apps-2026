@@ -13,16 +13,16 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      workbox: { globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"] },
       manifest: {
-        // Nombre provisional: cambiar cuando el equipo defina el producto.
-        name: "Space Apps 2026 — Health Monitor",
-        short_name: "Health Monitor",
+        name: "Nóstos — salud de la tripulación",
+        short_name: "Nóstos",
         description:
           "Prototipo para el reto de monitoreo de salud de astronautas (NASA Space Apps 2026).",
         lang: "es",
         display: "standalone",
-        theme_color: "#0b1026",
-        background_color: "#0b1026",
+        theme_color: "#fbf6f2",
+        background_color: "#fbf6f2",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png" },

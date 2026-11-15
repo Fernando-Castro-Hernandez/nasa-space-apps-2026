@@ -4,6 +4,8 @@ Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTE
 
 ## Maqueta integral aprobada · Órbita
 
+La aplicación React implementa la paleta Marea, las fuentes locales Unbounded/Nunito/Atkinson, el escenario orbital con Lunito 3D y navegación inferior. Las rutas principales son `/`, `/tripulacion`, `/tareas` y `/ajustes`; se conservan las direcciones previas. Tocar una luna abre su evolución y Ajustes reúne perfiles, privacidad y acceso a Tierra/Demo. Las ilustraciones y cifras de la maqueta se sustituyen por los datos y controles funcionales del producto.
+
 La referencia integral del rediseño está en [diseno/prototipos/orbita.html](diseno/prototipos/orbita.html). Se abre directamente en un navegador y reúne Inicio, Equipo, Tareas, Ajustes, Check-in, Emergencia y Tierra en los tamaños de escritorio, tablet y celular.
 
 - La maqueta fija la estructura, jerarquía, lenguaje visual, movimiento y adaptación responsive.

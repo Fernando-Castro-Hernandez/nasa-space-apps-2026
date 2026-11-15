@@ -1,15 +1,7 @@
-// Adaptado de dashboard-shell-03 (Shadcn Space Pro, revisión 8c005d44179c):
-// navegación propia, sin widgets de demostración ni tarjeta promocional.
 import type { ReactNode } from "react";
-import { type LucideIcon, Moon } from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
-import { NavMain } from "@/components/premium/dashboard-shell-03/nav-main";
-import { SiteHeader } from "@/components/premium/dashboard-shell-03/site-header";
+import { Orbit, TriangleAlert, type LucideIcon } from "lucide-react";
+import { crewMember, MISSION } from "@/data/crew";
+import { useActiveProfile } from "@/features/profiles/activeProfile";
 
 export type NavItem = {
   label?: string;
@@ -20,54 +12,73 @@ export type NavItem = {
   children?: NavItem[];
   isActive?: boolean;
 };
-
 type Props = {
   children: ReactNode;
   nav: NavItem[];
   pathname: string;
   title: string;
   subtitle?: string;
-  /** Oculta el botón de emergencia (por ejemplo, dentro de la emergencia). */
   hideEmergency?: boolean;
 };
-
-const AppShell = ({
+export default function AppShell({
   children,
   nav,
   pathname,
   title,
-  subtitle,
   hideEmergency,
-}: Props) => (
-  <SidebarProvider>
-    <Sidebar className="bg-background px-0 py-4">
-      <SidebarHeader className="px-4 py-0">
-        <div className="flex items-center gap-2 px-2 py-1">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Moon className="size-4" />
-          </span>
-          <div className="leading-tight">
-            <p className="text-sm font-semibold">Health Monitor</p>
-            <p className="text-xs text-muted-foreground">Equipo Nóstos</p>
-          </div>
-        </div>
-      </SidebarHeader>
-      <SidebarContent className="gap-0 px-4 pt-4">
-        <NavMain items={nav} pathname={pathname} />
-      </SidebarContent>
-    </Sidebar>
-
-    <div className="flex min-w-0 flex-1 flex-col">
-      <header className="sticky top-0 z-50 flex items-center border-b bg-background px-4 py-3 md:px-6">
-        <SiteHeader
-          title={title}
-          subtitle={subtitle}
-          hideEmergency={hideEmergency}
-        />
+}: Props) {
+  const person = crewMember(useActiveProfile());
+  const immersive = pathname === "/check-in" || pathname === "/emergencia";
+  return (
+    <div className={`orbita-app ${immersive ? "orbita-immersive" : ""}`}>
+      <a href="#app-content" className="skip-link">
+        Ir al contenido
+      </a>
+      <header className="orbita-top">
+        <a href="/" className="orbita-brand">
+          <Orbit aria-hidden="true" />
+          Nóstos
+        </a>
+        <p className="orbita-telemetry">
+          Día {MISSION.day} · Fase {MISSION.phase}
+        </p>
+        <a
+          href="/ajustes"
+          className="orbita-profile"
+          aria-label={`Perfil de ${person.name}`}
+        >
+          <span>{person.name}</span>
+          <b>{person.name.slice(0, 2).toUpperCase()}</b>
+        </a>
+        {!hideEmergency && (
+          <a href="/emergencia" className="orbita-sos">
+            <TriangleAlert aria-hidden="true" />
+            Emergencia
+          </a>
+        )}
       </header>
-      <main className="flex-1">{children}</main>
+      <main id="app-content" tabIndex={-1}>
+        <h1 className={pathname === "/" ? "sr-only" : "orbita-page-title"}>
+          {title}
+        </h1>
+        {children}
+      </main>
+      {!immersive && (
+        <nav className="orbita-tabs" aria-label="Principal">
+          {nav
+            .filter((item) => item.href)
+            .map(({ href, title: label, icon: Icon }) => (
+              <a
+                key={href}
+                href={href}
+                aria-current={pathname === href ? "page" : undefined}
+              >
+                {Icon && <Icon aria-hidden="true" />}
+                <span>{label}</span>
+              </a>
+            ))}
+        </nav>
+      )}
     </div>
-  </SidebarProvider>
-);
-
-export default AppShell;
+  );
+}

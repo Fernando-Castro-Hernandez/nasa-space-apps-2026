@@ -10,7 +10,7 @@ export function App() {
   const route = findRoute(usePathname());
   useEffect(interceptLinks, []);
   useEffect(() => {
-    document.title = `${route.title} · Health Monitor`;
+    document.title = `${route.title} · Nóstos`;
   }, [route.title]);
 
   const { Screen } = route;

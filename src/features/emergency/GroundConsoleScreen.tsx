@@ -15,7 +15,7 @@ import { SbarCard } from "./SbarCard";
 
 function TopBar() {
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 border-b bg-card px-6 py-3">
+    <header className="orbita-console-top flex flex-wrap items-center justify-between gap-3 border-b bg-card px-6 py-3">
       <div className="flex items-center gap-3">
         <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
           <Radio className="size-4" aria-hidden="true" />

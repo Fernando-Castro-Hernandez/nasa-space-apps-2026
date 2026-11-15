@@ -15,7 +15,7 @@ export function ProfilesScreen() {
           Elige tu perfil: tus check-ins se guardan a tu nombre.
         </p>
       </div>
-      <ul className="grid grid-cols-2 gap-4">
+      <ul className="orbita-profiles grid grid-cols-2 gap-4">
         {CREW.map((c) => (
           <li key={c.id}>
             <button
