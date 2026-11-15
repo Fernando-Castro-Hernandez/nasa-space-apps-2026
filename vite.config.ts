@@ -15,9 +15,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       workbox: { globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"] },
       manifest: {
-        // Nombre provisional: cambiar cuando el equipo defina el producto.
-        name: "Space Apps 2026 — Health Monitor",
-        short_name: "Health Monitor",
+        name: "Nóstos — salud de la tripulación",
+        short_name: "Nóstos",
         description:
           "Prototipo para el reto de monitoreo de salud de astronautas (NASA Space Apps 2026).",
         lang: "es",

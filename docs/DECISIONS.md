@@ -57,14 +57,15 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 
 ### Implementación de Órbita · 2026-11-15
 
-- Mateo autoriza portar la maqueta integral a todas las pantallas, incluidos shell, navegación y estilos globales; la propiedad habitual de Ariff se conserva para mantenimiento posterior.
+- Por decisión de Fernando, Mateo porta la maqueta integral a todas las pantallas, incluidos shell, navegación y estilos globales, en un solo PR (#30). Ariff conserva la propiedad del shell, la navegación y los estilos globales para el mantenimiento posterior, y Jenni la del check-in.
+- El producto se llama **Nóstos** (decisión de Fernando).
 - La app usa la paleta Marea de la maqueta y conserva los flujos funcionales existentes de salud, privacidad y emergencias.
 - Unbounded 600, Nunito 700 y Atkinson Hyperlegible 400/700 se sirven localmente con `@fontsource`, para conservar la identidad de la maqueta también sin conexión.
 - Inicio, Equipo, Tareas y Ajustes forman la navegación principal. Check-in y Emergencia ocultan la barra inferior; Tierra y Demo conservan acceso desde Ajustes.
 
 ## Abierto
 
-- **Nombre del producto.** "Health Monitor" es provisional.
+- Nada por ahora.
 
 ## Para más adelante
 
