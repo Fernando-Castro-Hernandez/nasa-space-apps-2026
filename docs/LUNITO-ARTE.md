@@ -6,12 +6,12 @@ Guía para preparar en Blender el modelo de Lunito para que pueda **hablar, expr
 
 ## 1. Qué hay hoy
 
-| Pieza               | Dónde                                    | Estado                                                                                                                                                                                                                       |
-| ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Modelo en la app    | `public/lunito.glb`                      | Hecho desde el modelo de Meshy: 12 partes con nombre (las 10 originales, `mouth` y `tail`), unos 37k triángulos, 1.3 MB, 2 texturas JPEG. Con las shape keys de §3 y §4, sin animaciones, `metallic = 0`. Faltan los brazos. |
-| Scripts de Blender  | `art/lunito/blender/`                    | Rehacen el modelo desde el GLB original, en orden (`01` a `08`), con `blender -b -P`. `90_preview_grid.py` saca las capturas de cada forma.                                                                                  |
-| Código que lo anima | `src/features/lunito/useLunitoMotion.ts` | Busca cada parte **por nombre** y la mueve con datos reales: la pancita late con el pulso, las branquias brillan con el SpO2, el cuerpo respira con la HRV, los ojos parpadean.                                              |
-| Referencia visual   | `docs/diseno/lunito-hoja.jpg`            | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                                      |
+| Pieza               | Dónde                                    | Estado                                                                                                                                                                                                                      |
+| ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modelo en la app    | `public/lunito.glb`                      | Hecho desde el modelo de Meshy: 14 partes con nombre (las 10 originales, `mouth`, `tail`, `arm_L` y `arm_R`), unos 46k triángulos, 1.4 MB, 2 texturas JPEG. Con las shape keys de §3 y §4, sin animaciones, `metallic = 0`. |
+| Scripts de Blender  | `art/lunito/blender/`                    | Rehacen el modelo desde el GLB original, en orden (`01` a `09`), con `blender -b -P`. `90_preview_grid.py` saca las capturas de cada forma.                                                                                 |
+| Código que lo anima | `src/features/lunito/useLunitoMotion.ts` | Busca cada parte **por nombre** y la mueve con datos reales: la pancita late con el pulso, las branquias brillan con el SpO2, el cuerpo respira con la HRV, los ojos parpadean.                                             |
+| Referencia visual   | `docs/diseno/lunito-hoja.jpg`            | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                                     |
 
 **No se rehace el modelo.** Se parte de `public/lunito.glb` y se le agregan piezas. El código anima todo; el GLB no lleva animaciones.
 
@@ -95,6 +95,13 @@ Cómo están hechas: cada ojo tapa un hueco de `body`, así que no se aplasta. L
 - Rellenar el hueco que quede en `body` para que no se vea vacío al rotar.
 - Prioridad más baja que la boca y los ojos.
 
+Cómo quedaron (`07_tail.py` y `08_arms.py`):
+
+- `tail` se corta con un plano que sigue la espalda. Origen en el centro del corte.
+- Cada brazo es un relieve pegado al torso, repartido entre `body` (mitad de afuera) y `belly` (mitad de adentro). Se reconstruye la piel que habría debajo, se corta donde el brazo se despega de ella y el hueco se tapa con un parche pintado en un espacio libre de la textura. El parche se reparte entre `body` y `belly` para que el semáforo lo tiña igual que al resto de la pancita.
+- El origen de `arm_L` y `arm_R` está en el hombro, en el costado del torso. Convención de lados: L es -X, igual que en branquias y ojos.
+- Los brazos ya no forman parte de `belly`: no laten ni cambian de color con el semáforo.
+
 ## 6. Paso a paso en Blender
 
 ### 6.0 Conectar Blender con el agente (MCP)
@@ -135,7 +142,7 @@ pnpm dlx @gltf-transform/cli prune   art/lunito/out/a.glb art/lunito/out/b.glb
 pnpm dlx @gltf-transform/cli resize  art/lunito/out/b.glb public/lunito.glb --width 1024 --height 1024
 ```
 
-`meshopt` cuantiza las posiciones y, para compensar, le pone escala y traslación a cada parte: el origen se mueve (hasta 0.11 en las branquias) y el código pivotaría en otro punto. Sin él, el modelo pesa 1.3 MB.
+`meshopt` cuantiza las posiciones y, para compensar, le pone escala y traslación a cada parte: el origen se mueve (hasta 0.11 en las branquias) y el código pivotaría en otro punto. Sin él, el modelo pesa 1.4 MB.
 
 Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es temporal y está en `.gitignore`.
 
@@ -143,7 +150,7 @@ Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es t
 
 - `pnpm dlx @gltf-transform/cli validate public/lunito.glb`: 0 errores.
 - `pnpm dlx @gltf-transform/cli inspect public/lunito.glb`: revisar partes y número de shape keys.
-- `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si alguna parte trae escala propia (origen movido), si hay animaciones o si pesa más de 2 MB. Los brazos están como pendientes: avisa, pero no falla, hasta que se entreguen.
+- `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si alguna parte trae escala propia (origen movido), si hay animaciones o si pesa más de 2 MB.
 - Vista previa con sliders de cada shape key: arrastrar el GLB a https://gltf-viewer.donmccurdy.com/ (se abre en el navegador, no se sube).
 - En la app: `pnpm dev` y abrir Mi Lunito. Debe verse y moverse igual que antes; las partes nuevas todavía no se animan.
 
