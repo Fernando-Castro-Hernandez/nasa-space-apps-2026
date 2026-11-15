@@ -248,7 +248,8 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- Cada dato se clasifica en su peligro: dosis → R; ánimo, estrés, sueño y HRV → I; ejercicio y recuperación → G; CO2 y SpO2 → E; botiquín y casos → D.
+- Cada dato se clasifica en su peligro: dosis → R; ánimo, estrés, sueño y HRV → I; ejercicio y recuperación → G; CO2 y SpO2 → E; enlace con Tierra y casos que esperan respuesta → D.
+- La luz D responde "¿podemos contar con Tierra ahora?": Bien con enlace activo y sin casos esperando ("Tierra responde en ~28 min"); Precaución si un caso espera respuesta o no hay enlace ("Sin enlace: sigue el protocolo"). Nunca pasa de Precaución, porque mide el contexto de la misión y no la salud. El botiquín no la mueve: NASA ya lo controla y queda en su pantalla.
 - El estado se basa en la tendencia de varios días, no en una sola lectura.
 - Cada color muestra el motivo en texto ("Amarillo · G: 3 días sin ARED y recuperación más lenta") y la fuente de la regla, o "pendiente de validar".
 - Una regla sin fuente puede dar amarillo pero nunca rojo (C7, C15).
@@ -321,6 +322,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 - La Constelación muestra el porcentaje de autonomía, la meta de 100 %, la fase actual (órbita baja, tránsito o Marte) y el desglose por peligro ("E: 4 de 4 resueltos a bordo").
 - Un caso amarillo cerrado a bordo suma a la autonomía.
 - Un caso rojo escalado correctamente a Tierra también cuenta como éxito; nunca resta.
+- El texto explica la métrica: "Casos bien atendidos: resueltos a bordo o escalados a tiempo". No se muestra otra meta (por ejemplo 75 %) ni una métrica de "resolver sin esperar a Tierra", porque premiaría no escalar.
 - No hay métricas individuales ni rankings.
 - El cálculo es una función pura con pruebas en Vitest, incluido el caso rojo escalado.
 
@@ -457,7 +459,9 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 **Criterios de aceptación**
 
-- Cuando alguien queda en amarillo por I, se asigna a un tripulante en verde con una acción simple ("toma el café con Ana").
+- Cuando alguien queda en Precaución por I, se le asigna como compañero un tripulante en Bien.
+- La acción sale de una lista fija y neutra que no deja adivinar el motivo: "Tomen el café juntos", "Inviten a ver la Tierra por la cúpula", "Coman juntos hoy". Nunca una acción que lo revele, como "pregúntale cómo durmió".
+- Cada quien ve su versión: el compañero, "Hoy acompañas a Ana"; la persona apoyada, "Hoy te acompaña Luis". Si nadie está en Precaución por I, la tarjeta no aparece.
 - El compañero ve la acción y el nombre, nunca los datos de salud ni el motivo del semáforo.
 - La Constelación muestra la tarjeta del compañero del día.
 
@@ -471,7 +475,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 
 - Si un tripulante en amarillo (I, G o R) tiene una tarea pesada asignada, el comandante recibe "¿Intercambiar la caminata espacial de A con B?", donde B está en verde.
 - Aprobar o rechazar es un solo toque; la decisión queda registrada.
-- La propuesta muestra solo el peligro, no los datos de salud.
+- La propuesta muestra solo el peligro, no los datos de salud: "Ana está en Precaución por Aislamiento. ¿Intercambiar su caminata espacial con Omar?". Nunca "Ana lleva 3 noches durmiendo poco".
 
 **Prioridad:** P3 · **Dependencias:** HU-12 · **Notas:** las tareas de la tripulación son simuladas. Puede ir como pantalla simulada (§12).
 
