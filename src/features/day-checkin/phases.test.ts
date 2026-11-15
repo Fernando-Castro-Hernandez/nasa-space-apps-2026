@@ -58,6 +58,7 @@ describe("nextPhase", () => {
       "tapMic",
       "think",
       "heard",
+      "followUp",
       "failed",
       "write",
       "close",
@@ -73,6 +74,7 @@ const voice = (patch: Partial<VoiceSnapshot>): VoiceSnapshot => ({
   error: null,
   log: "ask",
   organizing: "idle",
+  followUp: null,
   ...patch,
 });
 
@@ -104,6 +106,16 @@ describe("voiceEvent", () => {
     expect(
       voiceEvent("pensando", voice({ log: "review", organizing: "failed" })),
     ).toBe("heard");
+  });
+
+  test("si falta ánimo o estrés, Lunito vuelve a preguntar", () => {
+    expect(voiceEvent("pensando", voice({ followUp: "mood" }))).toBe(
+      "followUp",
+    );
+    expect(nextPhase("pensando", "followUp")).toBe("pregunta");
+    expect(
+      voiceEvent("escucha", voice({ followUp: "mood", status: "listening" })),
+    ).toBeNull();
   });
 
   test("sin micrófono o sin palabras vuelve a preguntar con el aviso", () => {

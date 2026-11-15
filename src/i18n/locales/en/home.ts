@@ -47,6 +47,24 @@ export const home = {
     point: "{day}: {value}",
     baseline: "Baseline",
   },
+  // Lo que la persona contó en su check-in de hoy, tal cual: no es una
+  // lectura ni cambia el estado.
+  checkIn: {
+    title: "Your check-in today",
+    savedAt: "Saved · {time}",
+    sleep: "Sleep",
+    mood: "Mood",
+    stress: "Stress",
+    symptoms: "Symptoms",
+    hours: "{hours} h",
+    // "5 h · Poor": horas y calidad, cuando dijo las dos.
+    hoursQuality: "{hours} h · {quality}",
+    // "4 of 5 · good".
+    scale: "{value} of 5 · {word}",
+    noSymptoms: "None reported",
+    notSaid: "Not said",
+    note: "This is what you told Lunito. Your status comes from your readings.",
+  },
   mission: {
     title: "Your mission",
     buddy: "Buddy of the day",

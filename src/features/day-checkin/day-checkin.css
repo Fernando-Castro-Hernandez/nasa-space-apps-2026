@@ -3,6 +3,8 @@
    la izquierda, Emergencia a la derecha) y no se va de la pantalla: solo se
    desplaza el contenido. */
 .day-checkin {
+  /* Onda, micrófono y puntos: más chicos en pantallas bajitas. */
+  --day-control: clamp(72px, 13dvh, 112px);
   height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -38,6 +40,8 @@
   width: min(100%, 560px);
   margin-inline: auto;
   overflow-y: auto;
+  /* Si algo no cabe, se desplaza, pero sin la barra gris encima de Lunito. */
+  scrollbar-width: none;
   overscroll-behavior: contain;
   /* Arriba deja lugar a las branquias: el lienzo de Lunito se sale de su caja. */
   padding: 24px 20px 16px;
@@ -75,15 +79,15 @@
   display: block;
 }
 .day-voice-control {
-  height: 112px;
-  margin-top: 20px;
+  height: var(--day-control);
+  margin-top: 12px;
   display: grid;
   place-items: center;
 }
 .day-mic-button {
   position: relative;
-  width: 112px;
-  height: 112px;
+  width: var(--day-control);
+  height: var(--day-control);
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -109,13 +113,13 @@
   animation: day-invite 2s ease-out infinite;
 }
 .day-wave-button {
-  min-height: 112px;
+  min-height: var(--day-control);
   padding: 0 8px;
   border-radius: 24px;
   animation: day-grow 200ms ease-out;
 }
 .day-voice-wave {
-  height: 96px;
+  height: calc(var(--day-control) * 0.85);
   display: flex;
   align-items: center;
   gap: clamp(7px, 2.64vw, 14px);
@@ -129,7 +133,7 @@
   transform-origin: center;
 }
 .day-thinking {
-  height: 112px;
+  height: var(--day-control);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -163,6 +167,51 @@
 }
 .day-hint[role="alert"] {
   color: var(--reference-ink-strong);
+}
+/* "Terminar de hablar": el corte es automático, esto es la salida clara. */
+.day-stop-button {
+  margin-top: 14px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--reference-action);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  transition: transform 80ms ease-out;
+}
+.day-stop-button svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.day-stop-button:active {
+  transform: scale(0.97);
+}
+.day-transcript {
+  max-width: 22em;
+  margin: 10px 0 0;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: var(--reference-lavender-50);
+  color: var(--reference-ink);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  /* Solo el final de lo que va diciendo: tres líneas, sin barra de scroll. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.day-transcript b {
+  color: var(--reference-action);
+  font-weight: 800;
 }
 .day-saved {
   margin: 12px 0 0;
@@ -208,6 +257,33 @@
 .day-write-button:active,
 .day-header .reference-back:active {
   transform: scale(0.97);
+}
+
+/* Pantallas bajas (portátil, celular chico): Lunito más chico y sin el aviso
+   "paro cuando hagas una pausa", para que quepan la onda, el botón y la
+   transcripción sin scroll. */
+@media (max-height: 820px) {
+  .day-pose[data-size="l"] {
+    width: min(63.2%, 310px, 24dvh);
+  }
+  .day-checkin[data-phase="escucha"] .day-hint {
+    display: none;
+  }
+}
+@media (max-height: 700px) {
+  .day-pose[data-size="l"] {
+    width: min(63.2%, 310px, 20dvh);
+  }
+  .day-main {
+    padding-top: 12px;
+  }
+  .day-main h1 {
+    font-size: clamp(24px, 6.4vw, 32px);
+  }
+  .day-foot {
+    min-height: 64px;
+    padding-block: 4px calc(8px + env(safe-area-inset-bottom));
+  }
 }
 
 @keyframes day-fade {

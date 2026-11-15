@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import { setActiveProfile } from "@/features/profiles/activeProfile";
+import { saveVoiceLog } from "@/features/voice/voiceLogStore";
 import { LunitoHomeScreen } from "./LunitoHomeScreen";
 
 beforeEach(() => localStorage.clear());
@@ -144,4 +145,39 @@ test("RIDGE solo aparece para el perfil comandante y no expone motivos privados"
   expect(screen.queryByText(/Sueño bajo en Ana/)).toBeNull();
   act(() => setActiveProfile("ana"));
   expect(screen.queryByRole("list", { name: "Panel RIDGE" })).toBeNull();
+});
+
+test("Tus datos muestra lo que la persona contó en su check-in de hoy; sin check-in, no aparece", () => {
+  const first = render(<LunitoHomeScreen />);
+  fireEvent.click(screen.getByRole("button", { name: "Tus datos" }));
+  expect(
+    screen.queryByRole("region", { name: "Tu check-in de hoy" }),
+  ).toBeNull();
+  first.unmount();
+
+  saveVoiceLog("ana", {
+    transcript: "Dormí cinco horas y me duele la cabeza",
+    fields: {
+      sleepHours: 5,
+      sleepQuality: "mala",
+      mood: 2,
+      stress: 4,
+      symptoms: ["dolor_cabeza"],
+    },
+  });
+  render(<LunitoHomeScreen />);
+  fireEvent.click(screen.getByRole("button", { name: "Tus datos" }));
+  const summary = screen.getByRole("region", { name: "Tu check-in de hoy" });
+  expect(within(summary).getByText(/^Guardado · \d{2}:\d{2}$/)).toBeDefined();
+  const row = (label: string) =>
+    within(summary).getByText(label).nextElementSibling?.textContent;
+  expect(row("Sueño")).toBe("5 h · Mala");
+  expect(row("Ánimo")).toBe("2 de 5 · bajo");
+  expect(row("Estrés")).toBe("4 de 5 · bastante");
+  expect(row("Síntomas")).toBe("Dolor de cabeza");
+  // Es de la persona activa: otro perfil no la ve.
+  act(() => setActiveProfile("luis"));
+  expect(
+    screen.queryByRole("region", { name: "Tu check-in de hoy" }),
+  ).toBeNull();
 });

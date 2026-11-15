@@ -1,9 +1,11 @@
 // "Tus datos" (referencia 05): una gráfica con pestañas por indicador, la
-// semana o el mes, y debajo "Tu misión".
+// semana o el mes, lo que la persona contó en su check-in de hoy y debajo
+// "Tu misión".
 import { useRef, useState } from "react";
 import type { LunitoDashboard, MetricKey } from "@/data/lunitoDashboard";
 import { metricParts, metricText } from "@/features/lunito/metricFormat";
 import { formatNumber, t } from "@/i18n";
+import { CheckInSummary } from "./CheckInSummary";
 import { MetricChart } from "./MetricChart";
 import { MissionSection } from "./MissionSection";
 
@@ -122,6 +124,7 @@ export function DataPage({ data }: { data: LunitoDashboard }) {
             </p>
           </div>
         </div>
+        <CheckInSummary />
         <MissionSection
           data={data}
           scrolled={scrolled}

@@ -18,14 +18,22 @@ export const dayCheckin: Messages<typeof source> = {
     title: "¿Cómo amaneciste hoy?",
     caption: "Cuéntame cómo te sientes",
   },
+  readback: {
+    title: "Entendido",
+    line: "Entendido. Ánimo {mood} de 5, estrés {stress} de 5.",
+    summary: "Ánimo {mood} de 5 · estrés {stress} de 5",
+    change: "Cambiar algo",
+  },
   mic: {
     talk: "Hablar con Lunito",
     stop: "Terminar de hablar",
   },
+  heard: "Te escuché:",
+  asking: { caption: "Lunito está preguntando…" },
   listening: {
     starting: "Preparando el micrófono…",
-    caption: "Escuchando…",
-    hint: "Toca la onda cuando termines · quedan {seconds} s",
+    caption: "Te toca · te escucho",
+    hint: "Paro cuando hagas una pausa",
   },
   thinking: {
     transcribing: "Pasando tu voz a texto…",
