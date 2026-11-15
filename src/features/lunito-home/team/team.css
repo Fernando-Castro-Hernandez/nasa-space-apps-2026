@@ -319,7 +319,7 @@
     grid-template-columns: repeat(2, minmax(0, 440px));
     justify-content: center;
     align-content: start;
-    column-gap: clamp(32px, 6vw, 96px);
+    column-gap: 64px;
     padding-inline: 16px;
   }
   .team-content {

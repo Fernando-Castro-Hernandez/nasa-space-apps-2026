@@ -83,77 +83,86 @@ export function ReferenceTasksScreen() {
       <ReferenceHeader title={t("tasks.title")} />
       <main className="tasks-page" aria-label={t("tasks.title")}>
         <div className="tasks-inner">
-          <div className="tasks-head">
-            <h1>{t("tasks.today")}</h1>
-            {progress.done && (
-              <LunitoAvatar
-                className="tasks-lunito"
-                pose={cheering ? "celebrating" : "idle"}
-                fallbackSrc={saludo}
-                label={t("tasks.allDone")}
-              />
-            )}
-          </div>
-          <p className="tasks-count" aria-live="polite">
-            {progress.label}
-          </p>
-          <progress
-            className="tasks-bar"
-            aria-label={t("tasks.progressLabel")}
-            max={100}
-            value={progress.percent}
-          />
-          <div className="tasks-list">
-            <Marea variant="mission" />
-            <ul>
-              <TaskRow
-                title={t("tasks.checkIn.title")}
-                detail={
-                  log === null
-                    ? undefined
-                    : savedAt === null
-                      ? t("tasks.checkIn.done")
-                      : t("tasks.checkIn.doneAt", {
-                          // 24 h, como el resto de las horas de la misión.
-                          time: formatDate(savedAt, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hourCycle: "h23",
-                          }),
-                        })
-                }
-                checked={log !== null}
-                disabled
-              >
-                {log === null && (
-                  <a className="tasks-start" href="/buenos-dias">
-                    {t("tasks.checkIn.start")}
-                    <ArrowRight aria-hidden="true" />
-                  </a>
+          {/* Dos columnas en tablet (tasks.css); en celular no existen. */}
+          <div className="tasks-col">
+            <div className="tasks-pad">
+              <div className="tasks-head">
+                <h1>{t("tasks.today")}</h1>
+                {progress.done && (
+                  <LunitoAvatar
+                    className="tasks-lunito"
+                    pose={cheering ? "celebrating" : "idle"}
+                    fallbackSrc={saludo}
+                    label={t("tasks.allDone")}
+                  />
                 )}
-              </TaskRow>
-              {DAY_ACTIONS.map((action) => (
-                <TaskRow
-                  key={action.id}
-                  title={action.text}
-                  checked={completed.checked(action.id)}
-                  onChange={(value) => toggle(action.id, value)}
-                />
-              ))}
-            </ul>
+              </div>
+              <p className="tasks-count" aria-live="polite">
+                {progress.label}
+              </p>
+              <progress
+                className="tasks-bar"
+                aria-label={t("tasks.progressLabel")}
+                max={100}
+                value={progress.percent}
+              />
+              <div className="tasks-list">
+                <Marea variant="mission" />
+                <ul>
+                  <TaskRow
+                    title={t("tasks.checkIn.title")}
+                    detail={
+                      log === null
+                        ? undefined
+                        : savedAt === null
+                          ? t("tasks.checkIn.done")
+                          : t("tasks.checkIn.doneAt", {
+                              // 24 h, como el resto de las horas de la misión.
+                              time: formatDate(savedAt, {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hourCycle: "h23",
+                              }),
+                            })
+                    }
+                    checked={log !== null}
+                    disabled
+                  >
+                    {log === null && (
+                      <a className="tasks-start" href="/buenos-dias">
+                        {t("tasks.checkIn.start")}
+                        <ArrowRight aria-hidden="true" />
+                      </a>
+                    )}
+                  </TaskRow>
+                  {DAY_ACTIONS.map((action) => (
+                    <TaskRow
+                      key={action.id}
+                      title={action.text}
+                      checked={completed.checked(action.id)}
+                      onChange={(value) => toggle(action.id, value)}
+                    />
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-          {/* The med kit sits right under today's list, where it is seen. */}
-          <a className="tasks-kit" href="/botiquin">
-            <span className="tasks-kit-icon">
-              <BriefcaseMedical aria-hidden="true" />
-            </span>
-            <span className="tasks-kit-text">
-              <small>{t("tasks.kit.question")}</small>
-              <strong>{t("tasks.kit.link")}</strong>
-            </span>
-            <ArrowRight aria-hidden="true" />
-          </a>
-          <SoonBlocks />
+          <div className="tasks-col">
+            <div className="tasks-pad">
+              {/* The med kit sits right under today's list, where it is seen. */}
+              <a className="tasks-kit" href="/botiquin">
+                <span className="tasks-kit-icon">
+                  <BriefcaseMedical aria-hidden="true" />
+                </span>
+                <span className="tasks-kit-text">
+                  <small>{t("tasks.kit.question")}</small>
+                  <strong>{t("tasks.kit.link")}</strong>
+                </span>
+                <ArrowRight aria-hidden="true" />
+              </a>
+              <SoonBlocks />
+            </div>
+          </div>
         </div>
       </main>
       <ReferenceNav pathname="/tareas" />

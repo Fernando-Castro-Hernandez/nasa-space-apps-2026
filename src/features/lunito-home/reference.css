@@ -5,6 +5,10 @@
    :root so sheets and dialogs (rendered outside the app container) and the
    shadcn tokens of index.css can use it too. */
 :root {
+  /* Side gutter of the shared frame: every screen keeps its content in the
+     same centered column, up to 880 px wide. On :root so screens outside
+     .reference-app (the morning check-in) line up too. */
+  --frame-gutter: max(20px, calc(50% - 440px));
   --reference-paper: #fdf7f3;
   --reference-surface: #fffcfd;
   --reference-ink: #625373;
@@ -371,7 +375,7 @@
 }
 .reference-page .reference-content > h1:not(.sr-only) {
   margin: 4px 0 12px;
-  padding-inline: max(20px, calc(50% - 440px));
+  padding-inline: var(--frame-gutter);
   font-size: clamp(28px, 7cqw, 36px);
   font-weight: 800;
   line-height: 1.15;
@@ -387,18 +391,26 @@
    phone design scales as one piece. Desktop does not patch sizes: it only
    chooses the page width. */
 
-/* Tablet and desktop (DISENO.md §2): both pages side by side, centered, split
-   by a thin line. Each page stays near phone width (about 80% of a full
-   column) and never taller than the viewport allows. */
+/* Tablet and desktop (DISENO.md §2): one frame for every screen. Tab screens
+   show two phone-width pages side by side (2 x 440 px and a 64 px gap), split
+   by a thin line on Home; secondary screens use the same width as one column.
+   The header lines up with that frame, so the way back and Emergency sit at
+   its edges instead of the corners of the window. */
 @media (min-width: 768px) {
+  :root {
+    --frame-gutter: max(32px, calc(50% - 440px));
+  }
   .reference-app {
     width: 100%;
   }
   .reference-header {
     height: 64px;
     min-height: 64px;
-    padding-inline: 32px;
+    padding-inline: var(--frame-gutter);
     font-size: 19px;
+  }
+  .case-banner {
+    padding-inline: var(--frame-gutter);
   }
   .reference-emergency {
     padding-inline: 18px;
@@ -417,7 +429,7 @@
     );
     grid-template-rows: minmax(0, 1fr);
     justify-content: center;
-    column-gap: clamp(32px, 7vw, 128px);
+    column-gap: 64px;
     padding: 0 16px 16px;
     background: linear-gradient(var(--reference-line), var(--reference-line))
       50% 0 / 1px calc(100% - 16px) no-repeat;

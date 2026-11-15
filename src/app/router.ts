@@ -1,6 +1,7 @@
 // Router mínimo sobre el History API, sin dependencias. Cloudflare sirve
 // index.html en cualquier ruta (not_found_handling: single-page-application).
 import { useSyncExternalStore } from "react";
+import { watchForNewVersion } from "./freshness";
 
 // Ruta actual y la anterior, para que una pantalla pueda volver "a donde
 // estabas" (Salir de Emergencia). null: la app se abrió en esta ruta.
@@ -30,8 +31,15 @@ export const usePathname = () =>
 /** Ruta interna desde la que se llegó a la actual. */
 export const previousPath = () => previous;
 
+// Tras un despliegue, esta pestaña puede quedarse con la versión anterior.
+const isStale = watchForNewVersion(
+  typeof navigator === "undefined" ? undefined : navigator.serviceWorker,
+);
+
 export function navigate(to: string) {
   if (to === window.location.pathname) return;
+  // Con una versión nueva ya instalada, el cambio de pantalla la carga entera.
+  if (isStale()) return window.location.assign(to);
   window.history.pushState(null, "", to);
   window.dispatchEvent(new PopStateEvent("popstate"));
   window.scrollTo(0, 0);

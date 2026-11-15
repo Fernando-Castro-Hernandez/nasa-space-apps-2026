@@ -121,6 +121,17 @@ La app lee la estación de Viridiana (ESP32-C3 + MAX30102) por Web Bluetooth (`s
 - **Wi-Fi descartado:** una página HTTPS no puede abrir un WebSocket sin cifrar hacia el ESP32, y conectarse a su red dejaría al dispositivo sin internet (voz e IA).
 - **Sin dependencias nuevas:** los tipos de Web Bluetooth que se usan están escritos a mano en `bluetooth.ts`.
 
+### Un solo marco en tablet y un README en inglés · 2026-11-15
+
+Por pedido de Fernando: la app está pensada para tablet y las pantallas no se veían del mismo tamaño.
+
+- **Un marco común desde 768 px** (`--frame-gutter` en `reference.css`): todo el contenido vive en la misma columna centrada de hasta 880 px. Las pestañas (Inicio, Equipo, Tareas, Configuración) muestran dos columnas de 440 px con 64 px entre ellas; las pantallas secundarias (Mi estado, Botiquín, Emergencia, Demo) usan ese mismo ancho. Antes Tareas medía 440 px, Configuración 480 y el resto 880 o más.
+- **Tareas y Configuración pasan a dos columnas en tablet.** Cada columna es su propio contenedor de 440 px, así que las medidas en `cqw` siguen siendo las del diseño de celular. En celular no cambia nada: las columnas no existen (`display: contents`).
+- **La cabecera se alinea con el marco:** la salida y el botón Emergencia quedan en los bordes de la columna, no en las esquinas de la ventana. También en el check-in del día.
+- **La consola de Tierra queda aparte:** es la pantalla del cirujano, a todo el ancho.
+- **Una pestaña abierta durante un despliegue ya no se queda con imágenes rotas** (`src/app/freshness.ts`). El service worker nuevo borra los archivos de la versión anterior y el servidor contesta con la página de la app a un archivo que ya no existe; así se vio rota la imagen de Lunito en Emergencia. No se recarga de golpe, para no cortar un check-in o un caso: el siguiente cambio de pantalla carga la versión nueva.
+- **El README está en inglés,** con capturas en inglés (`docs/readme/`): es lo que lee el jurado de la evaluación global. El resto de la documentación sigue en español. Los iconos del README son los de Lucide que ya usa la app, exportados como SVG.
+
 ## Abierto
 
 - **"Próximamente" de Tareas y Configuración** (estilos de Lunito, notificaciones, recordatorios): no están en el PRD; falta decidir si entran.
