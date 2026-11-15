@@ -9,7 +9,7 @@ import {
 import type { LunitoDashboard } from "@/data/lunitoDashboard";
 import { STATUS_LABEL } from "@/domain/status";
 import { StatusMeaning } from "@/features/lunito/StatusMeaning";
-import lunito from "@/features/day-checkin/assets/lunito-pregunta-clean.png";
+import lunito from "@/features/day-checkin/assets/lunito-pregunta.webp";
 import { Marea } from "./Marea";
 
 export function TodayPage({

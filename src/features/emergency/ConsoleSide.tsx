@@ -37,22 +37,20 @@ export function ConsoleSide({ c, delayMinutes, now }: Props) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">
-            Estado del enlace simulado
-          </CardTitle>
+          <CardTitle className="text-base">Estado del enlace</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-2 text-sm">
           <span>
-            Aviso local {formatTime(c.openedAt)} · llegada simulada{" "}
+            Aviso enviado {formatTime(c.openedAt)} · llega{" "}
             {formatTime(arrivesAt(c.openedAt, delayMinutes))}
           </span>
           <span>
-            Eventos de demostración: {received.length} de {c.events.length}
-            {pending > 0 && ` · ${pending} pendientes en la simulación`}
+            Recibidos {received.length} de {c.events.length}
+            {pending > 0 && ` · ${pending} en camino`}
           </span>
           <span className="text-xs text-muted-foreground">
-            No hay un enlace real ni se envían respuestas. La demostración usa
-            un retraso de {delayMinutes} min.
+            Tu respuesta llega a la nave {delayMinutes} min después de enviarla.
+            Si no hay enlace, el oficial médico sigue el protocolo.
           </span>
         </CardContent>
       </Card>

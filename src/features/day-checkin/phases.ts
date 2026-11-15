@@ -1,6 +1,6 @@
-import saludo from "./assets/lunito-saludo-clean.png";
-import pregunta from "./assets/lunito-pregunta-clean.png";
-import escucha from "./assets/lunito-escucha-clean.png";
+import saludo from "./assets/lunito-saludo.webp";
+import pregunta from "./assets/lunito-pregunta.webp";
+import escucha from "./assets/lunito-escucha.webp";
 
 export type Phase = "saludo" | "pregunta" | "escucha" | "listo";
 export type PhaseEvent = "tick" | "tapMic" | "stop" | "submitText";

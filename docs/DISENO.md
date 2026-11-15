@@ -22,7 +22,7 @@ Inicio tal como lo dibujan las PNG ([secuencia de inicio](diseno/referencias/04-
 - Una sola gráfica grande con pestañas por métrica y una sola etiqueta de valor: el último registro o el punto señalado.
 - Sin la fuente exacta ni originales limpios del personaje: se usa Nunito variable como aproximación y las tres poses se recrearon en PNG con autorización.
 - El inicio del día (`/buenos-dias`) solo antecede a `/referencia`, no a Órbita.
-- Sin backend todavía: datos de demostración centralizados. Emergencia guarda el caso localmente y no confirma envíos reales.
+- Sin backend todavía: datos de demostración centralizados.
 
 ## Referencias finales (modelo exacto del frontend)
 

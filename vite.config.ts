@@ -13,7 +13,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      workbox: { globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"] },
+      workbox: { globPatterns: ["**/*.{js,css,html,png,webp,ico,svg,woff2}"] },
       manifest: {
         name: "Nóstos — salud de la tripulación",
         short_name: "Nóstos",
