@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { motionFor } from "@/features/lunito/motion";
+import { calmMotion, motionFor } from "@/features/lunito/motion";
 import type { Baseline, Reading } from "@/domain/vitals";
 
 const base: Baseline = {
@@ -41,5 +41,14 @@ describe("motionFor", () => {
     expect(still.idle).toBe(0);
     expect(live.idle).toBe(1);
     expect(still.gillGlow).toBe(live.gillGlow);
+  });
+
+  test("sin lectura respira tranquilo y no inventa un pulso", () => {
+    const calm = calmMotion();
+    expect(calm.beatAmplitude).toBe(0);
+    expect(calm.breathDepth).toBeGreaterThan(0);
+    expect(calm.idle).toBe(1);
+    expect(calmMotion(true).breathDepth).toBe(0);
+    expect(calmMotion(true).idle).toBe(0);
   });
 });

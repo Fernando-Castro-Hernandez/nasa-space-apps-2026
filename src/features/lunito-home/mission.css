@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 11cqw;
+  min-height: max(48px, 11cqw);
   padding: 1cqw 2cqw;
 }
 .mission-toggle h2 {
@@ -46,8 +46,10 @@
 }
 .companion-panel {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 2cqw;
+  justify-content: space-between;
+  gap: 2cqw 3cqw;
   background: linear-gradient(
     110deg,
     var(--reference-lavender-100),
@@ -57,42 +59,54 @@
 }
 .mission-eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.5cqw;
-  font-size: 2.8cqw;
+  letter-spacing: 0.08em;
+  font-size: max(15px, 2.8cqw);
   font-weight: 800;
   line-height: 1.4;
 }
 .companion-panel h3 {
-  font-size: 4.65cqw;
+  font-size: max(17px, 4.65cqw);
   font-weight: 850;
-  letter-spacing: -0.18cqw;
+  letter-spacing: -0.01em;
   line-height: 1.3;
-  white-space: nowrap;
 }
 .companion-panel p:not(.mission-eyebrow) {
-  font-size: 3.9cqw;
-  white-space: nowrap;
+  font-size: max(15px, 3.9cqw);
 }
+/* "Send encouragement" (EncourageButton): it confirms itself once sent. */
 .encouragement {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1.1cqw;
+  gap: 1.6cqw;
   color: var(--reference-action);
   background: var(--reference-surface);
   border-radius: 99px;
-  min-height: 8.9cqw;
-  padding: 0 2.7cqw;
-  font-size: 3cqw;
+  min-height: 48px;
+  padding: 0 4cqw;
+  font-size: max(15px, 3.6cqw);
   font-weight: 850;
-  line-height: 1;
-  white-space: nowrap;
+  line-height: 1.15;
+  text-align: left;
   box-shadow: 0 0.8cqw 1cqw var(--reference-shadow-violet);
+  transition:
+    transform 120ms ease-out,
+    background-color 200ms ease-out;
+}
+.encouragement:active:not(:disabled) {
+  transform: scale(0.97);
 }
 .encouragement svg {
-  width: 4.4cqw;
-  height: 4.4cqw;
-  stroke-width: 2;
+  flex-shrink: 0;
+  width: max(18px, 4.4cqw);
+  height: max(18px, 4.4cqw);
+  stroke-width: 2.2;
+}
+.reference-app .encouragement[data-sent] {
+  cursor: default;
+  color: var(--reference-ok-ink);
+  background: var(--reference-aqua-50);
+  box-shadow: none;
 }
 .autonomy-panel {
   background: linear-gradient(
@@ -105,13 +119,13 @@
   min-height: 26.3cqw;
 }
 .autonomy-panel p:not(.mission-eyebrow) {
-  font-size: 3.75cqw;
+  font-size: max(15px, 3.75cqw);
 }
 .autonomy-target {
   margin-top: 2.3cqw;
 }
 .autonomy-target strong {
-  font-size: 4.5cqw;
+  font-size: max(16px, 4.5cqw);
   font-weight: 850;
 }
 .autonomy-gauge {
@@ -142,14 +156,14 @@
   padding-bottom: 3cqw;
 }
 .ridge-panel h3 {
-  font-size: 4.65cqw;
+  font-size: max(17px, 4.65cqw);
   font-weight: 850;
   line-height: 1.3;
   letter-spacing: -0.14cqw;
 }
 .ridge-panel > p {
-  font-size: 3.7cqw;
-  color: var(--reference-ink-soft);
+  font-size: max(15px, 3.7cqw);
+  color: var(--reference-ink-muted);
 }
 .ridge-panel ul {
   margin-top: 2cqw;
@@ -158,9 +172,9 @@
   display: flex;
   align-items: center;
   gap: 3cqw;
-  min-height: 7.8cqw;
+  min-height: max(36px, 7.8cqw);
   border-bottom: 1px solid var(--reference-line-neutral);
-  font-size: 3.9cqw;
+  font-size: max(15px, 3.9cqw);
 }
 .ridge-panel li:last-child {
   border: 0;
@@ -180,7 +194,7 @@
   margin-left: auto;
   border-radius: 99px;
   padding: 0.2cqw 2.3cqw;
-  font-size: 3.5cqw;
+  font-size: max(15px, 3.5cqw);
   background: var(--reference-aqua-200);
   color: var(--reference-ok-ink);
   font-weight: 850;
@@ -194,9 +208,8 @@
   background: var(--reference-alert-bg);
   color: var(--reference-alert-ink);
 }
-.demo-disclosure {
-  padding: 1cqw 4cqw;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--reference-ink-soft);
+@media (prefers-reduced-motion: reduce) {
+  .encouragement {
+    transition: none;
+  }
 }

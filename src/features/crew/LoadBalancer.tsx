@@ -1,63 +1,82 @@
 // Propuesta del balanceador para el comandante (HU-27): un toque para aprobar
-// o rechazar. Muestra solo el peligro, nunca datos de salud.
+// o rechazar, y se puede deshacer. Muestra solo el peligro, nunca datos de
+// salud.
 // ponytail: la decisión se registra en esta sesión de la pantalla; la
 // persistencia llegará con HU-29 (D1).
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Check, Undo2, X } from "lucide-react";
 import { CREW, crewMember } from "@/data/crew";
-import { AMBER_HAZARD, proposeSwap, TASKS, type SwapHazard } from "./swap";
+import { STATUS_LABEL } from "@/domain/status";
+import { t } from "@/i18n";
+import { AMBER_HAZARD, proposeSwap, TASKS } from "./swap";
+import "./crew.css";
 
 type Decision = "pendiente" | "aprobado" | "rechazado";
-
-const HAZARD_NAME: Record<SwapHazard, string> = {
-  R: "Radiación",
-  I: "Aislamiento",
-  G: "Gravedad",
-};
 
 export function LoadBalancer() {
   const [decision, setDecision] = useState<Decision>("pendiente");
   const p = proposeSwap(CREW, TASKS, AMBER_HAZARD);
   if (!p) return null;
-  const from = crewMember(p.fromId).name;
+  const name = crewMember(p.fromId).name;
   const to = crewMember(p.toId).name;
+  const task = p.task;
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border bg-muted/50 p-4">
-      <p className="text-sm font-semibold">Balanceador de carga</p>
-      <p className="text-sm">
-        {from} está en ámbar por {HAZARD_NAME[p.hazard]} ({p.hazard}).
-        ¿Intercambiar la {p.task} de {from} con {to}?
+    <section
+      className="crew-card crew-balancer"
+      aria-labelledby="balancer-title"
+    >
+      <h2 id="balancer-title" className="crew-eyebrow">
+        {t("crew.balancer.title")}
+      </h2>
+      <p className="crew-balancer-proposal">
+        {t("crew.balancer.proposal", {
+          name,
+          status: STATUS_LABEL.ambar,
+          hazard: t(`common.hazards.${p.hazard}`),
+          task,
+          to,
+        })}
       </p>
-      {decision === "pendiente" ? (
-        <div className="flex gap-2">
-          <Button className="h-11 px-5" onClick={() => setDecision("aprobado")}>
-            Aprobar
-          </Button>
-          <Button
-            variant="outline"
-            className="h-11 px-5"
-            onClick={() => setDecision("rechazado")}
-          >
-            Rechazar
-          </Button>
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-center gap-3" aria-live="polite">
-          <span className="text-sm font-semibold">
-            {decision === "aprobado"
-              ? `Aprobado: ${to} hará la ${p.task}.`
-              : `Rechazado: ${from} mantiene la ${p.task}.`}
-          </span>
-          <Button
-            variant="ghost"
-            className="h-11 px-3"
-            onClick={() => setDecision("pendiente")}
-          >
-            Deshacer
-          </Button>
-        </div>
-      )}
-    </div>
+      {/* Región viva fija: al decidir o deshacer, se lee el cambio. */}
+      <div aria-live="polite">
+        {decision === "pendiente" ? (
+          <div className="crew-actions">
+            <button
+              type="button"
+              className="crew-button crew-button-solid"
+              onClick={() => setDecision("aprobado")}
+            >
+              <Check aria-hidden="true" />
+              {t("crew.balancer.approve")}
+            </button>
+            <button
+              type="button"
+              className="crew-button"
+              onClick={() => setDecision("rechazado")}
+            >
+              <X aria-hidden="true" />
+              {t("crew.balancer.reject")}
+            </button>
+          </div>
+        ) : (
+          <div className="crew-decision">
+            <p>
+              {decision === "aprobado"
+                ? t("crew.balancer.approved", { to, task })
+                : t("crew.balancer.rejected", { name, task })}
+            </p>
+            <button
+              type="button"
+              className="crew-button"
+              onClick={() => setDecision("pendiente")}
+            >
+              <Undo2 aria-hidden="true" />
+              {t("crew.balancer.undo")}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

@@ -1,0 +1,619 @@
+/* Botiquín con el estilo Marea, dentro de MareaPage. Medidas en px: la
+   pantalla se usa flotando, así que todo lo tocable mide 48 px o más y el
+   texto de lectura 15 px o más. */
+.medicine-page {
+  padding: 0 max(20px, calc(50% - 440px)) 32px;
+  color: var(--reference-ink-strong);
+}
+.medicine-page [data-slot="tabs"] {
+  gap: 16px;
+}
+
+/* Síntomas · Inventario: control segmentado como el de Semana · Mes. */
+.medicine-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  padding: 0;
+  border: 1px solid var(--reference-line);
+  border-radius: 99px;
+  background: var(--reference-lavender-50);
+}
+.medicine-tab {
+  height: auto;
+  min-height: 48px;
+  padding-inline: 12px;
+  border: 0;
+  border-radius: 99px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--reference-ink);
+  white-space: normal;
+}
+/* La pestaña elegida: píldora blanca con texto violeta (6:1 o más). */
+.medicine-tab[data-active] {
+  color: var(--reference-action);
+  font-weight: 850;
+  background: var(--reference-surface);
+  box-shadow:
+    inset 0 0 0 1.5px var(--reference-violet-soft),
+    0 2px 6px var(--reference-shadow);
+}
+.medicine-tab::after {
+  display: none;
+}
+
+.medicine-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--reference-surface);
+  box-shadow: 0 6px 16px var(--reference-shadow);
+  font-size: 16px;
+}
+.medicine-card h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.medicine-card p {
+  margin: 0;
+}
+.medicine-card .medicine-disclaimer {
+  margin-top: -8px;
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+
+/* Buscador y cuadrícula de síntomas. */
+.medicine-search {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.medicine-search-field {
+  position: relative;
+}
+.medicine-search-field > svg {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  translate: 0 -50%;
+  width: 20px;
+  height: 20px;
+  color: var(--reference-ink-muted);
+  pointer-events: none;
+}
+.medicine-search-field input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px 0 48px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 99px;
+  background: var(--reference-paper);
+  font: inherit;
+  font-size: 16px;
+  color: var(--reference-ink-strong);
+}
+/* Sin la "x" nativa de 16 px: borrar la búsqueda es un botón de 48 px. */
+.medicine-search-field input::-webkit-search-cancel-button {
+  appearance: none;
+}
+.medicine-search-field:has(.medicine-search-clear) input {
+  padding-right: 56px;
+}
+.medicine-search-clear {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  translate: 0 -50%;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--reference-ink);
+}
+.medicine-search-clear svg {
+  width: 20px;
+  height: 20px;
+}
+.medicine-search-field input::placeholder {
+  color: var(--reference-ink-muted);
+}
+.medicine-search-field input:focus-visible {
+  border-color: var(--reference-action);
+  outline: 2px solid var(--reference-action);
+  outline-offset: 2px;
+}
+.medicine-symptoms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.medicine-symptoms li[data-guided] {
+  grid-column: 1 / -1;
+}
+.medicine-symptoms button {
+  width: 100%;
+  height: 100%;
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 20px;
+  background: var(--reference-surface);
+  color: var(--reference-ink-strong);
+  text-align: left;
+  transition:
+    transform 120ms ease-out,
+    background-color 150ms ease-out;
+}
+.medicine-symptom-icon {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  color: var(--reference-action);
+}
+.medicine-symptom-text {
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+.medicine-symptom-text strong {
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+.medicine-symptom-text small {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--reference-ink-muted);
+}
+/* El único síntoma con protocolo va primero y destacado. */
+.medicine-symptoms li[data-guided] button {
+  min-height: 84px;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  border-color: transparent;
+  background: linear-gradient(
+    120deg,
+    var(--reference-lavender-100),
+    var(--reference-lavender-200)
+  );
+}
+.medicine-symptoms li[data-guided] .medicine-symptom-icon {
+  width: 48px;
+  height: 48px;
+  padding: 10px;
+  border-radius: 50%;
+  background: var(--reference-surface);
+}
+.medicine-symptoms li[data-guided] small {
+  color: var(--reference-action);
+}
+.medicine-symptom-go {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  color: var(--reference-action);
+}
+
+/* Botones del Botiquín. */
+.medicine-primary,
+.medicine-secondary,
+.medicine-urgent {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 20px;
+  border-radius: 99px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 120ms ease-out;
+}
+.medicine-primary svg,
+.medicine-secondary svg,
+.medicine-urgent svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.medicine-primary {
+  background: var(--reference-action);
+  color: var(--reference-surface);
+}
+.medicine-primary:disabled {
+  background: var(--reference-lavender-100);
+  color: var(--reference-ink);
+}
+.medicine-secondary {
+  border: 1.5px solid var(--reference-line-strong);
+  background: var(--reference-surface);
+  color: var(--reference-action);
+}
+.medicine-urgent {
+  border: 1.5px solid var(--reference-emergency);
+  background: var(--reference-surface);
+  color: var(--reference-emergency);
+}
+.medicine-exits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.medicine-pending,
+.medicine-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 16px;
+}
+
+/* Asistente: cuánto falta, preguntas y respuestas grandes. */
+.medicine-assistant {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.medicine-steps p {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--reference-ink-strong);
+}
+.medicine-steps ol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.medicine-steps li {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  transition: background-color 200ms ease-out;
+}
+.medicine-steps li[data-state="done"] {
+  background: var(--reference-violet-soft);
+}
+.medicine-steps li[data-state="now"] {
+  background: var(--reference-action);
+}
+.medicine-lead {
+  font-size: 16px;
+}
+.medicine-question {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 18px;
+  background: var(--reference-surface);
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+.medicine-question[data-answered="true"] {
+  border-color: var(--reference-lavender-200);
+  background: var(--reference-lavender-50);
+}
+.medicine-question > p {
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 650;
+  color: var(--reference-ink-strong);
+}
+.medicine-answers {
+  display: flex;
+  gap: 10px;
+}
+.medicine-answer {
+  flex: 1;
+  min-height: 48px;
+  border: 1.5px solid var(--reference-line-strong);
+  border-radius: 14px;
+  background: var(--reference-surface);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--reference-ink-strong);
+  transition:
+    transform 120ms ease-out,
+    background-color 150ms ease-out;
+}
+.medicine-answer[aria-pressed="true"] {
+  border-color: var(--reference-action);
+  background: var(--reference-action);
+  color: var(--reference-surface);
+}
+/* Siguiente queda a la vista mientras se baja por las preguntas. En celular,
+   cuánto falta va en una línea sobre Siguiente; desde 640 px, en la misma. */
+.medicine-nav {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    ". count count"
+    "back . next";
+  align-items: center;
+  gap: 4px 12px;
+  margin: 4px -20px -20px;
+  padding: 10px 20px 16px;
+  border-radius: 0 0 24px 24px;
+  background: var(--reference-surface);
+  box-shadow: 0 -8px 12px -10px var(--reference-shadow);
+}
+.medicine-back {
+  grid-area: back;
+  justify-self: start;
+}
+.medicine-next {
+  grid-area: next;
+  justify-self: end;
+}
+.medicine-card .medicine-count {
+  grid-area: count;
+  justify-self: end;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--reference-ink-muted);
+}
+.medicine-count:empty {
+  display: none;
+}
+
+/* Resultado del asistente: palabra, ícono y color del nivel. */
+.medicine-result {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.medicine-verdict {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid var(--reference-ok-ink);
+  border-radius: 20px;
+  background: var(--reference-aqua-50);
+}
+.medicine-verdict[data-level="ambar"] {
+  border-color: var(--reference-warn-ink);
+  background: var(--reference-warn-bg);
+}
+.medicine-verdict[data-level="rojo"] {
+  border-color: var(--reference-alert-ink);
+  background: var(--reference-alert-bg);
+}
+.medicine-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--reference-ok-ink);
+}
+.medicine-level svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 3;
+}
+[data-level="ambar"] > .medicine-level {
+  color: var(--reference-warn-ink);
+}
+[data-level="rojo"] > .medicine-level {
+  color: var(--reference-alert-ink);
+}
+.medicine-verdict-title {
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.medicine-verdict .medicine-urgent {
+  margin-top: 4px;
+}
+.medicine-context {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--reference-lavender-50);
+}
+.medicine-selfcare {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.medicine-selfcare h3,
+.medicine-selfcare h4 {
+  margin: 0;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.medicine-selfcare h3 {
+  font-size: 18px;
+}
+.medicine-selfcare h4 {
+  font-size: 17px;
+}
+.medicine-drug {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 18px;
+}
+.medicine-muted {
+  color: var(--reference-ink-muted);
+}
+.medicine-source {
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+.medicine-pending-tag {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--reference-line);
+  border-radius: 99px;
+  background: var(--reference-lavender-50);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--reference-ink-muted);
+  white-space: nowrap;
+}
+
+/* Inventario: barra de stock y avisos con palabra. */
+.medicine-inventory {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.medicine-inventory li {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 18px;
+}
+.medicine-item-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.medicine-item-head strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+.medicine-item-head span {
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+.medicine-item-head b {
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.medicine-stock {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  overflow: hidden;
+}
+.medicine-stock span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--reference-ok);
+}
+.medicine-inventory li[data-level="warn"] .medicine-stock span {
+  background: var(--reference-warn-ink);
+}
+.medicine-inventory li[data-level="alert"] .medicine-stock span {
+  background: var(--reference-alert-ink);
+}
+.medicine-item-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+.medicine-alert {
+  padding: 1px 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 99px;
+  font-weight: 800;
+}
+.medicine-alert[data-level="warn"] {
+  color: var(--reference-warn-ink);
+  background: var(--reference-warn-bg);
+}
+.medicine-alert[data-level="alert"] {
+  color: var(--reference-alert-ink);
+  background: var(--reference-alert-bg);
+}
+
+/* Lo tocable responde al toque. */
+.medicine-symptoms button:active,
+.medicine-answer:active,
+.medicine-primary:not(:disabled):active,
+.medicine-secondary:active,
+.medicine-urgent:active {
+  transform: scale(0.97);
+}
+.medicine-symptoms button:active {
+  background-color: var(--reference-lavender-50);
+}
+
+@media (min-width: 640px) {
+  .medicine-question {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .medicine-answers {
+    flex: none;
+    width: 232px;
+  }
+  .medicine-nav {
+    grid-template-areas: "back count next";
+  }
+}
+@media (min-width: 768px) {
+  .medicine-card {
+    padding: 28px;
+  }
+  .medicine-nav {
+    margin: 4px -28px -28px;
+    padding: 12px 28px 28px;
+  }
+  .medicine-symptoms {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .medicine-inventory {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .medicine-page * {
+    transition: none !important;
+  }
+  .medicine-page :active {
+    transform: none !important;
+  }
+}

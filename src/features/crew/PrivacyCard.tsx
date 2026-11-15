@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { t } from "@/i18n";
 import { isShared, setShared, useShared } from "./privacy";
 
 export function PrivacyCard({ me }: { me: string }) {
@@ -14,20 +15,18 @@ export function PrivacyCard({ me }: { me: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Tu privacidad</CardTitle>
-        <CardDescription>
-          Solo se comparte tu estado general, sin cifras ni motivos.
-        </CardDescription>
+        <CardTitle className="text-lg">{t("crew.privacy.title")}</CardTitle>
+        <CardDescription>{t("crew.privacy.description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <label className="flex min-h-11 items-center gap-3 text-sm">
+        <label className="flex min-h-12 cursor-pointer items-center gap-3 text-base">
           <input
             type="checkbox"
-            className="size-5 accent-primary"
+            className="size-6 shrink-0 accent-primary"
             checked={isShared(shared, me)}
             onChange={(e) => setShared(me, e.target.checked)}
           />
-          Compartir mi estado con la tripulación
+          {t("crew.privacy.share")}
         </label>
       </CardContent>
     </Card>

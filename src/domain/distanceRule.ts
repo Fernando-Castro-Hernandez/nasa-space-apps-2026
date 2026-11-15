@@ -4,6 +4,7 @@
 // controla con sus sistemas y queda en su propia pantalla.
 import { finding, type Finding } from "@/domain/finding";
 import { SOURCES } from "@/domain/sources";
+import { formatNumber, t } from "@/i18n";
 
 export type EarthLink = {
   /** Retraso de comunicación en un sentido, en minutos. */
@@ -23,7 +24,7 @@ export function distanceRule(link: EarthLink): Finding {
       id: "distance-nolink",
       hazard: "D",
       status: "ambar",
-      reason: "sin enlace con Tierra: sigue el protocolo a bordo",
+      reason: t("domain.reasons.noLink"),
       source: SOURCES.ntrsNoComm,
     });
   }
@@ -32,7 +33,7 @@ export function distanceRule(link: EarthLink): Finding {
       id: "distance-waiting",
       hazard: "D",
       status: "ambar",
-      reason: "esperando respuesta de Tierra",
+      reason: t("domain.reasons.awaitingGround"),
       source: SOURCES.nasaDelay,
     });
   }
@@ -40,7 +41,9 @@ export function distanceRule(link: EarthLink): Finding {
     id: "distance-ok",
     hazard: "D",
     status: "verde",
-    reason: `Tierra responde en ~${roundTripMinutes(link.delayMinutes)} min`,
+    reason: t("domain.reasons.groundResponds", {
+      minutes: formatNumber(roundTripMinutes(link.delayMinutes)),
+    }),
     source: SOURCES.nasaDelay,
   };
 }

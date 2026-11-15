@@ -6,12 +6,12 @@ Guía para preparar en Blender el modelo de Lunito para que pueda **hablar, expr
 
 ## 1. Qué hay hoy
 
-| Pieza               | Dónde                                    | Estado                                                                                                                                                                                                                      |
-| ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Modelo en la app    | `public/lunito.glb`                      | Hecho desde el modelo de Meshy: 14 partes con nombre (las 10 originales, `mouth`, `tail`, `arm_L` y `arm_R`), unos 46k triángulos, 1.4 MB, 2 texturas JPEG. Con las shape keys de §3 y §4, sin animaciones, `metallic = 0`. |
-| Scripts de Blender  | `art/lunito/blender/`                    | Rehacen el modelo desde el GLB original, en orden (`01` a `09`), con `blender -b -P`. `90_preview_grid.py` saca las capturas de cada forma.                                                                                 |
-| Código que lo anima | `src/features/lunito/useLunitoMotion.ts` | Busca cada parte **por nombre** y la mueve con datos reales: la pancita late con el pulso, las branquias brillan con el SpO2, el cuerpo respira con la HRV, los ojos parpadean.                                             |
-| Referencia visual   | `docs/diseno/lunito-hoja.jpg`            | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                                     |
+| Pieza               | Dónde                         | Estado                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Modelo en la app    | `public/lunito.glb`           | Hecho desde el modelo de Meshy: 14 partes con nombre (las 10 originales, `mouth`, `tail`, `arm_L` y `arm_R`), unos 46k triángulos, 1.4 MB, 2 texturas JPEG. Con las shape keys de §3 y §4, sin animaciones, `metallic = 0`.                                                                                                                                  |
+| Scripts de Blender  | `art/lunito/blender/`         | Rehacen el modelo desde el GLB original, en orden (`01` a `09`), con `blender -b -P`. `90_preview_grid.py` saca las capturas de cada forma.                                                                                                                                                                                                                  |
+| Código que lo anima | `src/features/lunito/`        | `LunitoAvatar` es el componente que se coloca en las pantallas. Mueve cada parte **por nombre**: poses y gestos (`poses.ts`, `gestures.ts`, `animator.ts`), datos reales (la pancita late con el pulso y el cuerpo respira con la HRV, `motion.ts`) y la boca, que sigue la voz (`lunitoVoice.ts`, `visemes.ts`). La galería interna `/lunito` muestra todo. |
+| Referencia visual   | `docs/diseno/lunito-hoja.jpg` | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                                                                                                                                                                      |
 
 **No se rehace el modelo.** Se parte de `public/lunito.glb` y se le agregan piezas. El código anima todo; el GLB no lleva animaciones.
 
@@ -152,7 +152,7 @@ Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es t
 - `pnpm dlx @gltf-transform/cli inspect public/lunito.glb`: revisar partes y número de shape keys.
 - `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si alguna parte trae escala propia (origen movido), si hay animaciones o si pesa más de 2 MB.
 - Vista previa con sliders de cada shape key: arrastrar el GLB a https://gltf-viewer.donmccurdy.com/ (se abre en el navegador, no se sube).
-- En la app: `pnpm dev` y abrir Mi Lunito. Debe verse y moverse igual que antes; las partes nuevas todavía no se animan.
+- En la app: `pnpm dev` y abrir Mi Lunito. Debe verse y moverse igual que antes. La boca se mueve cuando Lunito habla ("Escuchar a Lunito") y el parpadeo usa `eyeBlink`; brazos, cola y expresiones todavía no se animan.
 
 ## 8. Qué no hacer
 
@@ -176,7 +176,20 @@ Fernando aprueba los PRs.
 
 Para que el arte se entienda; lo implementa Fernando.
 
-- **Voz:** Lunito habla con una voz sintética genérica; la voz final se elige después.
-- **Boca:** del texto que va a decir se sacan los sonidos (vocales y consonantes, §3) y se reparten a lo largo del audio; el volumen abre más o menos la boca.
-- **Expresión:** sale del semáforo y del momento (saludar, pensar mientras espera), con reglas fijas. **La IA nunca decide la expresión.**
+- **Voz:** Lunito habla con una voz sintética genérica, en inglés o en español según el idioma de la app; la voz final se elige después.
+- **Boca:** del texto que va a decir se sacan los sonidos (§3) y se reparten a lo largo del audio; el volumen abre más o menos la boca. El español se lee como se escribe; para el inglés hay reglas aproximadas (dígrafos, vocales dobles, "e" muda) con las mismas ocho formas.
+- **Poses y gestos:** ocho poses sostenidas (reposo, saludo, pregunta, escucha, pensar, hablar, celebrar y cuidar) y cuatro gestos de una vez (saludar, asentir, festejar y reír), con transición suave entre ellos. Participan brazos, branquias, ojos, boca y cuerpo.
+- **Expresión:** sale del semáforo y del momento (saludar, pensar mientras espera), con reglas fijas. **La IA nunca decide la expresión.** Nunca triste ni enojado: en Precaución o Atención, Lunito cuida (tranquilo y atento), y no celebra un resultado en Atención.
+- **Pancita:** toma el matiz del color del estado y conserva la luz de su textura.
 - **Emergencia:** sin gestos ni expresiones; Lunito queda como baliza calma ([SISTEMA.md](SISTEMA.md) §1).
+
+## 11. Límites del modelo que encontró la animación
+
+Sirven para decidir si vale la pena otra pasada de arte. Hoy la animación se mantiene dentro de ellos (`src/features/lunito/rig.ts`).
+
+- **Brazos:** solo se ven bien si al subir también se adelantan y se arriman al cuerpo; abrirlos hacia afuera deja ver el corte. Por eso "celebrar" son los puños a la altura de las mejillas, no los brazos arriba. De cerca se nota el contorno del parche pintado cuando el brazo se aparta.
+- **Branquias:** cada malla trae trozos de sus vecinas y la cabeza se quedó con sus raíces. Girarlas, aunque sea muy poco, abre grietas: solo se recogen un poco desde la cabeza.
+- **Cola:** se anima, pero de frente queda detrás del cuerpo y no se ve.
+- **Ojos:** moverlos deja ver el aro del hueco, así que la mirada casi no se desplaza. El párpado trae las normales de cuando está plegado; el código las corrige en memoria.
+- **Cabeza:** no hay cuello. "Ladear la cabeza" inclina el cuerpo entero desde la pancita y los pies se corren un poco.
+- **Pancita:** el borde superior del color se ve dentado porque así es la textura.

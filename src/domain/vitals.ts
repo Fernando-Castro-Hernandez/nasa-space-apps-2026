@@ -1,6 +1,7 @@
 // Reglas que convierten una lectura en el estado de cada indicador y en los
 // parámetros de animación de Lunito. Es una función pura: aquí viven las
 // reglas, la IA nunca decide esto. Fuentes en docs/FUENTES.md.
+import { t } from "@/i18n";
 
 export type Status = "verde" | "ambar" | "rojo";
 
@@ -59,28 +60,28 @@ function assessHeart(r: Reading, b: Baseline): Indicator {
     r.bpm <= RULES.bpmRedLow && r.bpm < b.bpm.mean - RULES.sdFactor * b.bpm.sd;
   if (r.bpm >= RULES.bpmRedHigh || lowAndBelowBase) {
     return r.confirmed
-      ? { status: "rojo", reason: "fuera de rango, avisa al oficial médico" }
-      : { status: "ambar", reason: "lectura dudosa, repite la medición" };
+      ? { status: "rojo", reason: t("domain.reasons.outOfRangeCmo") }
+      : { status: "ambar", reason: t("domain.reasons.doubtful") };
   }
   if (r.bpm > b.bpm.mean + RULES.sdFactor * b.bpm.sd)
-    return { status: "ambar", reason: "sobre tu normal" };
-  return { status: "verde", reason: "en tu normal" };
+    return { status: "ambar", reason: t("domain.reasons.aboveUsual") };
+  return { status: "verde", reason: t("domain.reasons.usual") };
 }
 
 function assessOxygen(r: Reading, b: Baseline): Indicator {
   if (r.spo2 <= RULES.spo2Red) {
     return r.confirmed
-      ? { status: "rojo", reason: "baja, avisa al oficial médico" }
-      : { status: "ambar", reason: "lectura dudosa, repite la medición" };
+      ? { status: "rojo", reason: t("domain.reasons.lowCmo") }
+      : { status: "ambar", reason: t("domain.reasons.doubtful") };
   }
   if (r.spo2 < RULES.spo2Yellow || b.spo2.mean - r.spo2 >= RULES.spo2DropYellow)
-    return { status: "ambar", reason: "bajo tu normal" };
-  return { status: "verde", reason: "en tu normal" };
+    return { status: "ambar", reason: t("domain.reasons.belowUsual") };
+  return { status: "verde", reason: t("domain.reasons.usual") };
 }
 
 function assessRecovery(r: Reading, b: Baseline): Indicator {
   // Sin rojo: FUENTES.md lo marca como pendiente de validar.
   if (r.hrv < b.hrv.mean - RULES.sdFactor * b.hrv.sd)
-    return { status: "ambar", reason: "bajo tu normal, descansa" };
-  return { status: "verde", reason: "en tu normal" };
+    return { status: "ambar", reason: t("domain.reasons.belowUsualRest") };
+  return { status: "verde", reason: t("domain.reasons.usual") };
 }

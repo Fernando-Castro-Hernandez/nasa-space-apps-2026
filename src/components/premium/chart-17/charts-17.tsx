@@ -7,6 +7,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { t } from "@/i18n";
 
 export type WeekPoint = { week: string; value: number; baseline: number };
 
@@ -15,19 +16,19 @@ type Props = { label: string; unit: string; data: WeekPoint[] };
 export function MonthBarsChart({ label, unit, data }: Props) {
   const config = {
     value: { label: `${label} (${unit})`, color: "var(--primary)" },
-    baseline: { label: "Tu normal", color: "var(--chart-5)" },
+    baseline: { label: t("shell.charts.baseline"), color: "var(--chart-5)" },
   } satisfies ChartConfig;
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px] text-muted-foreground">
         <span className="flex items-center gap-2">
           <span className="size-2.5 rounded-full bg-primary" />
-          Tu promedio
+          {t("shell.charts.average")}
         </span>
         <span className="flex items-center gap-2">
           <span className="size-2.5 rounded-full bg-chart-5" />
-          Tu normal
+          {t("shell.charts.baseline")}
         </span>
       </div>
       <ChartContainer config={config} className="h-56 w-full">

@@ -1,6 +1,9 @@
 // Fuentes de las reglas, tal como están citadas en docs/FUENTES.md. Si una
 // regla no tiene fuente ahí, usa null (pendiente de validar), nunca una nueva.
+// Títulos, autores y siglas van en su idioma original; solo se traducen las
+// etiquetas descriptivas (con getter, para que sigan el idioma activo).
 import type { Source } from "@/domain/finding";
+import { t } from "@/i18n";
 
 export const SOURCES = {
   plews2012: {
@@ -16,7 +19,9 @@ export const SOURCES = {
     url: "https://www.rcp.ac.uk/media/alxev00t/news2-chart-1_the-news-scoring-system_0_0.pdf",
   },
   news2Response: {
-    name: "Respuesta clínica NEWS2",
+    get name() {
+      return t("domain.sources.news2Response");
+    },
     url: "https://www.rcp.ac.uk/media/mrllczrj/news2-chart-4_clinical-response-to-news-trigger-thresholds_0.pdf",
   },
   bts2017: {
@@ -36,7 +41,9 @@ export const SOURCES = {
     url: "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf",
   },
   ochmoRadiation: {
-    name: "OCHMO, radiación",
+    get name() {
+      return t("domain.sources.ochmoRadiation");
+    },
     url: "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf",
   },
   ochmoExercise: {
@@ -48,7 +55,9 @@ export const SOURCES = {
     url: "https://ntrs.nasa.gov/citations/20100016333",
   },
   nasaDelay: {
-    name: "NASA, comunicaciones espaciales",
+    get name() {
+      return t("domain.sources.nasaDelay");
+    },
     url: "https://www.nasa.gov/centers-and-facilities/goddard/space-communications-7-things-you-need-to-know/",
   },
 } satisfies Record<string, Source>;

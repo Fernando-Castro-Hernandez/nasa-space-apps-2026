@@ -5,6 +5,7 @@ import { type PerspectiveCamera, Vector3 } from "three";
 import { LunitoGlb } from "@/features/lunito/LunitoGlb";
 import { LunitoPlaceholder } from "@/features/lunito/LunitoPlaceholder";
 import type { Motion } from "@/features/lunito/motion";
+import { hasWebGL } from "@/features/lunito/webgl";
 import type { Status } from "@/domain/vitals";
 
 export type Anchor = [number, number, number];
@@ -30,6 +31,9 @@ export function LunitoScene({
   onProject,
   halfWidthFor,
 }: Props) {
+  // Sin WebGL, three.js no puede crear el lienzo: mejor sin Lunito que sin
+  // pantalla. (LunitoAvatar, en cambio, deja su imagen.)
+  if (!hasWebGL()) return null;
   const model = <LunitoPlaceholder motion={motion} status={status} />;
   return (
     <Canvas

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { STATUS_TOKEN } from "@/domain/status";
 import {
-  CO2_MODULE,
+  co2Module,
   useCo2State,
   type Co2State,
 } from "@/features/demo/demoStore";
@@ -32,16 +32,17 @@ const RIDGE: Hazard[] = [
   { letter: "E", name: "Ambiente", status: "verde", word: "Aire normal" },
 ];
 
-/** El evento de CO2 de la demo (HU-28) cambia la luz E. */
-const CO2_E: Record<Exclude<Co2State, "normal">, Partial<Hazard>> = {
-  alto: { status: "ambar", word: `CO2 alto: ${CO2_MODULE}` },
-  resuelto: { status: "verde", word: "CO2 resuelto a bordo" },
-};
+/** El evento de CO2 de la demo (HU-28) cambia la luz E. El módulo se nombra
+ *  al momento, en el idioma activo. */
+const co2E = (state: Exclude<Co2State, "normal">): Partial<Hazard> =>
+  state === "alto"
+    ? { status: "ambar", word: `CO2 alto: ${co2Module()}` }
+    : { status: "verde", word: "CO2 resuelto a bordo" };
 
 const withCo2 = (hazards: Hazard[], state: Co2State): Hazard[] =>
   state === "normal"
     ? hazards
-    : hazards.map((h) => (h.letter === "E" ? { ...h, ...CO2_E[state] } : h));
+    : hazards.map((h) => (h.letter === "E" ? { ...h, ...co2E(state) } : h));
 
 export function CommanderPanel() {
   const hazards = withCo2(RIDGE, useCo2State());

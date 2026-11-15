@@ -1,10 +1,6 @@
-// Mapa de pantallas (SISTEMA.md §9) y la navegación lateral que sale de él.
-// Cada pantalla vive en la carpeta de su responsable (REPARTO.md).
+// Mapa de pantallas (SISTEMA.md §9). Cada pantalla vive en la carpeta de su
+// responsable (REPARTO.md); su lugar en la navegación está en pages.ts.
 import type { ComponentType } from "react";
-import { ListChecks, Orbit, Settings, Users } from "lucide-react";
-import type { NavItem } from "@/components/premium/dashboard-shell-03/app-sidebar";
-import { CREW, ME, MISSION } from "@/data/crew";
-import { CheckInScreen } from "@/features/check-in/CheckInScreen";
 import { EmergencyScreen } from "@/features/emergency/EmergencyScreen";
 import { GroundConsoleScreen } from "@/features/emergency/GroundConsoleScreen";
 import { LunitoHomeScreen } from "@/features/lunito-home/LunitoHomeScreen";
@@ -14,58 +10,51 @@ import { TeamScreen } from "@/features/lunito-home/team/TeamScreen";
 import { MedicineScreen } from "@/features/medicine/MedicineScreen";
 import { StatusScreen } from "@/features/status/StatusScreen";
 import { DemoScreen } from "@/features/demo/DemoScreen";
+import { LunitoLabRoute } from "@/features/lunito/lab/LunitoLabRoute";
+import { t, type MessageKey } from "@/i18n";
 
 export type Route = {
   path: string;
-  title: string;
+  /** Se lee al momento, en el idioma activo. */
+  readonly title: string;
   Screen: ComponentType;
-  /** false: pantalla completa sin barra lateral (consola de Tierra). */
+  /**
+   * true: pantalla secundaria dentro de la estructura Marea (`MareaPage`).
+   * false: trae su propia estructura (las cuatro pestañas y Tierra).
+   */
   shell: boolean;
 };
 
-const me = CREW.find((c) => c.id === ME)!;
-export const SUBTITLE = `${me.name} · Día ${MISSION.day} · ${MISSION.phase}`;
+const route = (
+  path: string,
+  titleKey: MessageKey,
+  Screen: ComponentType,
+  shell: boolean,
+): Route => ({
+  path,
+  get title() {
+    return t(titleKey);
+  },
+  Screen,
+  shell,
+});
 
 export const ROUTES: Route[] = [
-  // The four bottom-nav screens bring their own header and nav (DISENO.md).
-  {
-    path: "/ajustes",
-    title: "Configuración",
-    Screen: ReferenceSettingsScreen,
-    shell: false,
-  },
-  {
-    path: "/tareas",
-    title: "Tareas",
-    Screen: ReferenceTasksScreen,
-    shell: false,
-  },
-  { path: "/demo", title: "Panel de la demo", Screen: DemoScreen, shell: true },
-  { path: "/", title: "Inicio", Screen: LunitoHomeScreen, shell: false },
-  { path: "/estado", title: "Mi estado", Screen: StatusScreen, shell: true },
-  { path: "/check-in", title: "Check-in", Screen: CheckInScreen, shell: true },
-  { path: "/tripulacion", title: "Equipo", Screen: TeamScreen, shell: false },
-  { path: "/botiquin", title: "Botiquín", Screen: MedicineScreen, shell: true },
-  {
-    path: "/emergencia",
-    title: "Emergencia a bordo",
-    Screen: EmergencyScreen,
-    shell: true,
-  },
-  {
-    path: "/tierra",
-    title: "Consola del cirujano de vuelo",
-    Screen: GroundConsoleScreen,
-    shell: false,
-  },
+  // Las cuatro pestañas de la barra inferior (DISENO.md).
+  route("/", "shell.titles.home", LunitoHomeScreen, false),
+  route("/tripulacion", "shell.titles.crew", TeamScreen, false),
+  route("/tareas", "shell.titles.tasks", ReferenceTasksScreen, false),
+  route("/ajustes", "shell.titles.settings", ReferenceSettingsScreen, false),
+  // Pantallas secundarias: cuelgan de una pestaña (pages.ts).
+  route("/estado", "shell.titles.status", StatusScreen, true),
+  route("/botiquin", "shell.titles.medKit", MedicineScreen, true),
+  route("/emergencia", "shell.titles.emergency", EmergencyScreen, true),
+  route("/demo", "shell.titles.demo", DemoScreen, true),
+  // Consola de escritorio para Tierra, con su propia estructura.
+  route("/tierra", "shell.titles.ground", GroundConsoleScreen, false),
+  // Galería interna de Lunito 3D: fuera de la navegación (se abre desde /demo).
+  route("/lunito", "lunitoLab.title", LunitoLabRoute, false),
 ];
 
 export const findRoute = (path: string) =>
-  ROUTES.find((r) => r.path === path) ?? ROUTES.find((r) => r.path === "/")!;
-
-export const NAV: NavItem[] = [
-  { title: "Inicio", icon: Orbit, href: "/" },
-  { title: "Equipo", icon: Users, href: "/tripulacion" },
-  { title: "Tareas", icon: ListChecks, href: "/tareas" },
-  { title: "Ajustes", icon: Settings, href: "/ajustes" },
-];
+  ROUTES.find((r) => r.path === path) ?? ROUTES[0];

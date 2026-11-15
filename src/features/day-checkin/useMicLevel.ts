@@ -1,3 +1,6 @@
+// SIN USO: la onda sigue el volumen de la misma sesión de voz que graba
+// (useVoiceInput().level), para no abrir un segundo micrófono. Retirar junto
+// con su prueba y con `rmsLevel` y `simulatedLevel` de waveform.ts.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { rmsLevel, simulatedLevel } from "./waveform";
 

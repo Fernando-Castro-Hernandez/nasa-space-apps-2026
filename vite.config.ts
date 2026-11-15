@@ -13,16 +13,21 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      workbox: { globPatterns: ["**/*.{js,css,html,png,webp,ico,svg,woff2}"] },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,png,webp,ico,svg,woff2}"],
+        // La API la responde el Worker, nunca la copia de la app sin conexión.
+        navigateFallbackDenylist: [/^\/api\//],
+      },
+      // En inglés, el idioma oficial de la app; los colores son el papel Marea.
       manifest: {
-        name: "Nóstos — salud de la tripulación",
+        name: "Nóstos — crew health",
         short_name: "Nóstos",
         description:
-          "Prototipo para el reto de monitoreo de salud de astronautas (NASA Space Apps 2026).",
-        lang: "es",
+          "Each astronaut checks in on their own health and gets guidance on what to do, with Lunito as a companion. A NASA Space Apps 2026 prototype.",
+        lang: "en",
         display: "standalone",
-        theme_color: "#fbf6f2",
-        background_color: "#fbf6f2",
+        theme_color: "#fdf7f3",
+        background_color: "#fdf7f3",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png" },
@@ -36,8 +41,14 @@ export default defineConfig({
       },
     }),
   ],
+  // En desarrollo, la API es el Worker local de `pnpm dev:api`. NOSTOS_API
+  // apunta a otro Worker (por ejemplo, uno de pruebas en otro puerto).
+  server: {
+    proxy: { "/api": process.env.NOSTOS_API ?? "http://127.0.0.1:8787" },
+  },
   test: {
     environment: "jsdom",
-    include: ["src/**/*.test.{ts,tsx}"],
+    include: ["src/**/*.test.{ts,tsx}", "worker/**/*.test.ts"],
+    setupFiles: ["src/test/setup.ts"],
   },
 });

@@ -1,190 +1,152 @@
-import { lazy, Suspense, useState } from "react";
-import { WeekAreaChart } from "@/components/premium/chart-14/charts-14";
-import { MonthBarsChart } from "@/components/premium/chart-17/charts-17";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Callout, type CalloutData } from "@/features/lunito/Callout";
-import { HISTORY, type IndicatorKey } from "@/data/history";
-import type { ScreenPoint } from "@/features/lunito/LunitoScene";
-import { anchorsFor, halfWidthFor, isNarrow } from "./sceneLayout";
-import { motionFor } from "@/features/lunito/motion";
-import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
+// Mi estado (SISTEMA.md §1, "el detalle"): la misma lectura del día que
+// Inicio (useLunitoDashboard, que sigue al panel /demo), indicador por
+// indicador, con su línea base, su peligro RIDGE y los datos de la nave. Se
+// muestra dentro de MareaPage, que pone la cabecera y el título.
+import { ChevronRight, Droplet, Heart, HeartPulse } from "lucide-react";
+import { useState } from "react";
+import { DAY_ACTIONS } from "@/data/actions";
+import { useLunitoDashboard, type MetricKey } from "@/data/lunitoDashboard";
+import { HAZARD_NAME, type Hazard } from "@/domain/finding";
+import { STATUS_LABEL } from "@/domain/status";
+import { metricParts, metricText } from "@/features/lunito/metricFormat";
+import { StatusMark } from "@/features/lunito/StatusMark";
+import { MetricChart } from "@/features/lunito-home/MetricChart";
+import { useDailyActions } from "@/features/medicine/actionStore";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
-import { IndicatorCards, INDICATORS } from "./IndicatorCards";
+import { useTodayVoiceLog } from "@/features/voice/voiceLogStore";
+import { t } from "@/i18n";
+import { initialMetric } from "./initialMetric";
 import { ShipFeedCard } from "./ShipFeedCard";
-import { SideCards } from "./SideCards";
-import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
-import { assessVitals } from "@/domain/vitals";
+import "@/features/lunito-home/data.css";
+import "./status.css";
 
-// three.js pesa 1 MB: se carga aparte para que la app abra rápido.
-const LunitoScene = lazy(() =>
-  import("@/features/lunito/LunitoScene").then((m) => ({
-    default: m.LunitoScene,
-  })),
-);
-
-// Con movimiento reducido, Lunito se queda quieto y el dato sigue en números.
-const prefersReducedMotion = () =>
-  typeof window.matchMedia === "function" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-const TABS: { key: IndicatorKey; label: string }[] = [
-  { key: "bpm", label: "Pulso" },
-  { key: "spo2", label: "Oxígeno" },
-  { key: "hrv", label: "Recuperación" },
-];
+const ICON = { bpm: Heart, hrv: HeartPulse, spo2: Droplet };
+/** Por qué importa cada indicador: el peligro de NASA al que responde. */
+const HAZARD: Record<MetricKey, Hazard> = { hrv: "I", bpm: "G", spo2: "E" };
 
 export function StatusScreen() {
-  const me = useActiveProfile();
-  const [sample, setSample] = useState(0);
-  const [scene, setScene] = useState<{ points: ScreenPoint[]; width: number }>({
-    points: [],
-    width: 0,
-  });
-  const [tab, setTab] = useState<IndicatorKey>("hrv");
-  const { reading } = SAMPLE_READINGS[sample]!;
-  const vitals = assessVitals(reading, SAMPLE_BASELINE);
-  const motion = motionFor(reading, SAMPLE_BASELINE, {
-    mode: "rest",
-    reducedMotion: prefersReducedMotion(),
-  });
-  const history = HISTORY[tab];
+  const data = useLunitoDashboard();
+  const profile = useActiveProfile();
+  const [key, setKey] = useState<MetricKey>(() =>
+    initialMetric(window.location.search),
+  );
+  const [period, setPeriod] = useState<"week" | "month">("week");
+  const metric = data.metrics.find((m) => m.key === key)!;
+  const baseline = data.baseline[key].mean;
 
-  const callouts: CalloutData[] = [
-    {
-      side: "right",
-      label: "Oxígeno",
-      value: String(reading.spo2),
-      unit: "% SpO2",
-      indicator: vitals.oxygen,
-    },
-    {
-      side: "left",
-      label: "Pulso",
-      value: String(reading.bpm),
-      unit: "lpm",
-      indicator: vitals.heart,
-    },
-    {
-      side: "right",
-      label: "Recuperación",
-      value: String(reading.hrv),
-      unit: "ms HRV",
-      indicator: vitals.recovery,
-    },
-  ];
+  // Lo mismo que cuenta Tareas: el check-in del día y las acciones de hoy.
+  const actions = useDailyActions();
+  const checkIn = useTodayVoiceLog(profile) !== null;
+  const tasks = [checkIn, ...DAY_ACTIONS.map((a) => actions.checked(a.id))];
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-12 gap-4 p-4 md:gap-6 md:p-6">
-      <Card className="col-span-12 xl:col-span-7">
-        <CardHeader className="flex flex-row items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-lg">Cómo estás hoy</CardTitle>
-            <CardDescription>Última lectura 07:12 · hace 3 h</CardDescription>
-          </div>
-          <span
-            className="rounded-full border px-3 py-1 text-sm font-semibold"
-            style={{ color: STATUS_TOKEN[vitals.overall] }}
-          >
-            {STATUS_LABEL[vitals.overall]}
+    <div className="status-page">
+      <section className="status-card status-summary">
+        <p className="status-line" aria-live="polite">
+          <StatusMark status={data.status} className="size-9" />
+          <strong>{STATUS_LABEL[data.status]}</strong>
+        </p>
+        {data.reason && <p className="status-reason">{data.reason}</p>}
+        <p className="status-time">
+          {t("status.lastReading", { time: data.reading.time })}
+        </p>
+      </section>
+
+      <div
+        className="status-metrics"
+        role="tablist"
+        aria-label={t("status.indicators")}
+      >
+        {data.metrics.map((item) => {
+          const Icon = ICON[item.key];
+          const [value, unit] = metricParts(item.key, item.value, item.unit);
+          return (
+            <button
+              key={item.key}
+              type="button"
+              role="tab"
+              id={`status-tab-${item.key}`}
+              aria-selected={item.key === key}
+              aria-controls="status-panel"
+              data-status={item.status}
+              className="status-metric"
+              onClick={() => setKey(item.key)}
+            >
+              <span className="status-metric-name">
+                <Icon aria-hidden="true" />
+                {item.label}
+              </span>
+              <strong>
+                {value}
+                <small>{unit}</small>
+              </strong>
+              <span className="status-metric-state">
+                <StatusMark status={item.status} className="size-5" />
+                {STATUS_LABEL[item.status]}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <section
+        id="status-panel"
+        role="tabpanel"
+        aria-labelledby={`status-tab-${key}`}
+        className="status-card status-panel"
+      >
+        <div className="status-panel-head">
+          <h2>{metric.label}</h2>
+          <span className="status-hazard">
+            {t("status.hazard", { hazard: HAZARD_NAME[HAZARD[key]] })}
           </span>
-        </CardHeader>
-        <CardContent>
-          <div className="relative h-[26rem] md:h-[30rem]">
-            <Suspense fallback={null}>
-              <LunitoScene
-                motion={motion}
-                status={vitals.overall}
-                anchorsFor={anchorsFor}
-                halfWidthFor={halfWidthFor}
-                onProject={(points, width) => setScene({ points, width })}
-              />
-            </Suspense>
-            <div className="pointer-events-none absolute inset-0">
-              {callouts.map((c, i) =>
-                scene.points[i] ? (
-                  <Callout
-                    key={c.label}
-                    {...c}
-                    at={scene.points[i]}
-                    compact={isNarrow(scene.width)}
-                  />
-                ) : null,
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        <p className="status-explain">{t(`status.explain.${key}`)}</p>
+        <div className="status-trend-head">
+          <h3>{t("status.trend")}</h3>
+          <fieldset
+            className="period-selector"
+            aria-label={t("home.data.period")}
+          >
+            {(["week", "month"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setPeriod(value)}
+                aria-pressed={period === value}
+              >
+                {t(`home.data.${value}`)}
+              </button>
+            ))}
+          </fieldset>
+        </div>
+        <MetricChart
+          key={`${key}-${period}`}
+          metric={metric}
+          period={period}
+          baseline={baseline}
+        />
+        <p className="status-legend">
+          {t("status.baseline", {
+            value: metricText(key, baseline, metric.unit),
+          })}
+        </p>
+      </section>
 
-      <SideCards sample={sample} onSample={setSample} />
+      <a href="/tareas" className="status-card status-tasks">
+        <span>
+          <strong>{t("status.tasks")}</strong>
+          <span>
+            {t("status.tasksDone", {
+              count: tasks.filter(Boolean).length,
+              total: tasks.length,
+            })}
+          </span>
+        </span>
+        <ChevronRight aria-hidden="true" />
+      </a>
 
-      <IndicatorCards
-        reading={reading}
-        vitals={vitals}
-        selected={tab}
-        onSelect={setTab}
-      />
-
-      <Card className="col-span-12 lg:col-span-7">
-        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-          <div>
-            <CardTitle className="text-lg">Últimos 7 días</CardTitle>
-            <CardDescription>
-              Línea punteada: tu normal antes del vuelo.
-            </CardDescription>
-          </div>
-          <Tabs value={tab} onValueChange={(v) => setTab(v as IndicatorKey)}>
-            <TabsList>
-              {TABS.map((t) => (
-                <TabsTrigger key={t.key} value={t.key}>
-                  {t.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <WeekAreaChart
-            label={history.label}
-            unit={history.unit}
-            data={history.days}
-            baseline={history.baseline}
-          />
-          <p className="text-sm text-muted-foreground">
-            {INDICATORS.find((i) => i.key === tab)!.explain}
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card className="col-span-12 lg:col-span-5">
-        <CardHeader>
-          <CardTitle className="text-lg">Último mes</CardTitle>
-          <CardDescription>
-            Promedio semanal de {history.label.toLowerCase()} frente a tu
-            normal.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <MonthBarsChart
-            label={history.label}
-            unit={history.unit}
-            data={history.weeks}
-          />
-        </CardContent>
-      </Card>
-
-      <ShipFeedCard personId={me} />
-
-      <p className="col-span-12 text-center text-xs text-muted-foreground">
-        Prototipo, no es un diagnóstico. Sensor sin validación médica. Historial
-        simulado.
-      </p>
+      <ShipFeedCard personId={profile} />
     </div>
   );
 }

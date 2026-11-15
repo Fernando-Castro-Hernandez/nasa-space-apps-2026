@@ -1,14 +1,12 @@
 // Cuentas del retraso de comunicación Tierra–nave y formato de horas.
 // El retraso es de un tramo (FUENTES.md §4); ida y vuelta es el doble.
+import { formatDate, t } from "@/i18n";
 
 const MINUTE = 60_000;
 
-export const formatTime = (ms: number) => {
-  const d = new Date(ms);
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  return `${hh}:${mm}`;
-};
+/** Hora de la nave, "14:03": 24 h en los dos idiomas, como en una misión. */
+export const formatTime = (ms: number) =>
+  formatDate(ms, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
 /** Cuándo llega a destino algo enviado en `sentAt`. */
 export const arrivesAt = (sentAt: number, delayMinutes: number) =>
@@ -28,8 +26,8 @@ export function countdown(target: number, now: number) {
 
 /** Estado de un mensaje en el enlace, en palabras. */
 export function linkLabel(sentAt: number, delayMinutes: number, now: number) {
-  const at = arrivesAt(sentAt, delayMinutes);
-  return now >= at
-    ? `llegó ${formatTime(at)}`
-    : `en camino · llega ${formatTime(at)}`;
+  const time = formatTime(arrivesAt(sentAt, delayMinutes));
+  return now >= arrivesAt(sentAt, delayMinutes)
+    ? t("ground.arrival.arrived", { time })
+    : t("ground.arrival.inTransit", { time });
 }

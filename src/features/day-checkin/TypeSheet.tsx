@@ -1,3 +1,5 @@
+// SIN USO: "Escribir respuesta" abre ahora la hoja de la bitácora
+// (voice/VoiceLogSheet), la misma que tras hablar. Retirar.
 import { useEffect, useRef, useState } from "react";
 
 type Props = { onCancel: () => void; onSubmit: (text: string) => void };

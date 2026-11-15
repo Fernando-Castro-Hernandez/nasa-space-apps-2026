@@ -2,7 +2,9 @@
 
 Proyecto del equipo **Nóstos** para el [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/), reto [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/).
 
-El nombre es provisional y el producto aún no está definido. Por ahora el repo es la plantilla sobre la que vamos a construir.
+**Nóstos** es una app web instalable donde cada astronauta tiene a **Lunito**, un ajolote que es la cara de su agente de salud: su pancita es el semáforo de cómo estás hoy, le cuentas por voz cómo amaneciste y te dice qué hacer. Junta lo que dices, lo que mide un sensor y lo que ya registra la nave, y lo ordena según los cinco peligros del espacio de NASA. Está en inglés y en español.
+
+Es un prototipo de hackatón, no un dispositivo médico.
 
 ## Empezar
 
@@ -13,6 +15,14 @@ git clone <url-del-repo>
 cd <carpeta-del-repo>
 pnpm install
 pnpm dev
+```
+
+`pnpm dev` levanta solo la app: sin la API, Lunito usa sus respaldos (voz y dictado del navegador, respuestas fijas). Para probar con la API y la IA de verdad, en otra terminal:
+
+```bash
+pnpm dlx wrangler@4 login   # una sola vez, con la cuenta de Cloudflare del equipo
+pnpm build
+pnpm dev:api
 ```
 
 Antes de abrir un PR:

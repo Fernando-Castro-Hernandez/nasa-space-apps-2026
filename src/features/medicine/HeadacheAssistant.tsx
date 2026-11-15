@@ -1,89 +1,82 @@
 // Asistente paso a paso del protocolo de dolor de cabeza (FUENTES.md §3).
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// Pensado para usarse flotando: respuestas grandes, se ve cuánto falta y los
+// números se eligen con − y +, sin teclado.
+import { useRef, useState } from "react";
+import { NumberStepper } from "@/components/ui/number-stepper";
 import { MISSION } from "@/data/crew";
+import { useCo2State } from "@/features/demo/demoStore";
+import { t } from "@/i18n";
+import {
+  anyRedFlag,
+  draftAnswers,
+  emptyDraft,
+  nextStep,
+  QUESTION_STEPS,
+  RESULT_STEP,
+  stepProgress,
+  type Draft,
+} from "./assistant";
 import {
   assessHeadache,
-  type HeadacheAnswers,
+  cabinContext,
   RED_FLAGS,
-  type SpaceContext,
+  redFlagQuestion,
 } from "./headache";
 import { HeadacheResult } from "./HeadacheResult";
 import { Source, YesNo } from "./parts";
 
-/** Feed de la nave simulado para la demo (SISTEMA.md §11). */
-const CABIN: SpaceContext = {
-  co2Avg7dMmHg: 2.1,
-  co2Avg1hMmHg: 3.2,
-  flightDay: MISSION.day,
-  nauseaOrCongestion: false,
-};
-
-type Draft = Partial<Omit<HeadacheAnswers, "redFlags">> & {
-  redFlags: (boolean | undefined)[];
-};
-const STEPS = ["Descarte", "Historial", "Medicamentos", "Resultado"] as const;
-
 export function HeadacheAssistant({ onExit }: { onExit: () => void }) {
   const [step, setStep] = useState(0);
-  const [d, setD] = useState<Draft>({
-    redFlags: RED_FLAGS.map(() => undefined),
-  });
+  const [d, setD] = useState<Draft>(emptyDraft);
+  const top = useRef<HTMLDivElement>(null);
+  const cabin = cabinContext(useCo2State(), MISSION.day);
   const set = (patch: Partial<Draft>) => setD((p) => ({ ...p, ...patch }));
-  const anyRed = d.redFlags.some((f) => f === true);
+  const red = anyRedFlag(d);
+  const progress = stepProgress(d, step);
+  const onResult = step === RESULT_STEP;
 
-  const done = [
-    d.redFlags.every((f) => f !== undefined),
-    d.fever !== undefined && d.worseningOrOver10Days !== undefined,
-    d.chronicCondition !== undefined &&
-      d.ulcerOrBleeding !== undefined &&
-      d.ate !== undefined,
-  ];
-  const result = assessHeadache(
-    {
-      redFlags: d.redFlags.map(Boolean),
-      analgesicDaysThisMonth: d.analgesicDaysThisMonth ?? 0,
-      fever: d.fever ?? false,
-      worseningOrOver10Days: d.worseningOrOver10Days ?? false,
-      chronicCondition: d.chronicCondition ?? false,
-      ulcerOrBleeding: d.ulcerOrBleeding ?? false,
-      ate: d.ate ?? true,
-      paracetamolTablets24h: d.paracetamolTablets24h ?? 0,
-    },
-    CABIN,
-  );
-  // Un "sí" en el descarte salta directo al resultado rojo.
-  const next = () => setStep(anyRed ? 3 : step + 1);
+  // Cada paso empieza arriba: tras "Siguiente", la primera pregunta queda a
+  // la vista aunque se hubiera bajado para responder. Se desplaza antes de
+  // pintar el paso nuevo, cuando la línea de pasos todavía está en su lugar
+  // (en el resultado ya no se dibuja).
+  const goTo = (next: number) => {
+    setStep(next);
+    // jsdom no implementa scrollIntoView: en las pruebas no hace nada.
+    top.current?.scrollIntoView?.({ block: "nearest" });
+  };
 
   return (
-    <div className="flex flex-col gap-4">
-      <ol className="flex flex-wrap gap-2 text-xs" aria-label="Pasos">
-        {STEPS.map((s, i) => (
-          <li
-            key={s}
-            aria-current={i === step ? "step" : undefined}
-            className={
-              i === step
-                ? "rounded-full bg-primary px-3 py-1 text-primary-foreground"
-                : "rounded-full bg-muted px-3 py-1 text-muted-foreground"
-            }
-          >
-            {i + 1}. {s}
-          </li>
-        ))}
-      </ol>
+    <div className="medicine-assistant">
+      {!onResult && (
+        <div className="medicine-steps" ref={top}>
+          <p>
+            {t("medicine.headache.stepOf", {
+              step: step + 1,
+              total: QUESTION_STEPS.length,
+              name: t(`medicine.headache.steps.${QUESTION_STEPS[step]!}`),
+            })}
+          </p>
+          <ol aria-hidden="true">
+            {QUESTION_STEPS.map((name, i) => (
+              <li
+                key={name}
+                data-state={i < step ? "done" : i === step ? "now" : "next"}
+              />
+            ))}
+          </ol>
+        </div>
+      )}
 
       {step === 0 && (
         <>
-          <p className="text-sm text-muted-foreground">
-            Si respondes sí a cualquiera, llama al cirujano de vuelo.{" "}
+          <p className="medicine-lead">
+            {t("medicine.headache.screeningIntro")}{" "}
             <Source>SNNOOP10, Do et al., Neurology 2019</Source>
           </p>
-          {RED_FLAGS.map((q, i) => (
+          {RED_FLAGS.map((flag, i) => (
             <YesNo
-              key={q}
-              question={q}
+              key={flag}
+              question={redFlagQuestion(flag)}
               value={d.redFlags[i]}
               onChange={(v) =>
                 set({ redFlags: d.redFlags.map((f, j) => (j === i ? v : f)) })
@@ -95,19 +88,20 @@ export function HeadacheAssistant({ onExit }: { onExit: () => void }) {
 
       {step === 1 && (
         <>
-          <NumberField
-            label="¿Cuántos días tomaste analgésicos este mes?"
-            value={d.analgesicDaysThisMonth}
+          <NumberQuestion
+            label={t("medicine.headache.analgesicDays")}
+            unit={t("medicine.headache.days")}
+            value={d.analgesicDaysThisMonth ?? 0}
             max={31}
             onChange={(v) => set({ analgesicDaysThisMonth: v })}
           />
           <YesNo
-            question="¿Tienes fiebre?"
+            question={t("medicine.headache.fever")}
             value={d.fever}
             onChange={(v) => set({ fever: v })}
           />
           <YesNo
-            question="¿El dolor empeora o lleva más de 10 días?"
+            question={t("medicine.headache.worsening")}
             value={d.worseningOrOver10Days}
             onChange={(v) => set({ worseningOrOver10Days: v })}
           />
@@ -116,77 +110,100 @@ export function HeadacheAssistant({ onExit }: { onExit: () => void }) {
 
       {step === 2 && (
         <>
-          <NumberField
-            label="¿Cuántas tabletas de paracetamol tomaste en las últimas 24 h?"
-            value={d.paracetamolTablets24h}
+          <NumberQuestion
+            label={t("medicine.headache.paracetamolTablets")}
+            unit={t("medicine.headache.tablets")}
+            value={d.paracetamolTablets24h ?? 0}
             max={20}
             onChange={(v) => set({ paracetamolTablets24h: v })}
           />
           <YesNo
-            question="¿Tienes enfermedad del hígado o del riñón, presión alta, enfermedad del corazón o asma?"
+            question={t("medicine.headache.chronic")}
             value={d.chronicCondition}
             onChange={(v) => set({ chronicCondition: v })}
           />
           <YesNo
-            question="¿Has tenido úlcera, sangrado del estómago o sangre en las heces?"
+            question={t("medicine.headache.ulcer")}
             value={d.ulcerOrBleeding}
             onChange={(v) => set({ ulcerOrBleeding: v })}
           />
           <YesNo
-            question="¿Comiste?"
+            question={t("medicine.headache.ate")}
             value={d.ate}
             onChange={(v) => set({ ate: v })}
           />
-          <Source>Etiquetas de paracetamol e ibuprofeno, DailyMed</Source>
+          <Source>{t("medicine.headache.labelsSource")}</Source>
         </>
       )}
 
-      {step === 3 && <HeadacheResult r={result} />}
+      {onResult && (
+        <HeadacheResult r={assessHeadache(draftAnswers(d), cabin)} />
+      )}
 
-      <div className="flex flex-wrap justify-between gap-2">
-        <Button
-          variant="outline"
-          className="h-11 px-4"
-          onClick={step === 0 || step === 3 ? onExit : () => setStep(step - 1)}
+      <div className="medicine-nav">
+        <button
+          type="button"
+          className="medicine-secondary medicine-back"
+          onClick={step === 0 || onResult ? onExit : () => goTo(step - 1)}
         >
-          {step === 0 || step === 3 ? "Volver a síntomas" : "Atrás"}
-        </Button>
-        {step < 3 && (
-          <Button
-            className="h-11 px-6"
-            disabled={!done[step] && !anyRed}
-            onClick={next}
-          >
-            {anyRed ? "Ver qué hacer" : "Siguiente"}
-          </Button>
+          {step === 0 || onResult
+            ? t("medicine.headache.backToSymptoms")
+            : t("medicine.headache.back")}
+        </button>
+        {!onResult && (
+          <>
+            {/* Cuánto falta para que "Siguiente" funcione, junto a él. */}
+            <p className="medicine-count" aria-live="polite">
+              {!red &&
+                t("medicine.headache.answered", {
+                  count: progress.answered,
+                  total: progress.total,
+                })}
+            </p>
+            <button
+              type="button"
+              className="medicine-primary medicine-next"
+              data-next
+              disabled={!progress.done && !red}
+              onClick={() => goTo(nextStep(d, step))}
+            >
+              {red
+                ? t("medicine.headache.seeWhatToDo")
+                : t("medicine.headache.next")}
+            </button>
+          </>
         )}
       </div>
     </div>
   );
 }
 
-type NumberFieldProps = {
+type NumberQuestionProps = {
   label: string;
-  value: number | undefined;
+  unit: string;
+  value: number;
   max: number;
   onChange: (v: number) => void;
 };
 
-function NumberField({ label, value, max, onChange }: NumberFieldProps) {
+function NumberQuestion({
+  label,
+  unit,
+  value,
+  max,
+  onChange,
+}: NumberQuestionProps) {
   return (
-    <label className="flex flex-col gap-2 rounded-xl border bg-card p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-      {label}
-      <Input
-        type="number"
-        inputMode="numeric"
+    <div className="medicine-question">
+      <p aria-hidden="true">{label}</p>
+      <NumberStepper
+        value={value}
+        onChange={onChange}
         min={0}
         max={max}
-        value={value ?? 0}
-        onChange={(e) =>
-          onChange(Math.min(max, Math.max(0, Number(e.target.value) || 0)))
-        }
-        className="h-11 w-24"
+        label={label}
+        unit={unit}
       />
-    </label>
+    </div>
   );
 }

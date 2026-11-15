@@ -28,6 +28,6 @@ describe("FEED", () => {
   });
 
   it("el dato se etiqueta como simulado", () => {
-    expect(FEED_LABEL).toBe("simulado");
+    expect(FEED_LABEL()).toBe("simulado");
   });
 });

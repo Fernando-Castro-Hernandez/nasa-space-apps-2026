@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { t } from "@/i18n";
 
 export type DayPoint = { day: string; value: number };
 
@@ -52,9 +53,9 @@ export function WeekAreaChart({ label, unit, data, baseline }: Props) {
           stroke="var(--muted-foreground)"
           strokeDasharray="4 4"
           label={{
-            value: "tu normal",
+            value: t("shell.charts.baselineLine"),
             position: "insideTopRight",
-            fontSize: 11,
+            fontSize: 14,
             fill: "var(--muted-foreground)",
           }}
         />

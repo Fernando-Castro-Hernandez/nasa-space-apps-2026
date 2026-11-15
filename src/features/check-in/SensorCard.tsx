@@ -1,13 +1,18 @@
+// SIN USO desde el check-in único (/buenos-dias usa SensorStep): retirar junto
+// con /check-in.
 // Lectura simulada del MAX30102: 60 s con el dedo quieto, pulso y SpO2 en vivo.
 import { Fingerprint } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { SAMPLE_READINGS } from "@/data/sample";
 import { liveVitals, SENSOR_SECONDS } from "./simulation";
 import { useElapsed } from "./useElapsed";
+
+const FINAL_READING = SAMPLE_READINGS.find((s) => s.id === "low-rest")!.reading;
 
 export function SensorCard({ running }: { running: boolean }) {
   const [elapsed] = useElapsed(running, SENSOR_SECONDS);
   const done = elapsed >= SENSOR_SECONDS;
-  const v = liveVitals(elapsed);
+  const v = liveVitals(elapsed, FINAL_READING);
   const progress = (elapsed / SENSOR_SECONDS) * 100;
 
   return (

@@ -1,111 +1,300 @@
-import { Keyboard, Mic, Plus } from "lucide-react";
-import { useEffect, useReducer, useState } from "react";
-import { GREETING_MS, LISTEN_MAX_MS, nextPhase, PHASE_COPY } from "./phases";
-import { TypeSheet } from "./TypeSheet";
-import { useMicLevel } from "./useMicLevel";
+// Check-in único del día (/buenos-dias, referencia 04). Lunito saluda,
+// pregunta, escucha de verdad (Whisper en el Worker; sin IA, el dictado del
+// navegador), piensa, muestra "Esto entendí" para corregir y guardar la
+// bitácora, ofrece el sensor y la prueba de reacción (opcionales) y dice el
+// resultado del día: el mismo que muestra Inicio. Si algo falla, se escribe y
+// se termina igual. "Ahora no" sale en cualquier momento.
+import { Check, ChevronLeft, Keyboard, Mic } from "lucide-react";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { ActiveCaseBanner, EmergencyLink } from "@/components/emergency-access";
+import { useLunitoDashboard } from "@/data/lunitoDashboard";
+import { ReactionTest } from "@/features/check-in/ReactionTest";
+import { ResultView } from "@/features/check-in/ResultView";
+import { SensorStep } from "@/features/check-in/SensorStep";
+import { secondsLeft } from "@/features/check-in/simulation";
+import { useCheckInResult } from "@/features/check-in/useCheckInResult";
+import {
+  LunitoAvatar,
+  type LunitoAvatarHandle,
+} from "@/features/lunito/LunitoAvatar";
+import { lunitoVoice } from "@/features/lunito/lunitoVoice";
+import { useVoiceLog, VOICE_LOG_SECONDS } from "@/features/voice/useVoiceLog";
+import { VoiceLogSheet } from "@/features/voice/VoiceLogSheet";
+import { t } from "@/i18n";
+import "@/features/lunito-home/reference.css";
+import {
+  DONE_MS,
+  GREETING_MS,
+  nextPhase,
+  PHASE_VIEW,
+  resultImage,
+  resultPose,
+  TALKING,
+  voiceEvent,
+} from "./phases";
 import { VoiceWave } from "./VoiceWave";
 import "./day-checkin.css";
 
-type Props = { onDone: () => void };
+type Props = {
+  onDone: () => void;
+  /** "Ahora no": pospone el check-in y deja pasar a Inicio. */
+  onSkip?: () => void;
+};
 
-/** Secuencia visual de la referencia 1. No graba, transcribe ni envía respuestas. */
-export function DayCheckInScreen({ onDone }: Props) {
+const prefersReducedMotion = () =>
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+export function DayCheckInScreen({ onDone, onSkip }: Props) {
   const [phase, send] = useReducer(nextPhase, "saludo");
-  const [typing, setTyping] = useState(false);
-  const listening = phase === "escucha";
-  const mic = useMicLevel(listening && !typing);
-  const copy = PHASE_COPY[phase];
-  const reducedMotion =
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // La hoja dice "Esto entendí" tras hablar y repite la pregunta al escribir.
+  const [answer, setAnswer] = useState<"voice" | "text">("text");
+  const [spoken, setSpoken] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [reducedMotion] = useState(prefersReducedMotion);
+  const lunito = useRef<LunitoAvatarHandle>(null);
+  const finish = useRef(onDone);
+  useEffect(() => {
+    finish.current = onDone;
+  });
+  const log = useVoiceLog({ onConfirm: () => send("confirm") });
+  const { voice } = log;
+  const day = useLunitoDashboard();
+  const result = useCheckInResult(day);
+
+  // Lunito saluda en voz alta. Antes del primer toque el navegador puede no
+  // dejarlo sonar; el saludo ya está escrito en pantalla.
+  useEffect(() => {
+    void lunitoVoice.say(t("dayCheckin.greeting.speech"));
+    return () => {
+      lunitoVoice.stop();
+      lunitoVoice.setThinking(false);
+    };
+  }, []);
 
   useEffect(() => {
-    if (typing || phase === "pregunta") return;
-    const duration =
-      phase === "saludo"
-        ? GREETING_MS
-        : phase === "escucha"
-          ? LISTEN_MAX_MS
-          : 0;
-    const timer = setTimeout(() => {
-      if (phase === "listo") onDone();
-      else send(phase === "saludo" ? "tick" : "stop");
-    }, duration);
-    return () => clearTimeout(timer);
-  }, [phase, typing, onDone]);
+    if (phase !== "saludo") return;
+    const timer = window.setTimeout(() => send("tick"), GREETING_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
+
+  // La sesión de voz lleva la conversación mientras escucha y piensa.
+  const event = voiceEvent(phase, {
+    status: voice.status,
+    error: voice.error,
+    log: log.phase,
+    organizing: log.organizing,
+  });
+  useEffect(() => {
+    if (event) send(event);
+  }, [event]);
+
+  // Asiente al terminar de escuchar y al guardar; piensa mientras ordena.
+  useEffect(() => {
+    if (phase === "pensando" || phase === "sensor") lunito.current?.play("nod");
+    lunitoVoice.setThinking(phase === "pensando");
+  }, [phase]);
+
+  // El resultado: Lunito lo dice y, cuando termina, celebra.
+  useEffect(() => {
+    if (phase !== "resultado") return;
+    const current = { live: true };
+    void lunitoVoice.say(result.line).then(() => {
+      if (current.live) setSpoken(true);
+    });
+    return () => {
+      current.live = false;
+    };
+  }, [phase, result.line]);
+
+  // "¡Listo!" un momento y después Inicio.
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = window.setTimeout(() => finish.current(), DONE_MS);
+    return () => window.clearTimeout(timer);
+  }, [leaving]);
+
+  const write = () => {
+    // Lo que no terminó de transcribirse se descarta; lo ya escuchado se queda.
+    if (voice.status !== "idle") voice.cancel();
+    lunitoVoice.stop();
+    if (!log.transcript.trim()) setAnswer("text");
+    log.write();
+    send("write");
+  };
+
+  const talk = () => {
+    if (voice.engine === "none") return write();
+    lunitoVoice.stop();
+    setAnswer("voice");
+    log.listen();
+    send("tapMic");
+  };
+
+  const goHome = () => {
+    if (result.status !== "rojo") lunito.current?.play("cheer");
+    setLeaving(true);
+  };
+
+  // Con la bitácora guardada, salir ya no pospone nada: el check-in está hecho.
+  const exit =
+    phase === "resultado" ? undefined : log.phase === "saved" ? onDone : onSkip;
+  const talking = TALKING.includes(phase) || phase === "revisar";
+  const view = PHASE_VIEW[phase];
+  const pose =
+    phase === "resultado"
+      ? resultPose(result.status, spoken || leaving)
+      : view.pose;
+  const question = t("dayCheckin.question.title");
 
   return (
-    <main className="day-checkin">
-      <div className="day-checkin-content">
-        <a className="day-emergency" href="/emergencia">
-          <Plus aria-hidden="true" strokeWidth={3} />
-          Emergencia
-        </a>
-        <section className="day-main" aria-label="Conversación con Lunito">
-          <div className="day-pose">
-            <img src={copy.pose} alt="Lunito" />
-            {phase === "saludo" && (
-              <svg
-                className="day-wave-marks"
-                viewBox="0 0 40 60"
-                aria-hidden="true"
-              >
-                <path d="M22 8 Q8 30 22 52 M33 16 Q24 30 33 44" />
-              </svg>
-            )}
-          </div>
-          <h1>{copy.title}</h1>
-          <div className="day-voice-control">
-            {listening || phase === "listo" ? (
-              <button
-                className="day-wave-button"
-                type="button"
-                aria-label="Terminar de hablar"
-                onClick={() => send("stop")}
-              >
-                <VoiceWave
-                  getLevel={mic.getLevel}
-                  reducedMotion={reducedMotion}
-                />
-              </button>
-            ) : (
-              <button
-                className="day-mic-button"
-                type="button"
-                aria-label="Hablar con Lunito"
-                onClick={() => send("tapMic")}
-              >
-                <Mic aria-hidden="true" strokeWidth={1.5} />
-              </button>
-            )}
-          </div>
-          <p className="day-caption" aria-live="polite">
-            {copy.caption}
-          </p>
-          {listening && mic.source === "demo" && (
-            <p className="day-mic-notice">
-              Sin acceso al micrófono: onda de demostración.
-            </p>
+    <div className="day-checkin" data-phase={phase}>
+      <div className="day-top">
+        <header className="reference-header day-header">
+          {exit ? (
+            <button type="button" className="reference-back" onClick={exit}>
+              <ChevronLeft aria-hidden="true" />
+              {t("dayCheckin.notNow")}
+            </button>
+          ) : (
+            <span />
           )}
-        </section>
-        <button
-          className="day-write-button"
-          type="button"
-          onClick={() => setTyping(true)}
-        >
-          <Keyboard aria-hidden="true" strokeWidth={1.75} />
-          Escribir respuesta
-        </button>
+          <EmergencyLink className="reference-emergency" />
+        </header>
+        <ActiveCaseBanner />
       </div>
-      {typing && (
-        <TypeSheet
-          onCancel={() => setTyping(false)}
-          onSubmit={() => {
-            setTyping(false);
-            send("submitText");
-          }}
+
+      <main className="day-main" aria-label={t("dayCheckin.region")}>
+        <div className="day-pose" data-size={view.size}>
+          <LunitoAvatar
+            ref={lunito}
+            pose={pose}
+            status={phase === "resultado" ? result.status : undefined}
+            fallbackSrc={phase === "resultado" ? resultImage(pose) : view.image}
+            label={t("dayCheckin.lunito")}
+          />
+        </div>
+
+        {phase === "saludo" ? (
+          <h1 key="saludo">
+            <span>{t("dayCheckin.greeting.hello")}</span>{" "}
+            <span>{t("dayCheckin.greeting.title")}</span>
+          </h1>
+        ) : (
+          <h1 key={talking ? "pregunta" : phase}>
+            {talking
+              ? question
+              : phase === "sensor"
+                ? t("checkin.sensor.title")
+                : phase === "reaccion"
+                  ? t("checkin.reaction.title")
+                  : t("checkin.result.title")}
+          </h1>
+        )}
+
+        {talking && (
+          <>
+            <div className="day-voice-control">
+              {phase === "escucha" ? (
+                <button
+                  key="wave"
+                  className="day-wave-button"
+                  type="button"
+                  aria-label={t("dayCheckin.mic.stop")}
+                  onClick={voice.stop}
+                >
+                  <VoiceWave
+                    getLevel={voice.level}
+                    reducedMotion={reducedMotion}
+                  />
+                </button>
+              ) : phase === "pensando" ? (
+                <span key="dots" className="day-thinking" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              ) : (
+                <button
+                  key="mic"
+                  className="day-mic-button"
+                  type="button"
+                  data-invite={phase === "pregunta" || undefined}
+                  aria-label={t("dayCheckin.mic.talk")}
+                  onClick={talk}
+                >
+                  <Mic aria-hidden="true" strokeWidth={1.6} />
+                </button>
+              )}
+            </div>
+            <p className="day-caption" aria-live="polite">
+              {phase === "saludo"
+                ? t("dayCheckin.greeting.caption")
+                : phase === "escucha"
+                  ? voice.status === "listening"
+                    ? t("dayCheckin.listening.caption")
+                    : t("dayCheckin.listening.starting")
+                  : phase === "pensando"
+                    ? voice.status === "transcribing"
+                      ? t("dayCheckin.thinking.transcribing")
+                      : t("dayCheckin.thinking.organizing")
+                    : t("dayCheckin.question.caption")}
+            </p>
+            {phase === "escucha" && voice.status === "listening" && (
+              <p className="day-hint">
+                {t("dayCheckin.listening.hint", {
+                  seconds: secondsLeft(voice.elapsed, VOICE_LOG_SECONDS),
+                })}
+              </p>
+            )}
+            {phase === "pregunta" && voice.error && (
+              <p className="day-hint" role="alert">
+                {voice.error}
+              </p>
+            )}
+            {voice.engine === "none" && !voice.error && (
+              <p className="day-hint">{t("dayCheckin.noVoice")}</p>
+            )}
+          </>
+        )}
+
+        {phase === "sensor" && (
+          <>
+            <p className="day-saved">
+              <Check aria-hidden="true" />
+              {t("checkin.saved")}
+            </p>
+            <p className="day-caption">{t("checkin.sensor.caption")}</p>
+            <SensorStep target={day.reading} onNext={() => send("next")} />
+          </>
+        )}
+        {phase === "reaccion" && (
+          <>
+            <p className="day-caption">{t("checkin.reaction.caption")}</p>
+            <ReactionTest onNext={() => send("next")} />
+          </>
+        )}
+        {phase === "resultado" && (
+          <ResultView result={result} leaving={leaving} onHome={goHome} />
+        )}
+      </main>
+
+      <footer className="day-foot">
+        {talking && (
+          <button className="day-write-button" type="button" onClick={write}>
+            <Keyboard aria-hidden="true" strokeWidth={1.75} />
+            {t("dayCheckin.write")}
+          </button>
+        )}
+      </footer>
+
+      {phase === "revisar" && (
+        <VoiceLogSheet
+          log={log}
+          title={answer === "voice" ? t("voiceUi.sheet.heard") : question}
+          onClose={() => send("close")}
         />
       )}
-    </main>
+    </div>
   );
 }

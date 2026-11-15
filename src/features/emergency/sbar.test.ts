@@ -1,7 +1,10 @@
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest";
 import type { IndicatorHistory } from "@/data/history";
+import { setLocale } from "@/i18n";
 import { addNote, addOrder, checkStep, openCase } from "./caseLogic";
 import { buildSbar, trendNote } from "./sbar";
+
+afterEach(() => window.localStorage.clear());
 
 const T0 = new Date(2026, 10, 14, 14, 3).getTime();
 
@@ -45,6 +48,24 @@ describe("resumen SBAR", () => {
     const replied = addOrder(c, "Reposo", T0 + 60_000);
     expect(buildSbar(replied, "Ana", []).request).toContain(
       "Indicaciones enviadas: 1",
+    );
+  });
+
+  test("en inglés, cada parte es una frase completa, sin trozos en español", () => {
+    let c = openCase("ana", "Ana", "fainted", T0);
+    c = checkStep(c, "sensor", T0 + 4 * 60_000);
+    c = addNote(c, T0 + 5 * 60_000, "le di oxígeno");
+    setLocale("en");
+    const s = buildSbar(c, "Ana", [hist([50, 41, 40, 39], 50)]);
+    expect(s.situation).toBe(
+      "Ana fainted at 14:03. Last note: “le di oxígeno”",
+    );
+    expect(s.background).toContain("below their usual");
+    expect(s.assessment).toBe(
+      "14:07 · 58\u00a0bpm, 97%\u00a0SpO2. Prototype sensor, not a medical device. The diagnosis is the surgeon's call.",
+    );
+    expect(s.request).toBe(
+      "Guidance on rest, oxygen use and the next reading.",
     );
   });
 });

@@ -1,13 +1,17 @@
-/* Variable Nunito only for the PNG-reference screens; Órbita loads its own fonts. */
+/* The app's only typeface: variable Nunito (main.tsx loads this file). */
 @import "@fontsource-variable/nunito";
 
-/* Palette: the only place hex colors live; screens use the tokens. */
-.reference-app {
+/* Palette: the only place hex colors live; screens use the tokens. It sits on
+   :root so sheets and dialogs (rendered outside the app container) and the
+   shadcn tokens of index.css can use it too. */
+:root {
   --reference-paper: #fdf7f3;
   --reference-surface: #fffcfd;
   --reference-ink: #625373;
   --reference-ink-strong: #382451;
   --reference-ink-soft: #88749a;
+  /* Secondary text that must be read: 5.1:1 on paper (ink-soft is 3.9:1). */
+  --reference-ink-muted: #76628c;
   --reference-action: #6b0bff;
   --reference-violet: #9b25ff;
   --reference-violet-soft: #a45ae4;
@@ -21,17 +25,24 @@
   --reference-aqua-50: #ecf7f7;
   --reference-aqua-200: #c2f3f1;
   --reference-ok: #06c8e5;
-  --reference-ok-ink: #007b77;
+  /* Status text colors pass 4.5:1 on paper and on their tinted backgrounds. */
+  --reference-ok-ink: #006b67;
   --reference-warn-bg: #fff0d3;
-  --reference-warn-ink: #b66b00;
+  --reference-warn-ink: #955700;
   --reference-alert-bg: #ffe2e2;
   --reference-alert-ink: #a42525;
-  --reference-emergency: #fa1916;
+  /* Emergency red: 5:1 as text on paper and 5.3:1 under white text, so the
+     button and the active-case strip read at a glance. */
+  --reference-emergency: #d70f0c;
+  /* Text and icons on a solid emergency or action color. */
+  --reference-on-solid: #fff;
   --reference-glow: #cb90ec;
   --reference-aqua-100: #dff7f6;
   --reference-aqua-300: #a8eeec;
   --reference-shadow: #73538b25;
   --reference-shadow-violet: #ae6ee62b;
+}
+.reference-app {
   color: var(--reference-ink);
   background: var(--reference-paper);
   font-family: "Nunito Variable", "Nunito", sans-serif;
@@ -48,10 +59,10 @@
   padding-top: env(safe-area-inset-top);
   font-size: clamp(15px, 3.9vw, 22px);
 }
-/* Órbita's global styles give headings Unbounded; these screens use Nunito. */
 .reference-app :is(h1, h2, h3) {
   font-family: inherit;
 }
+/* The native tap flash is replaced by the pressed state of index.css. */
 .reference-app button,
 .reference-app a {
   -webkit-tap-highlight-color: transparent;
@@ -69,7 +80,7 @@
 .reference-header {
   flex-shrink: 0;
   height: 13.6cqw;
-  min-height: 54px;
+  min-height: 58px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -78,34 +89,101 @@
   font-weight: 850;
   font-size: 5cqw;
 }
-.reference-emergency {
-  position: relative;
-  border-radius: 99px;
-  padding: 0 2.7cqw;
-  min-height: 44px;
+/* Way back from a secondary screen to its parent tab (MareaPage). */
+.reference-back {
   display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 48px;
+  min-width: 48px;
+  margin-left: -8px;
+  padding-right: 12px;
+  border-radius: 99px;
+}
+.reference-back svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.6;
+}
+/* Emergency access (components/emergency-access.tsx), in the header and in
+   sheets: a red outlined pill, 48 px tall, that is all target. With an open
+   case it turns solid and reads "View case". No motion. */
+.emergency-link {
+  display: inline-flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
-  gap: 1.3cqw;
-  color: var(--reference-emergency);
-  font-size: 3.85cqw;
-  font-weight: 750;
-  line-height: 1;
-  isolation: isolate;
-}
-.reference-emergency::before {
-  content: "";
-  position: absolute;
-  inset: 6px 0;
-  border: 1px solid var(--reference-emergency);
-  border-radius: inherit;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 2px solid var(--reference-emergency);
+  border-radius: 99px;
   background: var(--reference-surface);
-  z-index: -1;
+  color: var(--reference-emergency);
+  font-family: "Nunito Variable", "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.emergency-link svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  stroke-width: 3.5;
+}
+.emergency-link[data-case="active"] {
+  background: var(--reference-emergency);
+  color: var(--reference-on-solid);
+}
+.reference-emergency {
+  padding: 0 3.6cqw;
+  gap: 1.3cqw;
+  font-size: max(15px, 3.85cqw);
 }
 .reference-emergency svg {
-  width: 4.6cqw;
-  height: 4.6cqw;
-  stroke-width: 4;
+  width: max(16px, 4.4cqw);
+  height: max(16px, 4.4cqw);
+}
+/* Active case: a fixed red strip under the header, on every screen but
+   Emergency and Ground. It lives outside the scrolling area. */
+.case-banner-slot {
+  display: block;
+  flex-shrink: 0;
+}
+.case-banner-slot:empty {
+  display: none;
+}
+.case-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px max(16px, calc(50% - 440px));
+  background: var(--reference-emergency);
+  color: var(--reference-on-solid);
+  font-family: "Nunito Variable", "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: none;
+}
+.case-banner svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.case-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+.case-banner-action {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .home-carousel {
   flex: 1;
@@ -119,29 +197,33 @@
   height: 100%;
   container-type: inline-size;
 }
+/* Page dots: the dot stays small, the button around it is a 48 px target.
+   The active dot stretches so the current page reads without color alone. */
 .carousel-pagination {
   display: flex;
   justify-content: center;
   flex-shrink: 0;
-  height: 9.5cqw;
-  min-height: 36px;
+  height: 48px;
   align-items: center;
   background: var(--reference-paper);
 }
 .carousel-pagination button {
-  width: 5.5cqw;
-  min-width: 28px;
-  min-height: 36px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
 }
 .carousel-pagination span {
   width: 2.85cqw;
   height: 2.85cqw;
-  border-radius: 50%;
-  background: var(--reference-lavender-100);
+  border-radius: 99px;
+  background: var(--reference-lavender-200);
+  transition:
+    width 200ms ease-out,
+    background-color 200ms ease-out;
 }
 .carousel-pagination [aria-pressed="true"] span {
+  width: 6.5cqw;
   background: var(--reference-violet);
 }
 .reference-nav {
@@ -161,14 +243,14 @@
   color: var(--reference-ink-strong);
 }
 .reference-nav a {
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 3.2cqw;
   gap: 0.4cqw;
-  font-size: 3.7cqw;
+  font-size: max(15px, 3.7cqw);
   line-height: 1.1;
 }
 .reference-nav svg {
@@ -188,15 +270,29 @@
   flex: 1;
   overflow-y: auto;
 }
-.reference-content > h1 {
-  margin: 0 6cqw 4cqw;
-  font-size: 7cqw;
-  font-weight: 800;
+/* Secondary screens (MareaPage): Marea header and tab bar around content
+   that was built with Tailwind and shadcn. The header and the tab bar stay
+   put; only the content scrolls, so Emergency never leaves the screen. */
+.reference-page {
+  font-size: 16px;
+  line-height: 1.5;
 }
-.reference-build {
-  margin: 2rem 1rem;
-  text-align: center;
-  font-size: 12px;
+.reference-page .reference-content {
+  min-height: 0;
+  overscroll-behavior: contain;
+  color: var(--reference-ink-strong);
+}
+.reference-page .reference-content:focus {
+  outline: none;
+}
+.reference-page .reference-content > h1:not(.sr-only) {
+  margin: 4px 0 12px;
+  padding-inline: max(20px, calc(50% - 440px));
+  font-size: clamp(28px, 7cqw, 36px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--reference-ink);
 }
 .marea {
   position: absolute;
@@ -215,19 +311,19 @@
     width: 100%;
   }
   .reference-header {
-    height: 52px;
-    min-height: 52px;
+    height: 64px;
+    min-height: 64px;
     padding-inline: 32px;
     font-size: 19px;
   }
   .reference-emergency {
-    padding-inline: 14px;
+    padding-inline: 18px;
     gap: 6px;
-    font-size: 15px;
+    font-size: 16px;
   }
   .reference-emergency svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
   .home-carousel {
     display: grid;
@@ -256,7 +352,7 @@
   .reference-nav a {
     border-radius: 13px;
     gap: 3px;
-    font-size: 14px;
+    font-size: 15px;
   }
   .reference-nav svg {
     width: 21px;

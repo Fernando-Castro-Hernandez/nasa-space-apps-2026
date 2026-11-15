@@ -69,12 +69,14 @@ export function updateCase(change: (c: EmergencyCase) => EmergencyCase) {
   if (current) saveCase(change(current));
 }
 
-/** Hora actual que se refresca cada segundo, para cuentas regresivas. */
-export function useNow() {
+/** Hora actual que se refresca cada segundo, para cuentas regresivas.
+ *  Con `active` en false deja de contar (un caso cerrado ya no espera nada). */
+export function useNow(active = true) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
+    if (!active) return;
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [active]);
   return now;
 }

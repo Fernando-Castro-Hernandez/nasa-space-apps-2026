@@ -1,0 +1,655 @@
+/* Emergencia a bordo y consola de Tierra. Sin nada lúdico: alto contraste,
+   objetivos de 56 px o más (se usa flotando y con una mano ocupada) y solo
+   dos microinteracciones funcionales: la fila nueva del registro y el check
+   de "Caso enviado". Colores: los tokens de reference.css e index.css. */
+
+/* El ancho de lectura es el del título de MareaPage: hasta 880 px, centrado. */
+.em-page {
+  --em-gutter: max(16px, calc(50% - 440px));
+  display: flex;
+  flex-direction: column;
+  color: var(--reference-ink-strong);
+}
+
+/* Respuesta al toque: corta y sin rebote. */
+.em-tap {
+  transition:
+    transform 80ms ease-out,
+    filter 80ms ease-out;
+}
+.em-tap:active:not(:disabled) {
+  transform: scale(0.98);
+  filter: brightness(0.94);
+}
+
+/* Franja roja: lo primero que se ve (el h1 de la página es solo para lectores
+   de pantalla). Lunito es una imagen fija: la baliza calma de SISTEMA.md §1. */
+.em-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px var(--em-gutter);
+  background: var(--reference-alert-ink);
+  color: white;
+}
+.em-banner[data-closed] {
+  background: var(--reference-ink);
+}
+.em-banner img {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+.em-eyebrow {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.em-headline {
+  font-size: clamp(26px, 7cqw, 36px);
+  font-weight: 850;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.em-banner-role {
+  font-size: 16px;
+  font-weight: 600;
+}
+/* Aviso del formulario: una línea fuerte con su ícono. */
+.em-banner--form {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.em-banner--form svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.em-section-title {
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+/* --- Formulario para abrir el caso --- */
+.em-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px var(--em-gutter) 0;
+}
+.em-form section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.em-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.em-choice {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 2px solid var(--reference-line-strong);
+  border-radius: 16px;
+  background: var(--reference-surface);
+  color: var(--reference-ink-strong);
+  text-align: left;
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.25;
+}
+.em-choice > span {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.em-choice small {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--reference-ink-muted);
+}
+.em-choice svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  stroke-width: 3;
+}
+/* Elegido: rojo lleno y un check (el color nunca va solo). */
+.em-choice[aria-pressed="true"] {
+  border-color: var(--reference-alert-ink);
+  background: var(--reference-alert-ink);
+  color: white;
+}
+.em-choice[aria-pressed="true"] small {
+  color: white;
+}
+
+/* Acciones fijas abajo: la instrucción del botón siempre se lee y abrir el
+   caso nunca queda fuera de la vista. */
+.em-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 12px var(--em-gutter) calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--reference-line);
+  background: var(--reference-paper);
+}
+.em-open {
+  min-height: 64px;
+  padding: 8px 16px;
+  border: 2px solid var(--reference-emergency);
+  border-radius: 18px;
+  background: var(--reference-emergency);
+  color: white;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+/* Sin opacidad: deshabilitado, el botón es la instrucción y se lee entera. */
+.em-open:disabled {
+  background: var(--reference-surface);
+  color: var(--reference-alert-ink);
+}
+
+/* Botón secundario de borde (Cancelar, Cerrar caso, No, Nuevo caso). */
+.em-secondary {
+  min-height: 56px;
+  width: 100%;
+  padding: 8px 16px;
+  border: 2px solid var(--reference-ink-strong);
+  border-radius: 18px;
+  background: var(--reference-surface);
+  color: var(--reference-ink-strong);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+/* --- Caso abierto --- */
+.em-case {
+  display: grid;
+  gap: 16px;
+  padding: 16px var(--em-gutter) 32px;
+}
+.em-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 22px;
+  background: var(--reference-surface);
+  box-shadow: 0 6px 16px var(--reference-shadow);
+}
+
+/* Aviso a Tierra con su retraso y la cuenta regresiva. */
+.em-link {
+  display: grid;
+  gap: 10px;
+  border: 2px solid var(--status-ok);
+}
+.em-link[data-closed] {
+  border-color: var(--reference-line);
+}
+.em-link-sent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--status-ok);
+  font-size: 17px;
+  font-weight: 800;
+}
+.em-link-sent svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 3.2;
+  flex-shrink: 0;
+}
+.em-link-delay {
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+/* En celular, la cuenta en una fila: etiqueta a la izquierda y el número a
+   la derecha. Desde tablet, a la derecha de la tarjeta. */
+.em-countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--reference-line);
+}
+.em-countdown-label {
+  font-size: 15px;
+  font-weight: 700;
+}
+.em-countdown-value {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: clamp(36px, 10cqw, 48px);
+  font-weight: 700;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.em-countdown-state {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.em-pending {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--status-warn);
+}
+
+/* Pasos del protocolo e indicaciones de Tierra. */
+.em-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.em-step {
+  min-height: 64px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border: 2px solid var(--reference-line-strong);
+  border-radius: 16px;
+  background: var(--reference-surface);
+  color: var(--reference-ink-strong);
+  text-align: left;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.em-step[data-current] {
+  border-color: var(--reference-ink-strong);
+  box-shadow: inset 0 0 0 1px var(--reference-ink-strong);
+  font-weight: 800;
+}
+.em-step:disabled {
+  cursor: default;
+}
+/* Caso cerrado: lo que quedó sin hacer se ve inerte. */
+.em-step:disabled:not([aria-pressed="true"]) {
+  border-style: dashed;
+  border-color: var(--reference-line-strong);
+  color: var(--reference-ink-muted);
+}
+.em-step[aria-pressed="true"] {
+  border-color: var(--reference-line);
+  color: var(--reference-ink-muted);
+}
+.em-step[aria-pressed="true"] .em-step-text > :first-child {
+  text-decoration: line-through;
+}
+.em-step-text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+.em-step-note {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--status-warn);
+}
+.em-box {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 2.5px solid currentColor;
+  border-radius: 8px;
+}
+.em-box svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 3.2;
+}
+.em-step[aria-pressed="true"] .em-box {
+  border-color: var(--status-ok);
+  background: var(--status-ok);
+  color: white;
+}
+.em-step-time {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.em-now {
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: var(--reference-ink-strong);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* Dictar: un toque empieza y otro guarda. La barra dice cuánto falta para
+   que se guarde sola. */
+.em-dictate {
+  position: relative;
+  overflow: hidden;
+  min-height: 64px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-radius: 18px;
+  background: var(--reference-ink-strong);
+  color: white;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+.em-dictate[data-listening] {
+  background: var(--reference-alert-ink);
+}
+.em-dictate:disabled {
+  background: var(--reference-ink);
+}
+.em-dictate svg {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.em-dictate-progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 6px;
+  background: white;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  transition: transform 200ms linear;
+}
+.em-hint {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--reference-ink-muted);
+  text-align: center;
+}
+.em-typed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.em-typed p {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+.em-typed div {
+  display: flex;
+  gap: 8px;
+}
+.em-typed input {
+  min-width: 0;
+  flex: 1;
+  min-height: 56px;
+  padding: 0 14px;
+  border: 2px solid var(--reference-line-strong);
+  border-radius: 14px;
+  background: var(--reference-surface);
+  font-size: 17px;
+}
+.em-typed input:focus-visible {
+  border-color: var(--reference-ink-strong);
+}
+.em-typed button {
+  min-height: 56px;
+  padding: 0 18px;
+  border-radius: 14px;
+  background: var(--reference-ink-strong);
+  color: white;
+  font-size: 17px;
+  font-weight: 800;
+}
+.em-typed button:disabled {
+  background: var(--reference-ink);
+}
+
+/* Registro del caso: la nave y Tierra comparten la lista. La fila más
+   reciente queda resaltada y entra en 200 ms: se nota sin distraer. */
+.em-log {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.em-log li {
+  display: grid;
+  grid-template-columns: auto 10px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 1.4;
+  transition: background-color 200ms ease-out;
+}
+.em-log li:first-child {
+  background: var(--reference-lavender-50);
+  animation: em-row-in 200ms ease-out;
+}
+.em-log time {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--reference-ink-muted);
+}
+.em-log-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 7px;
+  border-radius: 50%;
+}
+.em-log-arrival {
+  display: block;
+  font-size: 15px;
+  color: var(--reference-ink-muted);
+}
+@keyframes em-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+    background: var(--reference-lavender-200);
+  }
+}
+
+/* Cerrar el caso pide confirmación en línea. La pregunta queda donde estaba
+   el botón: un segundo toque rápido no cierra nada. */
+.em-confirm {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid var(--reference-ink-strong);
+  border-radius: 18px;
+  background: var(--reference-surface);
+}
+.em-confirm p {
+  font-size: 18px;
+  font-weight: 850;
+  text-align: center;
+}
+.em-confirm div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.em-yes {
+  min-height: 56px;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background: var(--reference-ink-strong);
+  color: white;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.em-check {
+  animation: em-pop 240ms ease-out both;
+}
+@keyframes em-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@media (min-width: 768px) {
+  .em-choices--what {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .em-actions {
+    grid-template-columns: minmax(0, 1fr) minmax(160px, auto);
+  }
+  .em-case {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: start;
+  }
+  .em-case > .em-link {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .em-countdown {
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 0 0 0 24px;
+    border-top: 0;
+    border-left: 1px solid var(--reference-line);
+    text-align: right;
+  }
+}
+
+/* --- Consola de Tierra: escritorio, otro usuario. Conserva su barra oscura de
+   consola; la letra y los colores son los de la app. --- */
+.ground-console {
+  min-height: 100dvh;
+  background: var(--reference-paper);
+  color: var(--reference-ink-strong);
+}
+.ground-console :focus-visible {
+  outline: 3px solid var(--reference-action);
+  outline-offset: 3px;
+}
+.ground-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 10px 24px;
+  background: var(--reference-ink-strong);
+  color: white;
+}
+.ground-top :focus-visible {
+  outline-color: white;
+}
+.ground-top h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 850;
+}
+.ground-top h1 span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--reference-action);
+}
+.ground-top h1 svg {
+  width: 20px;
+  height: 20px;
+}
+.ground-top-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  font-size: 15px;
+  color: var(--reference-lavender-100);
+}
+.ground-top-info > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ground-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--reference-ok);
+}
+.ground-simulated {
+  padding: 2px 10px;
+  border: 1px solid var(--reference-lavender-300);
+  border-radius: 99px;
+}
+.ground-back {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 4px;
+  padding: 0 16px 0 10px;
+  border: 2px solid var(--reference-lavender-300);
+  border-radius: 99px;
+  color: white;
+  font-weight: 850;
+}
+.ground-back:active {
+  filter: brightness(0.9);
+}
+.ground-back svg {
+  width: 22px;
+  height: 22px;
+}
+.ground-eyebrow {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ground-label {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--reference-action);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .em-tap,
+  .em-log li,
+  .em-dictate-progress {
+    transition: none;
+  }
+  .em-tap:active:not(:disabled) {
+    transform: none;
+  }
+  .em-log li:first-child,
+  .em-check {
+    animation: none;
+  }
+}

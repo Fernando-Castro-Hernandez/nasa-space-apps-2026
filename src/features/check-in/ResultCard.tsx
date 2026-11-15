@@ -1,10 +1,13 @@
+// SIN USO desde el check-in único (/buenos-dias usa ResultView, con la lectura
+// de Inicio): retirar junto con /check-in.
 // Cierre del check-in: semáforo con motivo y 1 o 2 acciones concretas.
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SAMPLE_BASELINE } from "@/data/sample";
+import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
 import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
 import { assessVitals } from "@/domain/vitals";
 import { headline } from "@/features/lunito/headline";
-import { FINAL_READING } from "./simulation";
+
+const FINAL_READING = SAMPLE_READINGS.find((s) => s.id === "low-rest")!.reading;
 
 // Acciones de SISTEMA.md §7.3; no son tratamientos.
 const ACTIONS = {

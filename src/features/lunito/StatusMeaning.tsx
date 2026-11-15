@@ -1,19 +1,18 @@
-// "Qué significa": explica el semáforo en una hoja desde abajo.
+// "Qué significa": explica el semáforo en una hoja desde abajo, con el mismo
+// ícono, palabra y color de cada estado que se ven en Inicio.
 import { useState } from "react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import type { Status } from "@/domain/vitals";
-import { STATUS_MEANING, STATUS_NAME } from "./dashboardData";
-import { DASH_VARS, STATUS_VIEW } from "./theme";
+import { STATUS_LABEL } from "@/domain/status";
+import { t } from "@/i18n";
+import { StatusMark } from "./StatusMark";
+import { STATUS_ORDER } from "./theme";
 
-const ORDER: Status[] = ["verde", "ambar", "rojo"];
-
-export function StatusMeaning() {
+export function StatusMeaning({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,37 +20,33 @@ export function StatusMeaning() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="min-h-11 text-base text-primary underline underline-offset-4"
+        className={
+          className ??
+          "min-h-12 text-base text-primary underline underline-offset-4"
+        }
       >
-        Qué significa
+        {t("home.meaning.open")}
       </button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="bottom"
-          // La hoja se pinta en un portal, fuera del contenedor con las variables.
-          style={DASH_VARS}
-          className="rounded-t-3xl p-6 md:mx-auto md:max-w-lg"
+          className="px-6 pt-3 pb-8 md:mx-auto md:max-w-lg"
         >
           <SheetHeader className="p-0">
-            <SheetTitle className="text-xl">
-              Qué significa cada estado
+            <SheetTitle className="text-2xl">
+              {t("home.meaning.title")}
             </SheetTitle>
-            <SheetDescription>
-              Es una guía para ti, no un diagnóstico.
-            </SheetDescription>
           </SheetHeader>
-          <ul className="flex flex-col gap-4">
-            {ORDER.map((s) => (
+          <ul className="flex flex-col gap-5">
+            {STATUS_ORDER.map((s) => (
               <li key={s} className="flex items-start gap-3">
-                <span
-                  className="mt-1.5 size-3 shrink-0 rounded-full"
-                  style={{ background: STATUS_VIEW[s].color }}
-                  aria-hidden="true"
-                />
+                <StatusMark status={s} className="mt-0.5 size-8" />
                 <span>
-                  <strong className="block text-base">{STATUS_NAME[s]}</strong>
-                  <span className="text-muted-foreground">
-                    {STATUS_MEANING[s]}
+                  <strong className="block text-lg font-extrabold">
+                    {STATUS_LABEL[s]}
+                  </strong>
+                  <span className="text-base text-muted-foreground">
+                    {t(`home.meaning.${s}`)}
                   </span>
                 </span>
               </li>

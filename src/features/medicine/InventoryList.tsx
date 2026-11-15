@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { STATUS_TOKEN } from "@/domain/status";
+import { formatDate, formatNumber, t } from "@/i18n";
 import {
   type InventoryAlert,
   inventoryAlerts,
@@ -7,15 +7,16 @@ import {
   stockLevel,
 } from "./inventory";
 
-const ALERT_STYLE: Record<InventoryAlert, string> = {
-  agotado: STATUS_TOKEN.rojo,
-  caducado: STATUS_TOKEN.rojo,
-  bajo: STATUS_TOKEN.ambar,
-  "por caducar": STATUS_TOKEN.ambar,
+// Tono de cada aviso: el color siempre va con su palabra al lado.
+const ALERT_LEVEL: Record<InventoryAlert, "warn" | "alert"> = {
+  agotado: "alert",
+  caducado: "alert",
+  bajo: "warn",
+  "por caducar": "warn",
 };
 
-const fmtDate = (iso: string) =>
-  new Date(`${iso}T12:00:00`).toLocaleDateString("es", {
+const expiry = (iso: string) =>
+  formatDate(new Date(`${iso}T12:00:00`), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -26,61 +27,44 @@ export function InventoryList({ today: fixed }: { today?: Date }) {
   const [now] = useState(() => new Date());
   const today = fixed ?? now;
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-xs text-muted-foreground">
-        Inventario simulado para la demo.
-      </p>
-      <ul className="flex flex-col gap-3">
-        {SAMPLE_INVENTORY.map((item) => {
-          const alerts = inventoryAlerts(item, today);
-          const color = alerts[0] ? ALERT_STYLE[alerts[0]] : STATUS_TOKEN.verde;
-          return (
-            <li
-              key={item.id}
-              className="flex flex-col gap-2 rounded-xl border bg-card p-4"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-medium">{item.name}</span>
-                <span className="text-sm">
-                  <strong>{item.count}</strong>{" "}
-                  <span className="text-muted-foreground">
-                    de {item.capacity} {item.unit}
-                  </span>
+    <ul className="medicine-inventory">
+      {SAMPLE_INVENTORY.map((item) => {
+        const alerts = inventoryAlerts(item, today);
+        const level = alerts[0] ? ALERT_LEVEL[alerts[0]] : "ok";
+        return (
+          <li key={item.id} data-level={level}>
+            <div className="medicine-item-head">
+              <strong>{item.name}</strong>
+              <span>
+                <b>{formatNumber(item.count)}</b>{" "}
+                {t("medicine.inventory.of", {
+                  capacity: formatNumber(item.capacity),
+                  unit: item.unit,
+                })}
+              </span>
+            </div>
+            <div className="medicine-stock" aria-hidden="true">
+              <span style={{ width: `${stockLevel(item) * 100}%` }} />
+            </div>
+            <div className="medicine-item-foot">
+              <span>
+                {t("medicine.inventory.expires", {
+                  date: expiry(item.expires),
+                })}
+              </span>
+              {alerts.map((a) => (
+                <span
+                  key={a}
+                  className="medicine-alert"
+                  data-level={ALERT_LEVEL[a]}
+                >
+                  {t(`medicine.inventory.alerts.${a}`)}
                 </span>
-              </div>
-              <div
-                className="h-2 overflow-hidden rounded-full bg-muted"
-                aria-hidden="true"
-              >
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${stockLevel(item) * 100}%`,
-                    background: color,
-                  }}
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span>Caduca: {fmtDate(item.expires)}</span>
-                {alerts.map((a) => (
-                  <span
-                    key={a}
-                    className="rounded-full border px-2 py-0.5 font-semibold"
-                    style={{
-                      color: ALERT_STYLE[a],
-                      borderColor: ALERT_STYLE[a],
-                    }}
-                  >
-                    {a === "bajo"
-                      ? "Stock bajo"
-                      : a[0]!.toUpperCase() + a.slice(1)}
-                  </span>
-                ))}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+              ))}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

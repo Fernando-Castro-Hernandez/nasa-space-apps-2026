@@ -27,6 +27,19 @@ export type MotionOptions = {
   reducedMotion?: boolean;
 };
 
+/**
+ * Sin lectura que mostrar: respira tranquilo y la pancita no late, porque un
+ * latido sin dato sería un pulso inventado.
+ */
+export const calmMotion = (reducedMotion = false): Motion => ({
+  beatInterval: 1,
+  beatAmplitude: 0,
+  gillGlow: 1,
+  breathDepth: reducedMotion ? 0 : 0.025,
+  breathPeriod: 4.5,
+  idle: reducedMotion ? 0 : 1,
+});
+
 export function motionFor(
   r: Reading,
   b: Baseline,

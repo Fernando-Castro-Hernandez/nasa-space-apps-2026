@@ -2,24 +2,45 @@ import { useState } from "react";
 import {
   Bone,
   Brain,
+  ChevronRight,
   Eye,
   type LucideIcon,
   Search,
   Waves,
   Wind,
+  X,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { t } from "@/i18n";
+import { UrgentLink } from "./UrgentLink";
 
-export type Symptom = { id: string; name: string; icon: LucideIcon };
+type SymptomId = "headache" | "nausea" | "congestion" | "back" | "eyes";
+
+export type Symptom = {
+  id: SymptomId;
+  name: string;
+  icon: LucideIcon;
+  /** Solo lo que tiene protocolo con fuente (FUENTES.md) abre un asistente. */
+  guided: boolean;
+};
+
+const symptom = (id: SymptomId, icon: LucideIcon, guided = false): Symptom => ({
+  id,
+  get name() {
+    return t(`medicine.symptoms.${id}`);
+  },
+  icon,
+  guided,
+});
 
 // Síntomas frecuentes en vuelo (SISTEMA.md §6). Solo dolor de cabeza tiene
-// protocolo con fuente; el resto queda pendiente de validar.
+// protocolo con fuente; el resto queda pendiente de validar, y la tarjeta lo
+// dice antes de tocarla.
 export const SYMPTOMS: Symptom[] = [
-  { id: "headache", name: "Dolor de cabeza", icon: Brain },
-  { id: "nausea", name: "Náusea y mareo", icon: Waves },
-  { id: "congestion", name: "Congestión nasal", icon: Wind },
-  { id: "back", name: "Dolor de espalda", icon: Bone },
-  { id: "eyes", name: "Cambios en la visión", icon: Eye },
+  symptom("headache", Brain, true),
+  symptom("nausea", Waves),
+  symptom("congestion", Wind),
+  symptom("back", Bone),
+  symptom("eyes", Eye),
 ];
 
 const normalize = (s: string) =>
@@ -33,44 +54,77 @@ type Props = { onPick: (s: Symptom) => void };
 export function SymptomSearch({ onPick }: Props) {
   const [q, setQ] = useState("");
   const shown = SYMPTOMS.filter((s) =>
-    normalize(s.name).includes(normalize(q)),
+    normalize(s.name).includes(normalize(q.trim())),
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="relative">
+    <div className="medicine-search">
+      <div className="medicine-search-field">
         <label htmlFor="symptom-search" className="sr-only">
-          Buscar síntoma
+          {t("medicine.search.label")}
         </label>
-        <Search
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-          aria-hidden="true"
-        />
-        <Input
+        <Search aria-hidden="true" />
+        <input
           id="symptom-search"
+          type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="¿Qué sientes?"
-          className="h-11 pl-9"
+          placeholder={t("medicine.search.placeholder")}
+          autoComplete="off"
         />
-      </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-        {shown.map((s) => (
+        {q && (
           <button
-            key={s.id}
             type="button"
-            onClick={() => onPick(s)}
-            className="flex min-h-24 flex-col items-center justify-center gap-2 rounded-xl border bg-card p-4 text-sm font-medium hover:border-primary hover:bg-accent"
+            className="medicine-search-clear"
+            aria-label={t("medicine.search.clear")}
+            onClick={() => setQ("")}
           >
-            <s.icon className="size-7 text-primary" aria-hidden="true" />
-            {s.name}
+            <X aria-hidden="true" />
           </button>
-        ))}
+        )}
       </div>
-      {shown.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No encontramos ese síntoma. Avisa al oficial médico.
-        </p>
+      {shown.length > 0 ? (
+        <ul className="medicine-symptoms">
+          {shown.map((s) => (
+            <li key={s.id} data-guided={s.guided || undefined}>
+              <button
+                type="button"
+                data-symptom={s.id}
+                onClick={() => onPick(s)}
+              >
+                <s.icon className="medicine-symptom-icon" aria-hidden="true" />
+                <span className="medicine-symptom-text">
+                  <strong>{s.name}</strong>
+                  <small>
+                    {s.guided
+                      ? t("medicine.search.guided")
+                      : t("medicine.search.noProtocol")}
+                  </small>
+                </span>
+                {s.guided && (
+                  <ChevronRight
+                    className="medicine-symptom-go"
+                    aria-hidden="true"
+                  />
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="medicine-empty">
+          <p>{t("medicine.search.empty")}</p>
+          <div className="medicine-exits">
+            <button
+              type="button"
+              className="medicine-secondary"
+              onClick={() => setQ("")}
+            >
+              {t("medicine.search.clear")}
+            </button>
+            <UrgentLink />
+          </div>
+        </div>
       )}
     </div>
   );

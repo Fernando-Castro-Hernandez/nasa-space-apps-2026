@@ -24,7 +24,10 @@ Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la bar
 - **Configuración (`/ajustes`):** perfil (abre el selector), privacidad real, información de la misión y accesos a Tierra, Demo y repetir el inicio del día.
 - Lo que el producto aún no tiene (estilos de Lunito, notificaciones, recordatorios) se dibuja desactivado con "Próximamente".
 - Sin la fuente exacta ni originales limpios del personaje: Nunito variable como aproximación y las tres poses recreadas con autorización.
-- El inicio del día (`/buenos-dias`) antecede a Inicio una vez por día.
+- El inicio del día (`/buenos-dias`) antecede a Inicio una vez por día. Es el único check-in: saludo, pregunta, escucha, "Esto entendí", sensor y prueba de reacción opcionales, y resultado. Se puede posponer con "Ahora no".
+- **Pantallas secundarias** (Mi estado, Botiquín, Emergencia, panel de demo): usan la misma estructura Marea, con la cabecera y la barra fijas, un botón para volver a su pestaña ("‹ Tareas") y Emergencia siempre arriba a la derecha. Sus componentes de catálogo (tarjetas, pestañas, botones, hojas) toman la paleta `--reference-*` y Nunito.
+- **Idioma:** la app está en inglés (idioma oficial) y en español; se cambia en Configuración. Ningún título lleva saltos de línea forzados, porque cada idioma se parte distinto.
+- **Al tocar:** todo lo tocable mide 48 px o más y responde al toque; las pantallas entran con un fundido breve. Con `prefers-reduced-motion` no hay animaciones.
 
 ## Referencias finales (modelo exacto del frontend)
 
@@ -117,11 +120,14 @@ El semáforo vive en su pancita:
 
 ## Lunito en 3D
 
-- Modelo: `public/lunito.glb`, generado con Meshy y separado en partes con nombre (`body`, `belly`, `gill_L/R_1..3`, `eye_L`, `eye_R`) para animar cada una.
-- Nada se pinta encima del modelo: la pancita queda en su cian natural cuando está Bien y **gira su tono** a amarillo o rojo y conserva su textura; las branquias se aclaran u oscurecen según el oxígeno.
-- Movimiento con sentido: la pancita late al ritmo del pulso, el cuerpo respira según la HRV. En reposo flota, se balancea y parpadea. Con `prefers-reduced-motion` se queda quieto.
-- Las imágenes 2D de `diseno/` se usan donde no conviene un canvas 3D (constelación, emergencia).
-- Lunito habla con voz: la boca sigue lo que dice, y tiene expresiones (nunca tristes ni enojadas) y gestos. Partes nuevas, formas de boca y cómo prepararlas en Blender: [LUNITO-ARTE.md](LUNITO-ARTE.md).
+- Modelo: `public/lunito.glb`, generado con Meshy y separado en partes con nombre (cuerpo, pancita, branquias, ojos, boca, brazos y cola) para animar cada una por código. Se coloca con el componente `LunitoAvatar`.
+- Nada se pinta encima del modelo: la pancita queda en su cian natural cuando está Bien y **toma el matiz** del amarillo o del rojo conservando la luz de su textura.
+- Movimiento con sentido: la pancita late al ritmo del pulso y el cuerpo respira según la HRV. Tiene ocho poses (reposo, saludo, pregunta, escucha, pensar, hablar, celebrar y cuidar) y gestos cortos (saludar, asentir, festejar, reír). Con `prefers-reduced-motion` queda en pose quieta.
+- Lunito habla con voz, en el idioma de la app: la boca sigue lo que dice. Sus expresiones nunca son tristes ni enojadas; cuando la persona está mal, la cuida.
+- **Dónde va el 3D:** en el inicio del día (una pose por fase) y en el héroe de Inicio (refleja el estado y se puede tocar para hablar con él); en Tareas celebra en pequeño al completar el día. Un solo Lunito 3D por pantalla.
+- **Dónde no:** en Equipo, Configuración y dentro de las hojas se usan las imágenes 2D; en Emergencia y en la consola de Tierra no hay nada animado (solo la imagen fija de la baliza).
+- Mientras carga, o si no hay WebGL, se ve la imagen de esa pose.
+- Cómo está hecho el modelo y sus límites: [LUNITO-ARTE.md](LUNITO-ARTE.md).
 
 ## Colores
 

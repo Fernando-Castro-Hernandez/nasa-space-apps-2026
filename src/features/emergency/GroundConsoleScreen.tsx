@@ -1,10 +1,13 @@
 // Consola del cirujano de vuelo (SISTEMA.md §9.7): pantalla de escritorio en
-// Tierra, sin la barra lateral de la app. Lee el mismo caso que la nave.
-import { Radio } from "lucide-react";
+// Tierra, sin la estructura de la app. Es otra persona y en otro lugar: se
+// queda con su barra oscura de consola. Lee el mismo caso que la nave.
+import { ChevronLeft, Radio } from "lucide-react";
 import { WeekAreaChart } from "@/components/premium/chart-14/charts-14";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { crewMember, MISSION } from "@/data/crew";
 import { HISTORY } from "@/data/history";
+import { t } from "@/i18n";
+import { whatLabel } from "./caseLogic";
 import { useCase, useNow } from "./caseStore";
 import { CaseTimeline } from "./CaseTimeline";
 import { ConsoleSide } from "./ConsoleSide";
@@ -12,26 +15,27 @@ import { formatTime } from "./link";
 import { ReplyBox } from "./ReplyBox";
 import { buildSbar } from "./sbar";
 import { SbarCard } from "./SbarCard";
+import { withWeekdays } from "./weekDays";
+import "./emergency.css";
 
 function TopBar() {
   return (
-    <header className="orbita-console-top flex flex-wrap items-center justify-between gap-3 border-b bg-card px-6 py-3">
-      <div className="flex items-center gap-3">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Radio className="size-4" aria-hidden="true" />
+    <header className="ground-top">
+      <h1>
+        <span>
+          <Radio aria-hidden="true" />
         </span>
-        <h1 className="text-base font-semibold">Consola médica · Tierra</h1>
-      </div>
-      <div className="flex items-center gap-4 text-sm">
-        <span className="flex items-center gap-2 text-muted-foreground">
-          <span
-            className="size-2 rounded-full bg-status-ok"
-            aria-hidden="true"
-          />
-          Enlace activo · retraso {MISSION.delayMinutes} min por tramo
+        {t("ground.title")}
+      </h1>
+      <div className="ground-top-info">
+        <span>
+          <span className="ground-led" aria-hidden="true" />
+          {t("ground.linkActive", { minutes: MISSION.delayMinutes })}
         </span>
-        <a href="/" className="font-semibold text-primary hover:underline">
-          Volver a la nave
+        <span className="ground-simulated">{t("ground.simulated")}</span>
+        <a href="/" className="ground-back">
+          <ChevronLeft aria-hidden="true" />
+          {t("ground.back")}
         </a>
       </div>
     </header>
@@ -44,47 +48,54 @@ export function GroundConsoleScreen() {
 
   if (!c) {
     return (
-      <div className="min-h-dvh bg-background">
+      <div className="ground-console">
         <TopBar />
-        <div className="mx-auto flex max-w-xl flex-col items-center gap-2 px-6 py-24 text-center">
-          <p className="text-lg font-semibold">Sin casos abiertos</p>
-          <p className="text-sm text-muted-foreground">
-            Cuando la tripulación abra una emergencia en{" "}
-            <a href="/emergencia" className="text-primary underline">
-              /emergencia
-            </a>
-            , el caso aparece aquí con su resumen.
+        <main className="mx-auto flex max-w-xl flex-col items-center gap-2 px-6 py-24 text-center">
+          <h2 className="text-xl font-bold">{t("ground.empty.title")}</h2>
+          <p className="text-base text-muted-foreground">
+            {t("ground.empty.body")}
           </p>
-        </div>
+        </main>
       </div>
     );
   }
 
   const person = crewMember(c.personId);
-  const sbar = buildSbar(c, person.name, [HISTORY.hrv, HISTORY.bpm]);
+  // El nombre del glosario para la HRV, igual en el resumen y en la gráfica.
+  const hrv = { ...HISTORY.hrv, label: t("ground.hrv") };
+  const sbar = buildSbar(c, person.name, [hrv, HISTORY.bpm]);
   const closed = c.closedAt !== undefined;
+  const opened = formatTime(c.openedAt);
 
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="ground-console">
       <TopBar />
-      <div className="mx-auto flex max-w-[90rem] flex-col gap-6 p-6">
+      <main className="mx-auto flex max-w-[90rem] flex-col gap-6 p-4 md:p-6">
         <section
-          className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 p-5 ${
+          className={`flex flex-col gap-1 rounded-2xl border-2 bg-card p-5 ${
             closed ? "border-border" : "border-status-alert"
           }`}
         >
-          <div className="flex flex-col gap-1">
-            <span className="text-xs font-bold tracking-widest text-status-alert">
-              {closed ? "CASO CERRADO" : "EMERGENCIA"} · ABIERTA{" "}
-              {formatTime(c.openedAt)} (HORA DE LA NAVE)
-            </span>
-            <span className="text-2xl font-bold">
-              {person.name} · {c.what.toLowerCase()}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              {person.role} · Día {MISSION.day} · {MISSION.phase}
-            </span>
-          </div>
+          <p
+            className={`ground-eyebrow ${closed ? "text-muted-foreground" : "text-status-alert"}`}
+          >
+            {closed
+              ? t("ground.case.closed", { time: opened })
+              : t("ground.case.open", { time: opened })}
+          </p>
+          <h2 className="text-[28px] leading-tight font-extrabold">
+            {t("emergency.banner.headline", {
+              name: person.name,
+              what: whatLabel(c.what),
+            })}
+          </h2>
+          <p className="text-base text-muted-foreground">
+            {t("ground.case.context", {
+              role: person.role,
+              day: MISSION.day,
+              phase: MISSION.phase,
+            })}
+          </p>
         </section>
 
         <div className="grid grid-cols-12 gap-6">
@@ -92,30 +103,34 @@ export function GroundConsoleScreen() {
             <SbarCard sbar={sbar} />
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">
-                  {HISTORY.hrv.label} · últimos 7 días
+                <CardTitle className="text-lg font-bold">
+                  {t("ground.hrvChart")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <WeekAreaChart
-                  label={HISTORY.hrv.label}
-                  unit={HISTORY.hrv.unit}
-                  data={HISTORY.hrv.days}
-                  baseline={HISTORY.hrv.baseline}
+                  label={hrv.label}
+                  unit={hrv.unit}
+                  data={withWeekdays(hrv.days)}
+                  baseline={hrv.baseline}
                 />
               </CardContent>
             </Card>
-            <Card>
-              <CardContent>
-                <ReplyBox disabled={closed} />
-              </CardContent>
-            </Card>
+            {!closed && (
+              <Card>
+                <CardContent>
+                  <ReplyBox />
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="col-span-12 flex flex-col gap-6 xl:col-span-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Línea de tiempo</CardTitle>
+                <CardTitle className="text-lg font-bold">
+                  {t("ground.timeline")}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <CaseTimeline
@@ -128,7 +143,7 @@ export function GroundConsoleScreen() {
             <ConsoleSide c={c} delayMinutes={MISSION.delayMinutes} now={now} />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

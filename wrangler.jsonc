@@ -2,14 +2,25 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Producción (rama main). Staging usa el entorno "staging" de abajo.
   "name": "space-apps-2026",
+  // El mismo Worker sirve la app y responde la API (HU-29).
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
+    // Solo /api/ pasa por el código del Worker; lo demás son archivos.
+    "run_worker_first": ["/api/*"],
   },
+  // Workers AI: transcripción, campos de la bitácora y voz de Lunito. Sin
+  // llaves de API. Los bindings no se heredan: se repiten en cada entorno.
+  "ai": { "binding": "AI" },
+  // Para cambiar la voz de Lunito (docs/DECISIONS.md), aquí y en "staging":
+  // "vars": { "TTS_MODEL": "@cf/deepgram/aura-2-es", "TTS_SPEAKER": "celeste" },
   "env": {
     "staging": {
       "name": "space-apps-2026-staging",
+      "ai": { "binding": "AI" },
     },
   },
 }

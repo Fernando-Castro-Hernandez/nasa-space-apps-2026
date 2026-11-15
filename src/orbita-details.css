@@ -1,12 +1,3 @@
-h1,
-h2,
-.orbita-brand {
-  font-family: "Unbounded", system-ui, sans-serif;
-}
-.orbita-voice,
-.orbita-checkin strong {
-  font-family: "Nunito", system-ui, sans-serif;
-}
 .orbita-constellation button img {
   border-radius: 50%;
   padding: 8px;
@@ -16,24 +7,6 @@ h2,
 }
 .orbita-constellation button {
   width: 128px;
-}
-.orbita-profiles button {
-  border: 0;
-  border-radius: 50% 50% 24px 24px;
-  padding: 24px 12px;
-  background: radial-gradient(circle at 50% 30%, white, #eee4fb);
-}
-.orbita-profiles button > span:first-child {
-  background: transparent;
-  color: var(--foreground);
-  border: 1px dashed var(--orbit-line);
-  width: 84px;
-  height: 84px;
-}
-.orbita-profiles button[aria-pressed="true"] {
-  box-shadow:
-    0 0 0 2px var(--primary),
-    0 20px 32px -24px #2bb8cc;
 }
 .orbita-moon[aria-pressed="true"] {
   outline: 3px solid var(--primary);
@@ -89,14 +62,8 @@ h2,
   display: block;
   max-height: 140px;
 }
-.orbita-chart > header p > span:first-child {
-  font-family: "Unbounded", system-ui, sans-serif;
-}
 .orbita-today > header p + h2 {
   margin-top: 8px;
-}
-.orbita-voice {
-  font-family: "Nunito", sans-serif;
 }
 @media (max-width: 600px) {
   .orbita-chart {
@@ -109,25 +76,8 @@ h2,
   .orbita-chart h3 {
     font-size: 13px;
   }
-  .orbita-chart > header p > span:first-child {
-    font-size: 25px;
-  }
   .orbita-moon {
     width: 25%;
-  }
-  .orbita-top .orbita-brand {
-    font-size: 17px;
-  }
-  .orbita-top .orbita-brand svg {
-    width: 20px;
-  }
-  .orbita-top {
-    gap: 8px;
-  }
-  .orbita-profile b {
-    width: 36px;
-    height: 36px;
-    font-size: 13px;
   }
   .orbita-today h2 {
     font-size: 25px;
