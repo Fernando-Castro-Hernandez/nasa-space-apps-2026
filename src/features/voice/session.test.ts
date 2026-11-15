@@ -36,7 +36,7 @@ test("el volumen va de 0 (silencio) a 1 (señal fuerte)", () => {
 
 /** Dictado del navegador de mentira: jsdom no tiene la Web Speech API. */
 function fakeRecognition() {
-  const created: (EventTarget & { lang: string })[] = [];
+  const created: (EventTarget & { lang: string; starts: number })[] = [];
   class Recognition extends EventTarget {
     lang = "";
     continuous = false;
@@ -45,7 +45,9 @@ function fakeRecognition() {
       super();
       created.push(this);
     }
+    starts = 0;
     start() {
+      this.starts++;
       this.dispatchEvent(new Event("start"));
     }
     stop() {
@@ -59,6 +61,7 @@ function fakeRecognition() {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
   window.localStorage.clear();
 });
 
@@ -156,9 +159,43 @@ test("si nunca pasó del umbral de voz, el último trozo se manda igual", async 
   }
 });
 
-test("con dictado disponible, el texto se ve mientras habla; sin él, frase por frase", async () => {
+test("por defecto Whisper no enciende el dictado del navegador: el audio no sale a otro servicio", async () => {
+  fakeMicrophone();
+  const created = fakeRecognition();
+  vi.spyOn(api, "transcribe").mockResolvedValue("hola");
+  const session = await startVoiceSession("worker", () => {});
+  expect(created).toHaveLength(0);
+  // Sin vista previa, el texto en vivo es el de Whisper, frase por frase.
+  expect(session.partial?.()).toBe("");
+  session.cancel();
+});
+
+test("la vista previa encendida deja de reintentar si el dictado falla de forma permanente", async () => {
+  vi.stubEnv("VITE_VOICE_PREVIEW", "on");
+  fakeMicrophone();
+  const created = fakeRecognition();
+  const session = await startVoiceSession("worker", () => {});
+  const preview = created[0]!;
+  expect(preview.starts).toBe(1);
+
+  // Un corte por silencio se reanuda.
+  preview.dispatchEvent(new Event("end"));
+  expect(preview.starts).toBe(2);
+
+  // Sin permiso o sin red no se reanuda: sería un bucle.
+  preview.dispatchEvent(
+    Object.assign(new Event("error"), { error: "not-allowed" }),
+  );
+  preview.dispatchEvent(new Event("end"));
+  preview.dispatchEvent(new Event("end"));
+  expect(preview.starts).toBe(2);
+  session.cancel();
+});
+
+test("con la vista previa encendida, el texto se ve mientras habla y el final es el de Whisper", async () => {
   vi.useFakeTimers();
   try {
+    vi.stubEnv("VITE_VOICE_PREVIEW", "on");
     fakeMicrophone();
     const created = fakeRecognition();
     vi.spyOn(api, "transcribe").mockResolvedValue("hola qué tal");

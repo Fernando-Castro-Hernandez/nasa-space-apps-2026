@@ -83,14 +83,28 @@ const PAUSE_MS = 700;
 const FAINT_LEVEL = VOICE_LEVEL / 2;
 
 /**
+ * La vista previa palabra por palabra está apagada salvo que el build lleve
+ * `VITE_VOICE_PREVIEW=on`. Usa el dictado del navegador a la vez que Whisper,
+ * y en Chrome ese dictado manda el audio al servicio de voz de Google: con
+ * ella, la bitácora de salud sale de Cloudflare (DECISIONS.md, "un motor de
+ * voz a la vez"). Apagada, el texto se ve frase por frase, con Whisper.
+ */
+const previewEnabled = () => import.meta.env.VITE_VOICE_PREVIEW === "on";
+
+/** Errores del dictado que no se arreglan reintentando (sin permiso, sin red,
+ *  servicio no disponible). "no-speech" y "aborted" sí son pasajeros. */
+const TRANSIENT_ERRORS = new Set(["no-speech", "aborted"]);
+
+/**
  * Texto en vivo mientras se habla: el dictado del navegador como vista previa
  * (Whisper no transcribe palabra por palabra). El texto final sigue siendo el
- * de Whisper. Si el navegador no lo tiene, o es Android (donde dos capturas del
- * micrófono a la vez se pelean), no hay vista previa y se ve frase por frase.
+ * de Whisper. Si está apagada, el navegador no la tiene, o es Android (donde
+ * dos capturas del micrófono a la vez se pelean), se ve frase por frase.
  */
 function livePreview(): { text(): string; stop(): void } | null {
   const Ctor = recognitionCtor();
-  if (!Ctor || /Android/i.test(navigator.userAgent)) return null;
+  if (!previewEnabled() || !Ctor || /Android/i.test(navigator.userAgent))
+    return null;
   try {
     const recognition = new Ctor();
     recognition.lang = localeTag();
@@ -105,6 +119,11 @@ function livePreview(): { text(): string; stop(): void } | null {
         .join(" ")
         .replace(/\s+/g, " ")
         .trim();
+    });
+    // Un fallo que no es pasajero apaga la vista previa: reintentar sería
+    // un bucle de arranques fallidos mientras dura la grabación.
+    recognition.addEventListener("error", (event) => {
+      if (!TRANSIENT_ERRORS.has(event.error)) active = false;
     });
     // El navegador lo corta solo tras un silencio largo: se reanuda.
     recognition.addEventListener("end", () => {
