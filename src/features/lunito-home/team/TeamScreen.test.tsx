@@ -43,3 +43,15 @@ test("tocar abre la hoja; Cerrar y Escape la cierran", () => {
   fireEvent.keyDown(document, { key: "Escape" });
   expect(screen.queryByText("Mei · Bien")).toBeNull();
 });
+
+test("todos ven la autonomía; solo el comandante ve el balanceador", () => {
+  const { unmount } = render(<TeamScreen />);
+  expect(screen.getByText("Autonomía de la tripulación")).toBeDefined();
+  expect(screen.queryByText("Balanceador de carga")).toBeNull();
+  unmount();
+
+  setActiveProfile("mei");
+  render(<TeamScreen />);
+  expect(screen.getByText("Autonomía de la tripulación")).toBeDefined();
+  expect(screen.getByText("Balanceador de carga")).toBeDefined();
+});

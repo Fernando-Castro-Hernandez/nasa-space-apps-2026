@@ -181,3 +181,31 @@
   height: 4.4cqw;
   stroke-width: 4;
 }
+/* Reused crew cards (shadcn) sit in the same capped column as the scene.
+   Their theme variables are remapped to the reference palette here, so the
+   shared components stay untouched. */
+.team-mission {
+  --card: var(--reference-surface);
+  --card-foreground: var(--reference-ink);
+  --foreground: var(--reference-violet);
+  --accent: var(--reference-lavender-200);
+  --primary: var(--reference-action);
+  --primary-foreground: var(--reference-surface);
+  --muted: var(--reference-lavender-50);
+  --muted-foreground: var(--reference-ink-soft);
+  --border: var(--reference-line);
+  color: var(--reference-ink);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  /* px, not cqw: this block is outside .team-content, so cqw would measure
+     the full-width app on desktop. */
+  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.team-mission [data-slot="card-title"] {
+  font-family: inherit;
+  font-weight: 850;
+}

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { CREW, crewMember } from "@/data/crew";
 import { pickCompanion } from "@/features/crew/companion";
-import { useShared } from "@/features/crew/privacy";
+import { AutonomyCard } from "@/features/crew/AutonomyCard";
+import { LoadBalancer } from "@/features/crew/LoadBalancer";
+import { isCommander, useShared } from "@/features/crew/privacy";
 import lunito from "@/features/day-checkin/assets/lunito-pregunta.webp";
 import { STATUS_VIEW } from "@/features/lunito/theme";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
@@ -85,6 +87,11 @@ export function TeamScreen() {
               </div>
             )
           )}
+        </section>
+        {/* HU-17/HU-30: shared autonomy goal; HU-27: balancer, commander only. */}
+        <section className="team-mission" aria-label="Misión de la tripulación">
+          <AutonomyCard />
+          {isCommander(crewMember(me)) && <LoadBalancer />}
         </section>
       </main>
       <ReferenceNav pathname="/tripulacion" />

@@ -16,10 +16,10 @@ La referencia integral del rediseño está en [diseno/prototipos/orbita.html](di
 
 ## Pantallas Marea de la app (2026-11-15)
 
-Por decisión de Ariff, estas pantallas reemplazan a las de Órbita en la barra inferior. Mandan sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
+Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la barra inferior. Mandan sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
 
 - **Inicio (`/`):** carrusel de dos páginas en celular (Así estás hoy y Tus datos, que sigue hasta Tu misión); desde 768 px las dos se ven lado a lado. Una sola gráfica con pestañas por métrica y una sola etiqueta de valor.
-- **Equipo (`/tripulacion`):** un Lunito por compañero; tocarlo abre una hoja con su estado público. Quien no comparte (o está en rojo) se ve como "Sin compartir".
+- **Equipo (`/tripulacion`):** un Lunito por compañero; tocarlo abre una hoja con su estado público. Quien no comparte (o está en rojo) se ve como "Sin compartir". Debajo, la autonomía de la tripulación y, solo para el comandante, el balanceador.
 - **Tareas (`/tareas`):** check-in del día y acciones del día con progreso por perfil; acceso al Botiquín al final.
 - **Configuración (`/ajustes`):** perfil (abre el selector), privacidad real, información de la misión y accesos a Tierra, Demo y repetir el inicio del día.
 - Lo que el producto aún no tiene (estilos de Lunito, notificaciones, recordatorios) se dibuja desactivado con "Próximamente".
