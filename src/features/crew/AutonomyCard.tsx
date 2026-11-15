@@ -8,15 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { MISSION } from "@/data/crew";
-import {
-  autonomy,
-  byHazard,
-  PHASE_GOAL,
-  SAMPLE_HAZARD_CASES,
-} from "./autonomy";
+import { casesWithCo2, useCo2State } from "@/features/demo/demoStore";
+import { autonomy, byHazard, PHASE_GOAL } from "./autonomy";
 
 export function AutonomyCard() {
-  const a = autonomy(SAMPLE_HAZARD_CASES.map((c) => c.outcome));
+  const cases = casesWithCo2(useCo2State());
+  const a = autonomy(cases.map((c) => c.outcome));
   const goal = Math.round(PHASE_GOAL * 100);
 
   return (
@@ -30,7 +27,7 @@ export function AutonomyCard() {
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <p className="text-2xl font-semibold">
-          {Math.round(a.ratio * 100)} %{" "}
+          {(a.ratio * 100).toFixed(1)} %{" "}
           <span className="text-base font-normal text-muted-foreground">
             · {a.wellHandled} de {a.closed} casos bien atendidos
           </span>
@@ -45,7 +42,7 @@ export function AutonomyCard() {
           />
         </div>
         <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-          {byHazard(SAMPLE_HAZARD_CASES).map((h) => (
+          {byHazard(cases).map((h) => (
             <li key={h.hazard}>
               <span className="font-semibold">{h.hazard}:</span> {h.wellHandled}{" "}
               de {h.closed} bien atendidos
