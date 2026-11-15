@@ -90,7 +90,7 @@ export const emergency = {
   // (SISTEMA.md §7.4): un toque, nunca se envía solo.
   escalation: {
     title: "Alert the flight surgeon?",
-    body: "Ground is {minutes} min away each way. Send now with who, why, your last sensor reading and the 7-day trend, so the reply is on its way while you keep checking.",
+    body: "Ground is {minutes} min away each way. The report carries who, why, your last reading and your 7-day trend.",
     send: "Send report to Ground",
     notNow: "Not yet",
   },

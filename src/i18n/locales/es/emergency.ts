@@ -86,7 +86,7 @@ export const emergency: Messages<typeof source> = {
   },
   escalation: {
     title: "¿Avisar al cirujano de vuelo?",
-    body: "Tierra está a {minutes} min por vía. Envía ya con quién, por qué, tu última lectura del sensor y la tendencia de 7 días, para que la respuesta venga en camino mientras sigues revisando.",
+    body: "Tierra está a {minutes} min por vía. El reporte lleva quién, por qué, tu última lectura y tu tendencia de 7 días.",
     send: "Enviar reporte a Tierra",
     notNow: "Todavía no",
   },
