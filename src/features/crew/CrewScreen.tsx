@@ -28,7 +28,7 @@ export function CrewScreen() {
   const pickedStatus = picked && publicStatus(picked, shared);
 
   return (
-    <div className="mx-auto grid max-w-7xl grid-cols-12 gap-4 p-4 md:gap-6 md:p-6">
+    <div className="orbita-crew mx-auto grid max-w-7xl grid-cols-12 gap-4 p-4 md:gap-6 md:p-6">
       <Card className="col-span-12 lg:col-span-7">
         <CardHeader>
           <CardTitle className="text-lg">La constelación</CardTitle>

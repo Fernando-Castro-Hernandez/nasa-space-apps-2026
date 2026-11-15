@@ -28,7 +28,7 @@ export function StatusSummary({
   status: Status;
   reason: string | null;
 }) {
-  const on = useReveal(900);
+  const on = useReveal(0);
   const Icon = ICON[status];
 
   return (

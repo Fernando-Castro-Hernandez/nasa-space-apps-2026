@@ -55,6 +55,13 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-15 | El compañero del día y el balanceador no revelan el motivo: acciones neutras de una lista fija y solo el peligro ("Precaución por Aislamiento").                                                                                                                                                                                                                                                                                                        | Privacidad (HU-26 y HU-27).                                                                                   |
 | 2026-11-14 | El modelo de Lunito se optimiza sin `meshopt` (1.3 MB) y sus brazos se entregan en un PR aparte: están repartidos entre `body` y `belly`. Detalle en `docs/LUNITO-ARTE.md`.                                                                                                                                                                                                                                                                             | `meshopt` mueve los orígenes de la animación; los brazos exigen cortar la pancita.                            |
 
+### Implementación de Órbita · 2026-11-15
+
+- Mateo autoriza portar la maqueta integral a todas las pantallas, incluidos shell, navegación y estilos globales; la propiedad habitual de Ariff se conserva para mantenimiento posterior.
+- La app usa la paleta Marea de la maqueta y conserva los flujos funcionales existentes de salud, privacidad y emergencias.
+- Unbounded 600, Nunito 700 y Atkinson Hyperlegible 400/700 se sirven localmente con `@fontsource`, para conservar la identidad de la maqueta también sin conexión.
+- Inicio, Equipo, Tareas y Ajustes forman la navegación principal. Check-in y Emergencia ocultan la barra inferior; Tierra y Demo conservan acceso desde Ajustes.
+
 ## Abierto
 
 - **Nombre del producto.** "Health Monitor" es provisional.

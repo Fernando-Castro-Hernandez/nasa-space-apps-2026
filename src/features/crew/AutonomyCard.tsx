@@ -32,15 +32,38 @@ export function AutonomyCard() {
             · {a.wellHandled} de {a.closed} casos bien atendidos
           </span>
         </p>
-        <div
-          className="h-3 overflow-hidden rounded-full bg-muted"
+        <svg
+          viewBox="0 0 200 112"
+          className="mx-auto w-full max-w-xs"
           aria-hidden="true"
         >
-          <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${(a.ratio / PHASE_GOAL) * 100}%` }}
+          <path
+            d="M20 100a80 80 0 0 1 160 0"
+            fill="none"
+            stroke="var(--accent)"
+            strokeWidth="14"
+            strokeLinecap="round"
           />
-        </div>
+          <path
+            d="M20 100a80 80 0 0 1 160 0"
+            fill="none"
+            stroke="var(--foreground)"
+            strokeWidth="14"
+            strokeLinecap="round"
+            pathLength="100"
+            strokeDasharray={`${Math.min(100, a.ratio * 100)} 100`}
+          />
+          <text
+            x="100"
+            y="100"
+            textAnchor="middle"
+            fill="var(--foreground)"
+            fontSize="26"
+            fontWeight="700"
+          >
+            {Math.round(a.ratio * 100)} %
+          </text>
+        </svg>
         <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
           {byHazard(cases).map((h) => (
             <li key={h.hazard}>

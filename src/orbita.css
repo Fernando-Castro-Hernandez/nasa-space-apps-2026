@@ -1,0 +1,193 @@
+:root {
+  --orbit-line: #2a1f5724;
+  --orbit-shadow: 0 16px 40px -20px #2a1f5730;
+}
+body {
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  line-height: 1.5;
+  background-image: radial-gradient(#2a1f5705 0.6px, transparent 0.6px);
+  background-size: 4px 4px;
+}
+h1,
+h2,
+h3,
+[data-slot="card-title"] {
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+  font-weight: 700;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+}
+[data-slot="card"],
+.orbita-panel {
+  border-radius: 24px;
+  box-shadow: var(--orbit-shadow);
+  background: var(--card);
+}
+[data-slot="card"] {
+  --card-spacing: 24px;
+}
+[data-slot="button"] {
+  border-radius: 999px;
+  min-height: 44px;
+}
+.orbita-app {
+  min-height: 100dvh;
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+.orbita-immersive {
+  padding-bottom: 24px;
+}
+.orbita-top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--orbit-line);
+}
+.orbita-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+.orbita-brand svg {
+  color: var(--primary);
+  width: 26px;
+}
+.orbita-telemetry,
+.orbita-kicker {
+  font:
+    600 12px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.orbita-profile {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+}
+.orbita-profile b {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: 1px solid var(--orbit-line);
+}
+.orbita-sos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  color: var(--status-alert);
+  background: white;
+  border: 1px solid var(--status-alert);
+  border-radius: 99px;
+  font-weight: 700;
+}
+.orbita-sos svg {
+  width: 20px;
+}
+.orbita-tabs {
+  position: fixed;
+  z-index: 40;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  padding: 8px;
+  gap: 4px;
+  border-radius: 99px;
+  background: #ece1fcf2;
+  box-shadow: var(--orbit-shadow);
+  backdrop-filter: blur(16px);
+}
+.orbita-tabs a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border-radius: 99px;
+  font-weight: 700;
+  color: var(--muted-foreground);
+  transition: background 180ms ease-out;
+}
+.orbita-tabs a[aria-current] {
+  background: white;
+  color: var(--primary);
+}
+.orbita-tabs svg {
+  width: 21px;
+}
+.orbita-page-title {
+  max-width: 1280px;
+  margin: 28px auto 0;
+  padding: 0 24px;
+  font-size: clamp(26px, 3vw, 38px);
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 12px;
+  background: white;
+}
+.skip-link:focus {
+  top: 12px;
+}
+.orbita-panel {
+  padding: 24px;
+}
+.orbita-settings {
+  max-width: 800px;
+  margin: auto;
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+}
+.orbita-setting-link {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.orbita-tasks-page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 24px;
+  display: grid;
+  gap: 40px;
+}
+.orbita-task {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.orbita-task:has(:checked) span {
+  text-decoration: line-through;
+  color: var(--muted-foreground);
+}
+.orbita-section-title {
+  font-size: 30px;
+}

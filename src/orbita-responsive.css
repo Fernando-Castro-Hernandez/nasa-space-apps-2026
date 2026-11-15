@@ -1,0 +1,64 @@
+@keyframes orbit-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@media (max-width: 900px) {
+  .orbita-home {
+    grid-template-columns: 1fr;
+  }
+  .orbita-today {
+    border-right: 0;
+    border-bottom: 1px solid var(--orbit-line);
+    padding: 24px 16px 32px;
+  }
+  .orbita-side {
+    padding: 24px 16px;
+  }
+  .orbita-telemetry {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .orbita-top {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .orbita-brand {
+    font-size: 20px;
+  }
+  .orbita-profile span {
+    display: none;
+  }
+  .orbita-sos {
+    padding: 0 12px;
+    font-size: 14px;
+  }
+  .orbita-tabs {
+    width: calc(100% - 32px);
+    max-width: 420px;
+    justify-content: space-around;
+  }
+  .orbita-tabs a {
+    flex-direction: column;
+    gap: 2px;
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+  .orbita-settings,
+  .orbita-tasks-page {
+    padding: 16px;
+  }
+  .orbita-checkin strong {
+    font-size: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
