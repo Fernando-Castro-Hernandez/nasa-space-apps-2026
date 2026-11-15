@@ -2,7 +2,7 @@
    pantalla se usa flotando, así que todo lo tocable mide 48 px o más y el
    texto de lectura 15 px o más. */
 .medicine-page {
-  padding: 0 max(20px, calc(50% - 440px)) 32px;
+  padding: 0 var(--frame-gutter) 32px;
   color: var(--reference-ink-strong);
 }
 .medicine-page [data-slot="tabs"] {

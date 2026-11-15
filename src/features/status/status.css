@@ -3,7 +3,7 @@
 .status-page {
   display: grid;
   gap: 14px;
-  padding: 0 max(20px, calc(50% - 440px)) 28px;
+  padding: 0 var(--frame-gutter) 28px;
   color: var(--reference-ink-strong);
 }
 .status-card {
