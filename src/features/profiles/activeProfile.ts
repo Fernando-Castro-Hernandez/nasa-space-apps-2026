@@ -31,6 +31,17 @@ export function setActiveProfile(id: string) {
   listeners.forEach((l) => l());
 }
 
+/** Vuelve al perfil de la demo (reinicio del panel /demo, HU-28). */
+export function resetActiveProfile() {
+  memory = null;
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    // Sin almacenamiento: solo se limpia la memoria.
+  }
+  listeners.forEach((l) => l());
+}
+
 function subscribe(onChange: () => void) {
   listeners.add(onChange);
   const onStorage = (e: StorageEvent) => {
