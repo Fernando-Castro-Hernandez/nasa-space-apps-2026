@@ -58,10 +58,13 @@ export const WHAT_HAPPENED = [
   "hardHit",
   "other",
 ] as const;
-export type WhatCode = (typeof WHAT_HAPPENED)[number];
+/** Con `redStatus`, que no se elige a mano: lo abre la propuesta de avisar a
+ *  Tierra cuando el estado llega a Atención (`escalation.ts`). */
+const WHAT_CODES = [...WHAT_HAPPENED, "redStatus"] as const;
+export type WhatCode = (typeof WHAT_CODES)[number];
 
 const isWhatCode = (value: string): value is WhatCode =>
-  (WHAT_HAPPENED as readonly string[]).includes(value);
+  (WHAT_CODES as readonly string[]).includes(value);
 
 /** Código de "qué pasó": acepta el código o su texto en cualquier idioma
  *  ("Se desmayó", "Fainted"). null si es otro texto. */
@@ -69,7 +72,7 @@ export function whatCode(what: string): WhatCode | null {
   if (isWhatCode(what)) return what;
   const clean = what.trim().toLocaleLowerCase();
   return (
-    WHAT_HAPPENED.find((code) =>
+    WHAT_CODES.find((code) =>
       LOCALES.some(
         (locale) =>
           translate(locale, `emergency.what.${code}`).toLocaleLowerCase() ===
@@ -132,6 +135,11 @@ export function eventText(e: CaseEvent): string {
   if (!p) return e.text;
   switch (e.kind) {
     case "open":
+      if (p.reason !== undefined)
+        return t("emergency.log.openedAlert", {
+          name: asText(p.name),
+          reason: asText(p.reason),
+        });
       return t("emergency.log.opened", {
         name: asText(p.name),
         what: whatLabel(asText(p.what)),
@@ -199,6 +207,41 @@ export function openCase(
     orders: [],
   };
   return withEvent(base, now, "open", { name: personName, what: code });
+}
+
+/**
+ * Caso abierto por una alerta del monitoreo (estado Atención), no por una
+ * persona: lleva el motivo y la última lectura de signos, para que Tierra no
+ * tenga que pedirlos. `simulated`: los signos no salieron de la estación.
+ */
+export function openRedCase(
+  personId: string,
+  personName: string,
+  reason: string,
+  vitals: { bpm: number; spo2: number; simulated: boolean },
+  now: number,
+): EmergencyCase {
+  const base: EmergencyCase = {
+    id: `caso-${now}`,
+    personId,
+    what: "redStatus",
+    openedAt: now,
+    steps: {},
+    events: [],
+    orders: [],
+  };
+  const opened = withEvent(base, now, "open", {
+    name: personName,
+    what: "redStatus",
+    reason,
+  });
+  const { bpm, spo2, simulated } = vitals;
+  return withEvent(
+    opened,
+    now,
+    "vitals",
+    simulated ? { bpm, spo2, simulated: 1 } : { bpm, spo2 },
+  );
 }
 
 export function checkStep(

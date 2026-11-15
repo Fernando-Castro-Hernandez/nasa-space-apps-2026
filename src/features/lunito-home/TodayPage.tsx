@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { LunitoDashboard, MetricKey } from "@/data/lunitoDashboard";
 import { STATUS_LABEL } from "@/domain/status";
 import pregunta from "@/features/day-checkin/assets/lunito-pregunta.webp";
+import { EscalationCard } from "@/features/emergency/EscalationCard";
 import { LunitoAvatar } from "@/features/lunito/LunitoAvatar";
 import { metricParts, metricText } from "@/features/lunito/metricFormat";
 import { LunitoTalkSheet } from "@/features/lunito/LunitoTalkSheet";
@@ -60,6 +61,7 @@ export function TodayPage({
           {data.reason}
         </p>
       )}
+      <EscalationCard />
       <div className="today-scene">
         <div className="today-stage">
           <Marea />

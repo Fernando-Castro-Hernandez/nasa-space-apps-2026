@@ -21,6 +21,8 @@ export const emergency = {
     breathing: "Trouble breathing",
     hardHit: "Hard blow",
     other: "Other",
+    // No se elige a mano: lo abre la propuesta de avisar a Tierra (escalation).
+    redStatus: "Monitoring alert",
   },
   // Franja roja del caso.
   banner: {
@@ -82,6 +84,15 @@ export const emergency = {
     groundOrder: "Ground instruction: {text}",
     orderDone: "Done: {text}",
     closed: "Case closed",
+    openedAlert: "Case opened by a monitoring alert: {name} · {reason}",
+  },
+  // Propuesta de avisar a Tierra cuando el estado llega a Atención
+  // (SISTEMA.md §7.4): un toque, nunca se envía solo.
+  escalation: {
+    title: "Alert the flight surgeon?",
+    body: "Ground is {minutes} min away each way. Send now with who, why, your last sensor reading and the 7-day trend, so the reply is on its way while you keep checking.",
+    send: "Send report to Ground",
+    notNow: "Not yet",
   },
   close: {
     button: "Close case",

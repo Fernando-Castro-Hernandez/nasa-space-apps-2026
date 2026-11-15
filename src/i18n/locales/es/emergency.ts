@@ -23,6 +23,7 @@ export const emergency: Messages<typeof source> = {
     breathing: "Dificultad para respirar",
     hardHit: "Golpe fuerte",
     other: "Otro",
+    redStatus: "Alerta del monitoreo",
   },
   // Franja roja del caso.
   banner: {
@@ -81,6 +82,13 @@ export const emergency: Messages<typeof source> = {
     groundOrder: "Indicación de Tierra: {text}",
     orderDone: "Hecho: {text}",
     closed: "Caso cerrado",
+    openedAlert: "Caso abierto por una alerta del monitoreo: {name} · {reason}",
+  },
+  escalation: {
+    title: "¿Avisar al cirujano de vuelo?",
+    body: "Tierra está a {minutes} min por vía. Envía ya con quién, por qué, tu última lectura del sensor y la tendencia de 7 días, para que la respuesta venga en camino mientras sigues revisando.",
+    send: "Enviar reporte a Tierra",
+    notNow: "Todavía no",
   },
   close: {
     button: "Cerrar caso",
