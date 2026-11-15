@@ -4,6 +4,7 @@
 // resultado → Inicio. Funciones puras: la pantalla solo despacha eventos.
 import type { StatusCode } from "@/api/contract";
 import type { LunitoPose } from "@/features/lunito/poses";
+import { STATUS_VIEW } from "@/features/lunito/theme";
 import type { VoiceLogState } from "@/features/voice/useVoiceLog";
 import type { VoiceStatus } from "@/features/voice/useVoiceInput";
 import saludo from "./assets/lunito-saludo.webp";
@@ -145,9 +146,9 @@ export function resultPose(
   return status === "verde" ? "idle" : "caring";
 }
 
-/** Imagen de respaldo de la pose del resultado. */
-export const resultImage = (pose: LunitoPose) =>
-  pose === "celebrating" ? saludo : pregunta;
+/** Imagen de respaldo de la pose del resultado: la pancita del color del estado. */
+export const resultImage = (pose: LunitoPose, status: StatusCode) =>
+  pose === "celebrating" ? saludo : STATUS_VIEW[status].image;
 
 /** El saludo dura lo que tarda en leerse; después, la pregunta. */
 export const GREETING_MS = 2600;
