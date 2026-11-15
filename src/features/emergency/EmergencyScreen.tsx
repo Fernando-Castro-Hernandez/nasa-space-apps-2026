@@ -46,16 +46,17 @@ export function EmergencyScreen() {
           <CardContent className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-base font-semibold text-status-ok">
-                Caso enviado a Tierra ✓ · {formatTime(c.openedAt)}
+                Caso guardado localmente · {formatTime(c.openedAt)}
               </p>
               <p className="text-sm text-muted-foreground">
-                Retraso de {MISSION.delayMinutes} min por tramo · respuesta
-                estimada {formatTime(eta)}
+                Demostración sin envío a Tierra. Retraso simulado de{" "}
+                {MISSION.delayMinutes} min por tramo · respuesta simulada{" "}
+                {formatTime(eta)}
               </p>
             </div>
             <span
               className="font-mono text-3xl font-bold tabular-nums"
-              aria-label="Tiempo hasta la respuesta estimada"
+              aria-label="Tiempo simulado hasta una respuesta de demostración"
             >
               {countdown(eta, now)}
             </span>

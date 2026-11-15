@@ -30,7 +30,7 @@ export function OpenCaseForm() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4 md:gap-6 md:p-6">
       <p className="rounded-xl border-2 border-status-alert px-4 py-3 text-base font-semibold text-status-alert">
-        Al abrir el caso se avisa a Tierra de inmediato.
+        Demostración local: abrir el caso no envía una alerta a Tierra.
       </p>
 
       <Card>

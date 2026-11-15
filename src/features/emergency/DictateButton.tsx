@@ -35,7 +35,9 @@ export function DictateButton({ disabled }: { disabled: boolean }) {
       }`}
     >
       <Mic className="size-6" aria-hidden="true" />
-      {listening ? "Escuchando… suelta para guardar" : "Mantén para dictar"}
+      {listening
+        ? "Nota de demostración… suelta para guardar"
+        : "Dictado de demostración"}
     </button>
   );
 }

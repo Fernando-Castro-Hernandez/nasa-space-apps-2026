@@ -35,6 +35,22 @@ for (const [path, title] of [
   });
 }
 
+test("Emergencia abre un caso local sin afirmar que envió una alerta", async ({
+  page,
+}) => {
+  await page.goto("/emergencia");
+  await expect(
+    page.getByRole("heading", { name: "Emergencia a bordo" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: /Ana Especialista de misión/ })
+    .click();
+  await page.getByRole("button", { name: "Se desmayó", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir emergencia · Ana" }).click();
+  await expect(page.getByText(/Caso guardado localmente/)).toBeVisible();
+  await expect(page.getByText(/Caso enviado a Tierra/)).toHaveCount(0);
+});
+
 test("la consola de Tierra abre sin la barra lateral", async ({ page }) => {
   await page.goto("/tierra");
   await expect(page.getByText("Consola médica · Tierra")).toBeVisible();

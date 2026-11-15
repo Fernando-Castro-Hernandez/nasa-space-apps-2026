@@ -34,14 +34,15 @@ export function ReplyBox({ disabled }: { disabled: boolean }) {
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="text-xs text-muted-foreground">
-          Llega a la nave como un paso de la checklist.
+          Se guarda en la checklist local de esta demostración; no se envía a la
+          nave.
         </span>
         <Button
           type="submit"
           disabled={disabled || !text.trim()}
           className="h-11 px-5 text-base"
         >
-          Enviar a la nave
+          Guardar indicación local
         </Button>
       </div>
     </form>

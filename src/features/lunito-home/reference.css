@@ -1,0 +1,261 @@
+/* Variable Nunito only for the PNG-reference screens; Órbita loads its own fonts. */
+@import "@fontsource-variable/nunito";
+
+/* Palette: the only place hex colors live; screens use the tokens. */
+.reference-app {
+  --reference-paper: #fdf7f3;
+  --reference-surface: #fffcfd;
+  --reference-ink: #625373;
+  --reference-ink-strong: #382451;
+  --reference-ink-soft: #88749a;
+  --reference-action: #6b0bff;
+  --reference-violet: #9b25ff;
+  --reference-violet-soft: #a45ae4;
+  --reference-lavender-50: #f8f0fc;
+  --reference-lavender-100: #ecdcfc;
+  --reference-lavender-200: #e4cbfc;
+  --reference-lavender-300: #dcbcfd;
+  --reference-line: #dcc0f8;
+  --reference-line-strong: #9b75cf;
+  --reference-line-neutral: #d6d3da;
+  --reference-aqua-50: #ecf7f7;
+  --reference-aqua-200: #c2f3f1;
+  --reference-ok: #06c8e5;
+  --reference-ok-ink: #007b77;
+  --reference-warn-bg: #fff0d3;
+  --reference-warn-ink: #b66b00;
+  --reference-alert-bg: #ffe2e2;
+  --reference-alert-ink: #a42525;
+  --reference-emergency: #fa1916;
+  --reference-glow: #cb90ec;
+  --reference-aqua-100: #dff7f6;
+  --reference-aqua-300: #a8eeec;
+  --reference-shadow: #73538b25;
+  --reference-shadow-violet: #ae6ee62b;
+  color: var(--reference-ink);
+  background: var(--reference-paper);
+  font-family: "Nunito Variable", "Nunito", sans-serif;
+  font-weight: 500;
+  position: relative;
+  /* Phone design width cap; past it the layout would just grow. */
+  width: min(100%, 480px);
+  height: 100dvh;
+  margin-inline: auto;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  font-size: clamp(15px, 3.9vw, 22px);
+}
+.reference-app button,
+.reference-app a {
+  -webkit-tap-highlight-color: transparent;
+}
+.reference-app button {
+  cursor: pointer;
+}
+.reference-app button:disabled {
+  cursor: not-allowed;
+}
+.reference-app :focus-visible {
+  outline: 2px solid var(--reference-action);
+  outline-offset: 4px;
+}
+.reference-header {
+  flex-shrink: 0;
+  height: 13.6cqw;
+  min-height: 54px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4.8cqw 0 6.2cqw;
+  color: var(--reference-action);
+  font-weight: 850;
+  font-size: 5cqw;
+}
+.reference-emergency {
+  position: relative;
+  border-radius: 99px;
+  padding: 0 2.7cqw;
+  min-height: 44px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.3cqw;
+  color: var(--reference-emergency);
+  font-size: 3.85cqw;
+  font-weight: 750;
+  line-height: 1;
+  isolation: isolate;
+}
+.reference-emergency::before {
+  content: "";
+  position: absolute;
+  inset: 6px 0;
+  border: 1px solid var(--reference-emergency);
+  border-radius: inherit;
+  background: var(--reference-surface);
+  z-index: -1;
+}
+.reference-emergency svg {
+  width: 4.6cqw;
+  height: 4.6cqw;
+  stroke-width: 4;
+}
+.home-carousel {
+  flex: 1;
+  min-height: 0;
+  outline-offset: -3px;
+  touch-action: pan-y;
+}
+/* Each page is its own container so cqw sizes follow the page, not the
+   whole app; on a phone both widths are the same. */
+.carousel-page {
+  height: 100%;
+  container-type: inline-size;
+}
+.carousel-pagination {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 9.5cqw;
+  min-height: 36px;
+  align-items: center;
+  background: var(--reference-paper);
+}
+.carousel-pagination button {
+  width: 5.5cqw;
+  min-width: 28px;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+}
+.carousel-pagination span {
+  width: 2.85cqw;
+  height: 2.85cqw;
+  border-radius: 50%;
+  background: var(--reference-lavender-100);
+}
+.carousel-pagination [aria-pressed="true"] span {
+  background: var(--reference-violet);
+}
+.reference-nav {
+  flex-shrink: 0;
+  min-height: 74px;
+  height: calc(18.8cqw + env(safe-area-inset-bottom));
+  padding: 2.5cqw 4.2cqw calc(2.5cqw + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5cqw;
+  border-radius: 6cqw 6cqw 0 0;
+  background: linear-gradient(
+    110deg,
+    var(--reference-lavender-100),
+    var(--reference-lavender-100)
+  );
+  color: var(--reference-ink-strong);
+}
+.reference-nav a {
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3.2cqw;
+  gap: 0.4cqw;
+  font-size: 3.7cqw;
+  line-height: 1.1;
+}
+.reference-nav svg {
+  width: 5.7cqw;
+  height: 5.7cqw;
+}
+.reference-nav [aria-current="page"] {
+  background: var(--reference-lavender-200);
+  color: var(--reference-action);
+  font-weight: 850;
+}
+.reference-nav [aria-current="page"] svg {
+  fill: var(--reference-violet);
+  stroke: var(--reference-violet);
+}
+.reference-content {
+  flex: 1;
+  overflow-y: auto;
+}
+.reference-content > h1 {
+  margin: 0 6cqw 4cqw;
+  font-size: 7cqw;
+  font-weight: 800;
+}
+.reference-build {
+  margin: 2rem 1rem;
+  text-align: center;
+  font-size: 12px;
+}
+.marea {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Sizing model: every page measures in cqw against its own width, so the
+   phone design scales as one piece. Desktop does not patch sizes: it only
+   chooses the page width. */
+
+/* Tablet and desktop (DISENO.md §2): both pages side by side, centered, split
+   by a thin line. Each page stays near phone width (about 80% of a full
+   column) and never taller than the viewport allows. */
+@media (min-width: 768px) {
+  .reference-app {
+    width: 100%;
+  }
+  .reference-header {
+    height: 52px;
+    min-height: 52px;
+    padding-inline: 32px;
+    font-size: 19px;
+  }
+  .reference-emergency {
+    padding-inline: 14px;
+    gap: 6px;
+    font-size: 15px;
+  }
+  .reference-emergency svg {
+    width: 16px;
+    height: 16px;
+  }
+  .home-carousel {
+    display: grid;
+    grid-template-columns: repeat(
+      2,
+      minmax(0, min(440px, calc((100dvh - 200px) / 1.25)))
+    );
+    grid-template-rows: minmax(0, 1fr);
+    justify-content: center;
+    column-gap: clamp(32px, 7vw, 128px);
+    padding: 0 16px 16px;
+    background: linear-gradient(var(--reference-line), var(--reference-line))
+      50% 0 / 1px calc(100% - 16px) no-repeat;
+  }
+  .carousel-pagination,
+  .reference-app .swipe-invitation {
+    display: none;
+  }
+  .reference-nav {
+    height: 70px;
+    min-height: 70px;
+    padding: 8px max(32px, calc(50% - 300px));
+    gap: 12px;
+    border-radius: 22px 22px 0 0;
+  }
+  .reference-nav a {
+    border-radius: 13px;
+    gap: 3px;
+    font-size: 14px;
+  }
+  .reference-nav svg {
+    width: 21px;
+    height: 21px;
+  }
+}

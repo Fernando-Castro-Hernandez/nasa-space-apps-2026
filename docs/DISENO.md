@@ -14,6 +14,16 @@ La referencia integral del rediseño está en [diseno/prototipos/orbita.html](di
 - Cada responsable porta su pantalla según [REPARTO.md](REPARTO.md). Ariff conserva en exclusiva la estructura global, navegación y tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
 - El selector de paleta, voz y estado de la esquina es una herramienta de comparación de la maqueta y no forma parte del producto final.
 
+## Inicio de referencia · `/referencia` (2026-11-15)
+
+Inicio tal como lo dibujan las PNG ([secuencia de inicio](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png) y [Así estás hoy](diseno/referencias/06-hoy-marea.png)) vive aparte en `/referencia` para compararlo con Órbita, que sigue mandando en `/`. Se abre desde Ajustes.
+
+- Carrusel de dos páginas en celular: Así estás hoy y Tus datos, que continúa hasta Tu misión. Desde 768 px las dos páginas se ven lado a lado, separadas por una línea fina.
+- Una sola gráfica grande con pestañas por métrica y una sola etiqueta de valor: el último registro o el punto señalado.
+- Sin la fuente exacta ni originales limpios del personaje: se usa Nunito variable como aproximación y las tres poses se recrearon en PNG con autorización.
+- El inicio del día (`/buenos-dias`) solo antecede a `/referencia`, no a Órbita.
+- Sin backend todavía: datos de demostración centralizados. Emergencia guarda el caso localmente y no confirma envíos reales.
+
 ## Referencias finales (modelo exacto del frontend)
 
 Estas imágenes fijan **el contenido y el flujo exactos de Inicio**. La maqueta Órbita fija la estructura y el lenguaje visual integral; si existe una diferencia puramente visual, manda Órbita. Los puntos donde las imágenes chocaban con reglas funcionales anteriores ya están decididos abajo.

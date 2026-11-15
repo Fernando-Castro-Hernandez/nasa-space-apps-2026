@@ -1,0 +1,165 @@
+/* Variable Nunito only for the PNG-reference screens; Órbita loads its own fonts. */
+@import "@fontsource-variable/nunito";
+
+.day-checkin {
+  --day-bg: #fef6f2;
+  --day-ink: #6a5a79;
+  --day-violet: #6c48b5;
+  --day-write: #410dfb;
+  color: var(--day-ink);
+  background: var(--day-bg) url("./background.svg") center / 100% 100% no-repeat;
+  min-height: 100dvh;
+  font-family: "Nunito Variable", "Nunito", sans-serif;
+}
+
+.day-checkin-content {
+  width: min(100%, 530px);
+  min-height: 100dvh;
+  margin: auto;
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day-emergency {
+  align-self: flex-end;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid #fa1916;
+  border-radius: 999px;
+  color: #fa1916;
+  font-size: clamp(16px, 3.75vw, 20px);
+  font-weight: 600;
+}
+
+.day-emergency svg {
+  width: 21px;
+  height: 21px;
+}
+.day-main {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 0 16px;
+  text-align: center;
+}
+.day-pose {
+  position: relative;
+  width: 63.2%;
+  max-width: 310px;
+}
+.day-pose img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.day-wave-marks {
+  position: absolute;
+  top: 43%;
+  left: -9%;
+  width: 25px;
+  height: 42px;
+}
+.day-wave-marks path {
+  fill: none;
+  stroke: #ac72f8;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+.day-main h1 {
+  margin: 4px 0 0;
+  white-space: pre-line;
+  font-size: clamp(28px, 7.55vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+.day-voice-control {
+  margin-top: 22px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+}
+.day-mic-button {
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  color: var(--day-violet);
+}
+.day-mic-button svg {
+  width: 96px;
+  height: 96px;
+}
+.day-caption {
+  margin: 8px 0 0;
+  font-size: clamp(17px, 4.5vw, 24px);
+  font-weight: 500;
+}
+.day-mic-notice {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+}
+.day-write-button {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--day-write);
+  font-size: 20px;
+  font-weight: 600;
+}
+.day-write-button svg {
+  width: 32px;
+  height: 32px;
+}
+.day-voice-wave {
+  display: flex;
+  align-items: center;
+  gap: clamp(7px, 2.64vw, 14px);
+  height: 96px;
+}
+.day-voice-wave > span {
+  display: block;
+  width: clamp(6px, 1.5vw, 8px);
+  height: 100%;
+  border-radius: 999px;
+  background: #ad72fc;
+  transform-origin: center;
+}
+.day-wave-button {
+  min-height: 96px;
+  padding: 0 8px;
+}
+.day-type-sheet {
+  color: var(--day-ink);
+  font-family: inherit;
+}
+.day-type-sheet textarea {
+  color: var(--day-ink);
+  background: var(--day-bg);
+}
+.day-type-sheet button[type="submit"] {
+  background: var(--day-write);
+}
+.day-checkin button:focus-visible,
+.day-emergency:focus-visible,
+.day-type-sheet button:focus-visible {
+  outline: 2px solid var(--day-write);
+  outline-offset: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .day-checkin *,
+  .day-type-sheet * {
+    animation: none;
+    transition: none;
+  }
+}
