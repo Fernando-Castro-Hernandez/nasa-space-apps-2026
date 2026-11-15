@@ -113,6 +113,14 @@ describe("SpO2", () => {
     expect(spo2Rule(spo2Base, [94, 94, 94]).status).toBe("ambar");
     expect(spo2Rule(spo2Base, [97, 96, 97]).status).toBe("verde");
   });
+
+  test("la lectura de hoy bajo 94 % es amarillo aunque no haya historial", () => {
+    const today = { value: 92, confirmed: false };
+    expect(spo2Rule(spo2Base, [], today).status).toBe("ambar");
+    expect(spo2Rule(spo2Base, [], { value: 97, confirmed: false }).status).toBe(
+      "verde",
+    );
+  });
 });
 
 describe("sueño", () => {

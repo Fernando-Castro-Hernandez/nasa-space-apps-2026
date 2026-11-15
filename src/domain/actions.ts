@@ -18,8 +18,14 @@ const CATALOG: CatalogEntry[] = [
   {
     id: "contact-surgeon",
     text: "Contacta al cirujano de vuelo",
-    rules: ["pulse-red", "spo2-red", "radiation-limit"],
+    rules: ["pulse-red", "spo2-red"],
     source: SOURCES.news2Response,
+  },
+  {
+    id: "dose-limit",
+    text: "Contacta al cirujano de vuelo: tu dosis llegó al límite",
+    rules: ["radiation-limit"],
+    source: SOURCES.ochmoRadiation,
   },
   {
     id: "repeat-reading",
@@ -59,7 +65,7 @@ const CATALOG: CatalogEntry[] = [
   },
   {
     id: "rest-recheck",
-    text: "Descansa y mide tu pulso mañana en reposo",
+    text: "Descansa y vuelve a medirte mañana en reposo",
     rules: ["pulse-high", "spo2-low"],
     source: null,
   },
