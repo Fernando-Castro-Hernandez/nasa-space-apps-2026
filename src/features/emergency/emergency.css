@@ -3,7 +3,8 @@
    dos microinteracciones funcionales: la fila nueva del registro y el check
    de "Caso enviado". Colores: los tokens de reference.css e index.css. */
 
-/* El ancho de lectura es el del título de MareaPage: hasta 880 px, centrado. */
+/* El ancho de lectura es el marco común (reference.css): hasta 880 px,
+   centrado. En celular el margen es un poco menor, para ganar ancho. */
 .em-page {
   --em-gutter: max(16px, calc(50% - 440px));
   display: flex;
@@ -189,6 +190,18 @@
   font-size: 17px;
   font-weight: 800;
   line-height: 1.25;
+}
+/* Con icono (Conectar sensor): en la misma fila que el texto. */
+.em-secondary:has(> svg) {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.em-secondary > svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* --- Caso abierto --- */
@@ -665,5 +678,12 @@
   .em-log li:first-child,
   .em-check {
     animation: none;
+  }
+}
+
+/* Tablet y escritorio: el mismo margen que el resto de las pantallas. */
+@media (min-width: 768px) {
+  .em-page {
+    --em-gutter: var(--frame-gutter);
   }
 }

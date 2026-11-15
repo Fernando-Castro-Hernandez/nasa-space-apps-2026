@@ -9,6 +9,13 @@
   container-type: inline-size;
   color: var(--reference-ink-strong);
 }
+/* The two tablet columns: on a phone they are not boxes, so the page reads
+   as one column and cqw still measures .settings-page. */
+.settings-grid,
+.settings-col,
+.settings-pad {
+  display: contents;
+}
 .settings-page h1 {
   margin: 0;
   font-size: 8.6cqw;
@@ -17,7 +24,7 @@
   letter-spacing: -0.15cqw;
   color: var(--reference-ink);
 }
-.settings-page > h2 {
+.settings-pad > h2 {
   margin: 6cqw 0 1.5cqw;
   font-size: 6.2cqw;
   font-weight: 850;
@@ -242,10 +249,37 @@
 .settings-notices p {
   margin: 0;
 }
+/* Tablet and desktop: the shared frame (reference.css). Profile, Lunito and
+   language on the left; privacy, reminders and links on the right. Each
+   column is its own 440 px container, so cqw sizes stay the phone's. */
 @media (min-width: 768px) {
   .settings-page {
     width: 100%;
-    max-width: 480px;
-    margin-inline: auto;
+    padding: 4px 16px 24px;
+    container-type: normal;
+  }
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 440px));
+    justify-content: center;
+    align-items: start;
+    column-gap: 64px;
+  }
+  .settings-col {
+    display: block;
+    container-type: inline-size;
+  }
+  .settings-pad {
+    display: block;
+    padding-inline: 5.3cqw;
+  }
+  /* The column is a bit narrower than a phone, so the profile line wraps:
+     the rows under it start clear of the blob. */
+  .settings-profile {
+    margin-bottom: 8cqw;
+  }
+  /* The first heading of the right column starts level with the title. */
+  .settings-col + .settings-col h2:first-child {
+    margin-top: 1.6cqw;
   }
 }

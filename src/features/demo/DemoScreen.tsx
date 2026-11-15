@@ -46,8 +46,9 @@ export function DemoScreen() {
   const [reset, setReset] = useState<"idle" | "confirm" | "done">("idle");
 
   return (
-    // Misma columna que el título de la página (MareaPage), a la izquierda.
-    <div className="mx-auto flex w-full max-w-[920px] flex-col gap-5 px-5 pb-6 *:max-w-2xl">
+    // El marco común de las pantallas (reference.css); cada bloque no pasa
+    // del ancho de una columna, a la izquierda, bajo el título.
+    <div className="flex w-full flex-col gap-5 px-[var(--frame-gutter)] pb-6 *:max-w-[440px]">
       <p className="text-base text-muted-foreground">{t("demo.intro")}</p>
 
       <Button

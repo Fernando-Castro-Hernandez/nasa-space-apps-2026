@@ -13,6 +13,12 @@
 .tasks-inner {
   padding: 1.1cqw 5.3cqw 6cqw;
 }
+/* The two tablet columns: on a phone they are not boxes, so the page reads
+   as one column and cqw still measures .tasks-page. */
+.tasks-col,
+.tasks-pad {
+  display: contents;
+}
 .tasks-head {
   position: relative;
 }
@@ -314,6 +320,35 @@
 .tasks-reminder strong {
   font-size: 5cqw;
   color: var(--reference-ink-strong);
+}
+/* Tablet and desktop: the shared frame (reference.css). Today's list on the
+   left, the med kit and what comes next on the right; each column is its own
+   440 px container, so cqw sizes stay those of the phone design. */
+@media (min-width: 768px) {
+  .tasks-page {
+    max-width: none;
+    container-type: normal;
+  }
+  .tasks-inner {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 440px));
+    justify-content: center;
+    align-items: start;
+    column-gap: 64px;
+    padding: 4px 16px 24px;
+  }
+  .tasks-col {
+    display: block;
+    container-type: inline-size;
+  }
+  .tasks-pad {
+    display: block;
+    padding-inline: 5.3cqw;
+  }
+  /* The med kit lines up with the first task, under the title's height. */
+  .tasks-col + .tasks-col .tasks-pad {
+    padding-top: 33cqw;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .tasks-lunito,
