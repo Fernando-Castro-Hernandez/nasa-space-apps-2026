@@ -11,12 +11,12 @@ const vitalsOf = (name: string) =>
 
 describe("headline", () => {
   test("en verde dice que todo está en tu normal", () => {
-    expect(headline(vitalsOf("Normal"))).toContain("Todo en orden");
+    expect(headline(vitalsOf("Normal"))).toContain("Bien");
   });
 
   test("en ámbar nombra el indicador y su motivo", () => {
     const text = headline(vitalsOf("Poco descanso"));
-    expect(text).toMatch(/^Revisar · /);
+    expect(text).toMatch(/^Precaución · /);
     // "Poco descanso": pulso 66 sobre la base (60 + 0.5·4) y HRV baja; el
     // pulso va primero en el orden de prioridad.
     expect(text).toContain("pulso: sobre tu normal");

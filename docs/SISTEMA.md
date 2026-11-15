@@ -210,7 +210,7 @@ Es la primera pregunta que nos harán. Respuesta corta: **sí para tendencias, n
 
 ### 7.2 Interpretación
 
-- **Clasificación por peligro:** dosis → R; ánimo y HRV → I; ejercicio y recuperación → G; CO2 y SpO2 → E; botiquín y casos → D.
+- **Clasificación por peligro:** dosis → R; ánimo y HRV → I; ejercicio y recuperación → G; CO2 y SpO2 → E; enlace con Tierra y casos que esperan respuesta → D.
 - **Línea base personal:** compara contigo mismo, no con rangos genéricos.
 - **Cruce de datos:** ejemplo: CO2 alto + varios con dolor de cabeza + pulso elevado = **evento ambiental (E)**, no tres casos médicos. La instrucción es revisar la ventilación, no repartir analgésicos.
 - **Semáforo con motivo:** "Amarillo · G: 3 días sin ARED y recuperación cardiaca más lenta".

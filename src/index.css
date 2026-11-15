@@ -72,7 +72,8 @@
   --border: oklch(0.91 0.012 295);
   --input: var(--border);
   --ring: var(--primary);
-  --status-ok: oklch(0.56 0.15 158);
+  /* Cian profundo (#0a8296, 4.5:1 sobre blanco) para texto de "Bien". */
+  --status-ok: #0a8296;
   --status-warn: oklch(0.65 0.16 65);
   --status-alert: oklch(0.56 0.2 22);
   --chart-1: var(--primary);
