@@ -306,7 +306,7 @@ El orden sigue las prioridades de §12 de SISTEMA.md, ajustadas por dependencias
 **Criterios de aceptación**
 
 - Lunito aparece pequeño con el semáforo y el motivo; I aparece primero (C9).
-- Cada indicador tiene una tarjeta con valor, estado en palabras, etiqueta RIDGE y gráfica de 7 días con la línea base punteada.
+- Cada indicador tiene una tarjeta con valor, estado en palabras, etiqueta RIDGE y gráfica de 7 días, sin línea base punteada (referencias de [DISENO.md](DISENO.md)).
 - Al abrir una tarjeta se muestra la gráfica grande y una explicación simple.
 - "Qué hacer hoy" muestra las acciones de HU-14 con casilla para marcar.
 
