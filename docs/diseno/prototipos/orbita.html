@@ -1,0 +1,3910 @@
+<!doctype html>
+<html lang="es" data-palette="marea" data-voice="nunito">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Órbita · maqueta</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@500;600&family=Nunito:wght@600;700&family=Outfit:wght@500;600&family=Quicksand:wght@600;700&family=JetBrains+Mono:wght@400;600&family=Unbounded:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ok: #2bb8cc;
+        --ok-text: #0b7f92;
+        --warn: #f2b233;
+        --warn-text: #9a6400;
+        --alert: #e04a3a;
+        --alert-text: #b3261e;
+        --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        --display: "Unbounded", system-ui, sans-serif;
+        --voice: "Nunito", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+        --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .13 0 0 0 0 .2 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+
+      /* Paletas a comparar. Lunito es lila arriba, azul abajo, pancita cian y puntas rosas. */
+      :root,
+      [data-palette="marea"] {
+        --bg: #fbf6f2;
+        --surface: #ffffff;
+        --ink: #2a1f57;
+        --ink-soft: #6b6392;
+        --action: #8550ea;
+        --action-soft: #f4a9d0;
+        --stage-1: #ffffff;
+        --stage-2: #f4ecff;
+        --stage-3: #e6dafb;
+        --water-1: #bfeee6;
+        --water-2: #e8dafc;
+        --blush: #fde3e6;
+      }
+      [data-palette="lavanda"] {
+        --water-1: #cdeff0;
+        --water-2: #e2dbf7;
+        --blush: #f6e3f1;
+        --bg: #f1eef8;
+        --surface: #fcfbff;
+        --ink: #1f1a40;
+        --ink-soft: #625c84;
+        --action: #7457ec;
+        --action-soft: #f3a6cf;
+        --stage-1: #ffffff;
+        --stage-2: #f1ecfd;
+        --stage-3: #e2dbf7;
+      }
+      [data-palette="bruma"] {
+        --bg: #edf1fa;
+        --surface: #fbfcff;
+        --ink: #16204a;
+        --ink-soft: #57618e;
+        --action: #5468ee;
+        --action-soft: #b9a8ff;
+        --stage-1: #ffffff;
+        --stage-2: #eaf0fd;
+        --stage-3: #d9e2f8;
+        --water-1: #c9eef0;
+        --water-2: #dbe3fb;
+        --blush: #ece6fb;
+      }
+      [data-palette="marfil"] {
+        --bg: #f5f1e9;
+        --surface: #fffdf8;
+        --ink: #221c45;
+        --ink-soft: #645f7f;
+        --action: #6e56e8;
+        --action-soft: #f0a6c9;
+        --stage-1: #fffdf8;
+        --stage-2: #f6efe6;
+        --stage-3: #ebe2f3;
+        --water-1: #cfece4;
+        --water-2: #ece2f3;
+        --blush: #f8e4dc;
+      }
+      [data-palette="original"] {
+        --bg: #f4eee2;
+        --surface: #fffcf5;
+        --ink: #1b2236;
+        --ink-soft: #5e6478;
+        --action: #e2703f;
+        --action-soft: #f6b28f;
+        --stage-1: #fffdf8;
+        --stage-2: #f9f3e8;
+        --stage-3: #efe6d6;
+        --water-1: #d6ece6;
+        --water-2: #efe6d6;
+        --blush: #f6dccd;
+      }
+      :root {
+        --orbit: color-mix(in oklab, var(--ink) 14%, transparent);
+      }
+      body {
+        transition: background-color 300ms ease;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg) var(--grain);
+        color: var(--ink);
+        font: 17px/1.4 var(--body);
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        border: 0;
+        background: none;
+        cursor: pointer;
+      }
+      .press {
+        transition: transform 160ms var(--ease);
+      }
+      .press:active {
+        transform: scale(0.97);
+      }
+      .label {
+        font: 600 11.5px/1 var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      /* ——— Estructura: una pantalla, sin scroll en tablet ——— */
+      .app {
+        display: grid;
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        height: 100vh;
+      }
+      .top {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--orbit);
+      }
+      .brand {
+        font: 700 19px var(--display);
+        letter-spacing: -0.03em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand i {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink);
+        position: relative;
+      }
+      .brand i::after {
+        content: "";
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--action);
+        top: -4px;
+        left: 6px;
+      }
+      .telemetry {
+        display: flex;
+        gap: 18px;
+      }
+      .telemetry span b {
+        color: var(--ink);
+        font-weight: 600;
+      }
+      .who {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+      }
+      .who .av {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+        display: grid;
+        place-items: center;
+        font: 600 12px var(--display);
+      }
+      .sos {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        background: var(--alert);
+        color: #fff;
+        font: 700 16px var(--body);
+        box-shadow: 0 8px 20px -8px
+          color-mix(in oklab, var(--alert) 70%, transparent);
+      }
+      .sos svg {
+        width: 19px;
+        height: 19px;
+      }
+
+      /* ——— Escenario de Lunito ——— */
+      .stage-col {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 92px 24px 96px;
+        border-right: 1px solid var(--orbit);
+        overflow: hidden;
+      }
+      .hello {
+        position: absolute;
+        top: 22px;
+        left: 28px;
+      }
+      .hello h1 {
+        font: 600 34px/1.05 var(--display);
+        letter-spacing: -0.045em;
+        margin-top: 8px;
+      }
+      .hello h1 em {
+        font: 500 34px var(--voice);
+        letter-spacing: -0.01em;
+        color: var(--action);
+        font-style: normal;
+      }
+      .corner {
+        position: absolute;
+        top: 24px;
+        right: 28px;
+        text-align: right;
+      }
+      .corner .label + p {
+        font: 600 15px var(--mono);
+        margin-top: 6px;
+      }
+
+      .orbit {
+        position: relative;
+        height: min(60vh, 520px);
+        max-width: 100%;
+        aspect-ratio: 1;
+      }
+      .orbit svg.rings {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .spin {
+        transform-origin: 300px 300px;
+        animation: spin 90s linear infinite;
+      }
+      .spin.rev {
+        animation-duration: 160s;
+        animation-direction: reverse;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .stage {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 42%;
+        aspect-ratio: 1;
+        translate: -50% -50%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 38%,
+          var(--stage-1) 0%,
+          var(--stage-2) 60%,
+          var(--stage-3) 100%
+        );
+        box-shadow:
+          0 0 0 1px var(--orbit),
+          0 0 0 14px color-mix(in oklab, var(--surface) 55%, transparent),
+          0 40px 90px -24px var(--halo, rgb(43 184 204 / 0.45));
+        display: grid;
+        place-items: center;
+        transition: box-shadow 500ms var(--ease);
+      }
+      .stage .slot {
+        width: 72%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 1.5px dashed color-mix(in oklab, var(--ink) 20%, transparent);
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+      .stage .slot p {
+        font: 500 18px/1.15 var(--voice);
+        color: var(--ink-soft);
+      }
+      .stage .slot .label {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .moon {
+        position: absolute;
+        width: 20%;
+        aspect-ratio: 1;
+        translate: -50% -50%;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow:
+          0 0 0 5px var(--bg),
+          0 0 0 7px var(--c),
+          0 18px 40px color-mix(in oklab, var(--ink) 12%, transparent);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        container-type: inline-size;
+        opacity: 0;
+        scale: 0.92;
+        transition:
+          opacity 240ms var(--ease),
+          scale 240ms var(--ease),
+          box-shadow 300ms var(--ease);
+      }
+      .moon.in {
+        opacity: 1;
+        scale: 1;
+      }
+      .moon.in:hover {
+        scale: 1.05;
+      }
+      .moon.in:active {
+        scale: 0.97;
+      }
+      .moon svg {
+        width: 16cqw;
+        height: 16cqw;
+      }
+      .moon .name {
+        font: 600 9.5cqw/1 var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        margin-top: 4cqw;
+      }
+      .moon .val {
+        font: 600 27cqw/1 var(--display);
+        letter-spacing: -0.06em;
+        font-variant-numeric: tabular-nums;
+        margin-top: 4cqw;
+      }
+      .moon .unit {
+        font: 400 10cqw var(--mono);
+        color: var(--ink-soft);
+        margin-top: 2cqw;
+      }
+      .moon .tag {
+        position: absolute;
+        top: 108%;
+        left: 50%;
+        translate: -50% 0;
+        white-space: nowrap;
+        font: 700 13.5px var(--body);
+        color: var(--ct);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px 3px 7px;
+        border-radius: 999px;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+      }
+      .moon .tag i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--c);
+      }
+
+      .voice {
+        text-align: center;
+        margin-top: 30px;
+      }
+      .voice .say {
+        font: 500 32px/1.15 var(--voice);
+        letter-spacing: -0.01em;
+      }
+      .voice .state {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        font-weight: 700;
+      }
+      .voice .state .badge {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--c);
+        color: #fff;
+      }
+      .voice .state .badge svg {
+        width: 15px;
+        height: 15px;
+      }
+      .voice .state small {
+        font-weight: 400;
+        color: var(--ink-soft);
+        font-size: 15px;
+      }
+      .voice .state button {
+        font-size: 15px;
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-color: var(--orbit);
+      }
+
+      /* ——— Columna derecha ——— */
+      .side {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 18px;
+        padding: 22px 28px 104px;
+        min-height: 0;
+      }
+
+      /* Check-in: luz que sigue al cursor (patrón card-15 de la librería) */
+      .checkin {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 18px;
+        padding: 20px 22px;
+        border-radius: 22px;
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .checkin::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          260px circle at var(--mx, 80%) var(--my, 50%),
+          color-mix(in oklab, var(--action) 38%, transparent),
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .checkin .label {
+        color: color-mix(in oklab, var(--bg) 60%, transparent);
+      }
+      .checkin h2 {
+        font: 600 22px/1.15 var(--display);
+        letter-spacing: -0.035em;
+        margin-top: 8px;
+      }
+      .checkin h2 em {
+        font: 500 22px var(--voice);
+        letter-spacing: 0;
+        color: var(--action-soft);
+        font-style: normal;
+      }
+      .checkin .go {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--action);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 0 0 6px
+          color-mix(in oklab, var(--action) 25%, transparent);
+      }
+      .checkin .go::after {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 1.5px solid color-mix(in oklab, var(--action) 60%, transparent);
+        animation: ping 2.4s var(--ease) infinite;
+      }
+      @keyframes ping {
+        from {
+          scale: 1;
+          opacity: 1;
+        }
+        to {
+          scale: 1.45;
+          opacity: 0;
+        }
+      }
+      .checkin .go svg {
+        width: 26px;
+        height: 26px;
+      }
+
+      /* Tu evolución, en filas */
+      .evo {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .evo header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .evo h2 {
+        font: 600 26px/1 var(--display);
+        letter-spacing: -0.045em;
+      }
+      .evo .range {
+        margin-top: 8px;
+      }
+      .seg {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 188px;
+        padding: 4px;
+        border-radius: 999px;
+        box-shadow: inset 0 0 0 1px var(--orbit);
+        background: var(--surface);
+      }
+      .seg .pill {
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        left: 4px;
+        width: calc(50% - 4px);
+        border-radius: 999px;
+        background: var(--ink);
+        transition: translate 220ms var(--ease);
+      }
+      .seg[data-m="month"] .pill {
+        translate: 100% 0;
+      }
+      .seg button {
+        position: relative;
+        min-height: 38px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--ink-soft);
+        transition: color 200ms ease;
+      }
+      .seg button[aria-pressed="true"] {
+        color: var(--bg);
+      }
+      .rows {
+        flex: 1;
+        display: grid;
+        grid-template-rows: repeat(3, 1fr);
+        margin-top: 10px;
+        min-height: 0;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 128px 1fr;
+        align-items: center;
+        gap: 14px;
+        border-top: 1px solid var(--orbit);
+        padding: 6px 0;
+        min-height: 0;
+      }
+      .row .k .label {
+        display: block;
+      }
+      .row .k .v {
+        font: 600 34px/1 var(--display);
+        letter-spacing: -0.06em;
+        margin-top: 8px;
+        font-variant-numeric: tabular-nums;
+      }
+      .row .k .v small {
+        font: 400 13px var(--mono);
+        letter-spacing: 0;
+        color: var(--ink-soft);
+        margin-left: 4px;
+      }
+      .row .k .st {
+        font-size: 14px;
+        font-weight: 700;
+        margin-top: 4px;
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .row .k .st i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .plot {
+        position: relative;
+        height: 100%;
+        min-height: 70px;
+      }
+      .plot svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .tip {
+        position: absolute;
+        pointer-events: none;
+        translate: -50% calc(-100% - 12px);
+        background: var(--ink);
+        color: var(--bg);
+        border-radius: 12px;
+        padding: 6px 12px;
+        text-align: center;
+        white-space: nowrap;
+        opacity: 0;
+        scale: 0.96;
+        transition:
+          opacity 125ms ease-out,
+          scale 125ms ease-out;
+        z-index: 2;
+      }
+      .tip.on {
+        opacity: 1;
+        scale: 1;
+      }
+      .tip b {
+        font: 600 15px var(--display);
+        display: block;
+        letter-spacing: -0.03em;
+      }
+      .tip span {
+        font: 400 12px var(--mono);
+        opacity: 0.75;
+      }
+      .line {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        transition: stroke-dashoffset 900ms var(--ease);
+      }
+      .line.in {
+        stroke-dashoffset: 0;
+      }
+
+      /* Fila inferior: tareas + tripulación */
+      .duo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .panel {
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow:
+          0 0 0 1px var(--orbit),
+          0 16px 40px -20px color-mix(in oklab, var(--ink) 18%, transparent);
+      }
+      .panel h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .todo {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        display: grid;
+        gap: 4px;
+      }
+      .todo label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 36px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .todo input {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink-soft);
+        display: grid;
+        place-items: center;
+        flex: none;
+        transition:
+          background 160ms ease,
+          border-color 160ms ease;
+      }
+      .todo input:checked {
+        background: var(--ink);
+        border-color: var(--ink);
+      }
+      .todo input:checked::after {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--bg);
+      }
+      .todo input:checked + span {
+        color: var(--ink-soft);
+        text-decoration: line-through;
+        text-decoration-color: var(--orbit);
+      }
+      .crew {
+        position: relative;
+        height: 92px;
+        margin-top: 6px;
+      }
+      .crew svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .star {
+        position: absolute;
+        translate: -50% -50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.06em;
+      }
+      .star i {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow:
+          0 0 0 2px var(--c),
+          0 0 0 5px var(--surface);
+      }
+      .star.me i {
+        width: 26px;
+        height: 26px;
+        background: var(--ink);
+      }
+      .meter {
+        margin-top: 8px;
+      }
+      .meter .bar {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--orbit);
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .meter .bar i {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: var(--ink);
+        transition: width 900ms var(--ease) 300ms;
+      }
+      .meter p {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--ink-soft);
+      }
+      .meter p b {
+        font: 600 13px var(--mono);
+        color: var(--ink);
+      }
+
+      /* ——— Barra inferior ——— */
+      nav.tabs {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        translate: -50% 0;
+        display: flex;
+        gap: 4px;
+        padding: 7px;
+        border-radius: 999px;
+        background: color-mix(in oklab, var(--ink) 94%, transparent);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 20px 50px -12px
+          color-mix(in oklab, var(--ink) 45%, transparent);
+        z-index: 5;
+      }
+      nav.tabs button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 999px;
+        font-size: 15px;
+        font-weight: 700;
+        color: color-mix(in oklab, var(--bg) 60%, transparent);
+        transition:
+          color 200ms ease,
+          background 200ms ease;
+      }
+      nav.tabs button svg {
+        width: 21px;
+        height: 21px;
+      }
+      nav.tabs button[aria-current] {
+        color: var(--ink);
+        background: var(--bg);
+      }
+
+      /* ——— Hoja de una luna ——— */
+      .scrim {
+        position: fixed;
+        inset: 0;
+        background: color-mix(in oklab, var(--ink) 28%, transparent);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 240ms var(--ease);
+        z-index: 8;
+      }
+      .scrim.on {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sheet {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: min(460px, 100%);
+        background: var(--surface) var(--grain);
+        padding: 28px;
+        translate: 100% 0;
+        transition: translate 320ms cubic-bezier(0.32, 0.72, 0, 1);
+        box-shadow: -20px 0 60px
+          color-mix(in oklab, var(--ink) 15%, transparent);
+        overflow-y: auto;
+        z-index: 9;
+      }
+      .sheet:not(.on) {
+        box-shadow: none;
+      }
+      .sheet.on {
+        translate: 0 0;
+      }
+      .sheet .close {
+        float: right;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px var(--orbit);
+        font-size: 22px;
+      }
+      .sheet h2 {
+        font: 600 30px var(--display);
+        letter-spacing: -0.045em;
+        margin-top: 10px;
+      }
+      .sheet .big {
+        font: 600 72px/1 var(--display);
+        margin-top: 18px;
+        letter-spacing: -0.07em;
+      }
+      .sheet .big small {
+        font: 400 18px var(--mono);
+        letter-spacing: 0;
+        color: var(--ink-soft);
+      }
+      .sheet .lunito {
+        font: 500 21px/1.3 var(--voice);
+        margin-top: 18px;
+        color: var(--action);
+      }
+      .sheet .plot {
+        height: 180px;
+        margin-top: 22px;
+      }
+      .sheet .pending {
+        margin-top: 22px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--bg);
+        font-size: 15px;
+        color: var(--ink-soft);
+      }
+
+      /* ——— Control de la maqueta ——— */
+      .preview {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        display: grid;
+        grid-template-columns: 50px repeat(5, auto);
+        width: 370px;
+        gap: 2px;
+        padding: 5px;
+        border-radius: 14px;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+        font-size: 13px;
+        align-items: center;
+        z-index: 6;
+      }
+      .preview span {
+        padding: 0 8px;
+      }
+      .preview button {
+        padding: 6px 6px;
+        border-radius: 9px;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .preview button[aria-pressed="true"] {
+        background: var(--bg);
+        box-shadow: inset 0 0 0 1px var(--orbit);
+      }
+
+      /* ——— Celular ——— */
+
+      /* ——— Navegación entre pantallas ——— */
+      .app {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .view {
+        display: none;
+        min-height: 0;
+      }
+      .view.on {
+        display: grid;
+        animation: viewIn 280ms var(--ease);
+      }
+      #v-inicio,
+      #v-equipo,
+      #v-tareas,
+      #v-ajustes {
+        grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+      }
+      @keyframes viewIn {
+        from {
+          opacity: 0;
+          translate: 0 8px;
+        }
+      }
+      .full {
+        position: fixed;
+        inset: 0;
+        z-index: 7;
+        background: var(--bg) var(--grain);
+        display: none;
+        flex-direction: column;
+      }
+      .full.on {
+        display: flex;
+        animation: viewIn 280ms var(--ease);
+      }
+      body.fullscreen nav.tabs,
+      body.fullscreen .top {
+        visibility: hidden;
+      }
+      .h2 {
+        font: 600 26px/1 var(--display);
+        letter-spacing: -0.045em;
+      }
+      .hello.static {
+        position: static;
+        align-self: stretch;
+      }
+      .hello h1 em,
+      .ci-title em {
+        font-family: var(--voice);
+        font-style: normal;
+        font-weight: 500;
+        color: var(--action);
+        letter-spacing: -0.01em;
+      }
+      .btn {
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn.small {
+        min-height: 44px;
+        padding: 0 18px;
+        font-size: 15px;
+      }
+      .btn.main {
+        background: var(--action);
+        color: #fff;
+      }
+      .btn.ghost {
+        box-shadow: inset 0 0 0 1.5px var(--orbit);
+      }
+      .fine {
+        font-size: 13.5px;
+        color: var(--ink-soft);
+        margin-top: 10px;
+      }
+      .col-a {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        padding: 22px 28px 104px;
+        border-right: 1px solid var(--orbit);
+        min-height: 0;
+      }
+
+      /* ——— Equipo ——— */
+      .sky {
+        position: relative;
+        padding: 22px 28px 104px;
+        border-right: 1px solid var(--orbit);
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        background-image: radial-gradient(
+          circle,
+          color-mix(in oklab, var(--ink) 22%, transparent) 1px,
+          transparent 1.5px
+        );
+        background-size: 46px 46px;
+        background-position: 12px 18px;
+      }
+      .sky-note {
+        position: absolute;
+        top: 30px;
+        right: 28px;
+      }
+      .constellation {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+      }
+      .constellation svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .node {
+        position: absolute;
+        translate: -50% -50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+      }
+      .node .disc {
+        width: 112px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 38%,
+          var(--stage-1),
+          var(--stage-3)
+        );
+        box-shadow:
+          0 0 0 5px var(--bg),
+          0 0 0 7px var(--c, var(--orbit)),
+          0 18px 40px color-mix(in oklab, var(--ink) 12%, transparent);
+        display: grid;
+        place-items: center;
+      }
+      .node .disc i {
+        width: 64%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 1.5px dashed color-mix(in oklab, var(--ink) 22%, transparent);
+      }
+      .node.me .disc {
+        width: 148px;
+      }
+      .node b {
+        font: 600 20px var(--display);
+        letter-spacing: -0.04em;
+        margin-top: 6px;
+      }
+      .node .role {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .node .word {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ct, var(--ink-soft));
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        padding: 3px 10px 3px 8px;
+        border-radius: 999px;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+      }
+      .node .word i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--c, var(--ink-soft));
+      }
+      #v-equipo .side,
+      #v-ajustes .side {
+        grid-template-rows: none;
+        align-content: start;
+      }
+      .buddy h2 {
+        font-size: 21px;
+      }
+      .buddy h2 em {
+        display: block;
+      }
+      .gauge-panel {
+        display: grid;
+        grid-template-columns: 1fr 190px;
+        align-items: center;
+        gap: 12px;
+      }
+      .gauge-sub {
+        font-size: 15px;
+        color: var(--ink-soft);
+        margin-top: 8px;
+      }
+      .gauge-meta {
+        margin-top: 12px;
+      }
+      .gauge-meta b {
+        color: var(--ink);
+      }
+      .gauge {
+        position: relative;
+      }
+      .gauge svg {
+        width: 100%;
+        display: block;
+      }
+      .gauge p {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 4px;
+        text-align: center;
+        font: 600 34px/1 var(--display);
+        letter-spacing: -0.06em;
+      }
+      .ridge {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        display: grid;
+        gap: 2px;
+      }
+      .ridge li {
+        display: grid;
+        grid-template-columns: 30px 1fr auto;
+        align-items: center;
+        gap: 10px;
+        min-height: 34px;
+        font-size: 15px;
+      }
+      .ridge li b {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font: 600 13px var(--display);
+        background: var(--bg);
+        box-shadow: inset 0 0 0 1px var(--orbit);
+      }
+      .ridge li span:last-child {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ct);
+      }
+      .swap {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--orbit);
+        display: grid;
+        gap: 10px;
+        font-size: 15px;
+      }
+      .swap span {
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .swap div {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      /* ——— Tareas ——— */
+      .tasks {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+      .tasks li {
+        display: grid;
+        grid-template-columns: 58px 30px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 18px;
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+        cursor: pointer;
+        transition: opacity 200ms ease;
+      }
+      .tasks li time {
+        font: 600 13px var(--mono);
+        color: var(--ink-soft);
+      }
+      .tasks li .dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 1.5px solid var(--ink-soft);
+        display: grid;
+        place-items: center;
+        transition: background 160ms ease;
+      }
+      .tasks li.done .dot {
+        background: var(--ink);
+        border-color: var(--ink);
+      }
+      .tasks li.done .dot::after {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--bg);
+      }
+      .tasks li.done {
+        opacity: 0.55;
+      }
+      .tasks li.done strong {
+        text-decoration: line-through;
+        text-decoration-color: var(--orbit);
+      }
+      .tasks li strong {
+        font-size: 17px;
+      }
+      .tasks li small {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .tasks li .r {
+        font: 600 12px var(--display);
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        box-shadow: inset 0 0 0 1px var(--orbit);
+      }
+      .breath {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+      .breath-orb {
+        position: relative;
+        width: 120px;
+        aspect-ratio: 1;
+      }
+      .breath-orb i {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--stage-1),
+          color-mix(in oklab, var(--action) 30%, var(--stage-2))
+        );
+        animation: breathe 10s ease-in-out infinite;
+      }
+      .breath-orb i + i {
+        inset: -10px;
+        background: none;
+        border: 1px solid var(--orbit);
+        animation-delay: -0.4s;
+      }
+      @keyframes breathe {
+        0% {
+          scale: 0.7;
+        }
+        40% {
+          scale: 1;
+        }
+        100% {
+          scale: 0.7;
+        }
+      }
+      .breath-say {
+        font: 500 20px/1.25 var(--voice);
+        margin: 8px 0 12px;
+      }
+      .kit {
+        grid-template-rows: auto auto auto 1fr;
+      }
+      .kit-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        max-width: 300px;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: var(--surface);
+        box-shadow: inset 0 0 0 1px var(--orbit);
+      }
+      .search svg {
+        width: 18px;
+        height: 18px;
+        color: var(--ink-soft);
+      }
+      .search input {
+        border: 0;
+        background: none;
+        font: inherit;
+        color: inherit;
+        flex: 1;
+        outline: none;
+      }
+      .chips {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 52px;
+        padding: 0 14px;
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 0 0 1px var(--orbit);
+        font-size: 15px;
+        font-weight: 700;
+        text-align: left;
+      }
+      .chip span {
+        font-size: 20px;
+      }
+      .chip.sel {
+        box-shadow: 0 0 0 2px var(--ink);
+      }
+      .assistant .q {
+        font: 600 22px var(--display);
+        letter-spacing: -0.04em;
+        margin-top: 12px;
+      }
+      .assistant .label {
+        display: flex;
+        justify-content: space-between;
+      }
+      .opts {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .opt {
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 999px;
+        box-shadow: inset 0 0 0 1.5px var(--orbit);
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .opt:hover {
+        box-shadow: inset 0 0 0 1.5px var(--ink);
+      }
+      .stock {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        display: grid;
+        gap: 10px;
+      }
+      .stock li {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 12px;
+        font-size: 15px;
+      }
+      .stock li .q {
+        font: 600 13px var(--mono);
+        color: var(--ink-soft);
+      }
+      .stock li .bar {
+        grid-column: 1 / -1;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--orbit);
+        overflow: hidden;
+      }
+      .stock li .bar i {
+        display: block;
+        height: 100%;
+        background: var(--c, var(--action));
+        border-radius: 999px;
+      }
+      .stock li .warnword {
+        color: var(--ct);
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      /* ——— Ajustes ——— */
+      .profiles {
+        align-items: center;
+      }
+      .profiles .hello {
+        align-self: stretch;
+      }
+      .arc {
+        position: relative;
+        width: min(100%, 560px);
+        aspect-ratio: 1.1;
+        margin: 0 auto;
+        transition: none;
+      }
+      .pick {
+        z-index: 1;
+      }
+      .pick {
+        transition:
+          left 320ms var(--ease),
+          top 320ms var(--ease);
+      }
+      .arc svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .pick {
+        position: absolute;
+        translate: -50% -50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        transition: scale 240ms var(--ease);
+      }
+      .pick .disc {
+        width: 96px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 50% 38%,
+          var(--stage-1),
+          var(--stage-3)
+        );
+        box-shadow: 0 0 0 1px var(--orbit);
+        display: grid;
+        place-items: center;
+        font: 600 20px var(--display);
+        transition:
+          box-shadow 240ms var(--ease),
+          width 240ms var(--ease);
+      }
+      .pick b {
+        font: 600 17px var(--display);
+        letter-spacing: -0.03em;
+      }
+      .pick small {
+        font: 600 10.5px var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+      .pick.sel .disc {
+        width: 150px;
+        box-shadow:
+          0 0 0 5px var(--bg),
+          0 0 0 7px var(--action),
+          0 24px 50px color-mix(in oklab, var(--action) 30%, transparent);
+      }
+      .arc-note {
+        font: 500 19px var(--voice);
+        color: var(--ink-soft);
+        margin-top: 18px;
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 56px;
+        padding: 8px 0;
+        border-top: 1px solid var(--orbit);
+        cursor: pointer;
+      }
+      .panel h3 + .switch {
+        border-top: 0;
+        margin-top: 6px;
+      }
+      .switch small {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .switch input {
+        appearance: none;
+        width: 52px;
+        height: 30px;
+        border-radius: 999px;
+        background: var(--orbit);
+        position: relative;
+        flex: none;
+        transition: background 200ms ease;
+        cursor: pointer;
+      }
+      .switch input::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--surface);
+        box-shadow: 0 2px 6px color-mix(in oklab, var(--ink) 25%, transparent);
+        transition: translate 220ms var(--ease);
+      }
+      .switch input:checked {
+        background: var(--action);
+      }
+      .switch input:checked::after {
+        translate: 22px 0;
+      }
+      .link-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        min-height: 56px;
+        border-top: 1px solid var(--orbit);
+        text-align: left;
+        font-size: 20px;
+      }
+      .panel h3 + .link-row {
+        border-top: 0;
+        margin-top: 6px;
+      }
+      .link-row small {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .link-row b {
+        font-size: 17px;
+      }
+
+      /* ——— Check-in ——— */
+      .full-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 28px;
+      }
+      .icon-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px var(--orbit);
+        font-size: 24px;
+        background: var(--surface);
+      }
+      .steps {
+        display: flex;
+        gap: 6px;
+      }
+      .steps i {
+        width: 28px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--orbit);
+        transition: background 240ms var(--ease);
+      }
+      .steps i.on {
+        background: var(--ink);
+      }
+      .ci {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 10px;
+        padding: 0 24px;
+      }
+      .ci-stage {
+        position: relative;
+        width: min(38vh, 340px);
+        aspect-ratio: 1;
+        margin-bottom: 12px;
+      }
+      .ci-stage svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .ci-stage .stage {
+        width: 76%;
+      }
+      .ci-title {
+        font: 600 44px/1.05 var(--display);
+        letter-spacing: -0.05em;
+        margin-top: 6px;
+      }
+      .ci-say {
+        font: 500 21px var(--voice);
+        color: var(--ink-soft);
+      }
+      .mic {
+        position: relative;
+        width: 104px;
+        height: 104px;
+        border-radius: 50%;
+        background: var(--action);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        margin-top: 18px;
+        box-shadow: 0 16px 40px -10px
+          color-mix(in oklab, var(--action) 70%, transparent);
+      }
+      .mic svg {
+        width: 38px;
+        height: 38px;
+        position: relative;
+      }
+      .mic .ring {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid var(--action);
+        opacity: 0;
+      }
+      .ci.is-listening .mic .ring {
+        animation: ripple 2.4s var(--ease) infinite;
+      }
+      .ci.is-listening .mic .ring:nth-child(2) {
+        animation-delay: 0.8s;
+      }
+      .ci.is-listening .mic .ring:nth-child(3) {
+        animation-delay: 1.6s;
+      }
+      @keyframes ripple {
+        from {
+          scale: 1;
+          opacity: 0.8;
+        }
+        to {
+          scale: 2.1;
+          opacity: 0;
+        }
+      }
+      .listening {
+        font-weight: 700;
+        color: var(--action);
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        visibility: hidden;
+        margin-top: 18px;
+      }
+      .listening i {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: blink 1s ease-in-out infinite;
+      }
+      .ci.is-listening .listening {
+        visibility: visible;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0.25;
+        }
+      }
+      .write {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--ink-soft);
+        font-weight: 700;
+        min-height: 44px;
+      }
+      .write svg {
+        width: 20px;
+        height: 20px;
+      }
+      .sensor {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 28px 24px;
+      }
+      .sensor .bar {
+        flex: 1;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--orbit);
+        overflow: hidden;
+      }
+      .sensor .bar i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--ok);
+      }
+      .sensor b {
+        color: var(--ink);
+      }
+
+      /* ——— Emergencia: alto contraste, sin decoración ——— */
+      .emergency {
+        background: #fff;
+      }
+      .em-band {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 28px 32px;
+        background: var(--alert);
+        color: #fff;
+      }
+      .em-band .label {
+        color: rgb(255 255 255 / 0.85);
+      }
+      .em-band h1 {
+        font: 600 36px/1.1 var(--display);
+        letter-spacing: -0.04em;
+        margin-top: 10px;
+      }
+      .em-time {
+        font: 600 16px var(--mono);
+        margin-top: 10px;
+      }
+      .em-close {
+        min-height: 48px;
+        padding: 0 20px;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--alert-text);
+        font-weight: 700;
+      }
+      .em-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1.1fr 1fr;
+        gap: 0;
+      }
+      .em-panel {
+        padding: 28px 32px;
+        border-right: 1px solid #e3e3ea;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .em-panel:last-child {
+        border-right: 0;
+      }
+      .em-panel .label {
+        color: #333;
+      }
+      .em-count {
+        font: 600 76px/1 var(--display);
+        letter-spacing: -0.06em;
+        font-variant-numeric: tabular-nums;
+        color: #111;
+        margin-top: 8px;
+      }
+      .em-sub {
+        font-size: 17px;
+        color: #333;
+      }
+      .dictate {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-height: 72px;
+        border-radius: 20px;
+        background: #111;
+        color: #fff;
+        font: 700 20px var(--body);
+      }
+      .dictate svg {
+        width: 28px;
+        height: 28px;
+      }
+      .em-check {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 8px;
+      }
+      .em-check label {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 60px;
+        padding: 0 16px;
+        border-radius: 14px;
+        border: 2px solid #111;
+        font-size: 19px;
+        font-weight: 700;
+        color: #111;
+        cursor: pointer;
+      }
+      .em-check input {
+        width: 26px;
+        height: 26px;
+        accent-color: #111;
+      }
+      .em-check input:checked + span {
+        text-decoration: line-through;
+        color: #555;
+      }
+      .em-log {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+        font-size: 16px;
+        color: #222;
+      }
+      .em-log b {
+        font: 600 14px var(--mono);
+        display: block;
+        color: #555;
+      }
+      .console .em-log {
+        color: var(--ink);
+        margin-top: 14px;
+      }
+      .console .em-log b {
+        color: var(--ink-soft);
+      }
+
+      /* ——— Consola de Tierra ——— */
+      .con-top {
+        border-bottom: 1px solid var(--orbit);
+      }
+      .link-ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+      }
+      .link-ok i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--ok);
+      }
+      .con-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: 1fr 1fr;
+        gap: 16px;
+        padding: 20px 28px 28px;
+        min-height: 0;
+      }
+      .con-grid .panel {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .sbar {
+        grid-column: span 5;
+      }
+      .con-trend {
+        grid-column: span 7;
+      }
+      .con-grid .panel:nth-child(3) {
+        grid-column: span 4;
+      }
+      .con-grid .panel:nth-child(4) {
+        grid-column: span 4;
+      }
+      .reply {
+        grid-column: span 4;
+      }
+      .sbar dl {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 12px 12px;
+        margin-top: 14px;
+        font-size: 16px;
+      }
+      .sbar dt {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        display: grid;
+        place-items: center;
+        font: 600 14px var(--display);
+        background: var(--ink);
+        color: var(--bg);
+      }
+      .con-trend .plot {
+        flex: 1;
+        margin-top: 10px;
+      }
+      .reply textarea {
+        flex: 1;
+        margin: 12px 0;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 0;
+        box-shadow: inset 0 0 0 1px var(--orbit);
+        background: var(--bg);
+        font: inherit;
+        color: inherit;
+        resize: none;
+      }
+      .reply .btn {
+        align-self: flex-end;
+      }
+      .panel h3 span {
+        color: var(--ink-soft);
+      }
+
+      /* ═════════ Marea (referencia del equipo) ═════════
+     El agua no es fondo: son estanques de orilla ondulada que abrazan a Lunito,
+     a la tripulación y a cada gráfica. Las filas tienen forma de gota. */
+      :root {
+        --shore-a: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20400%20100'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M18%2016C70%202%20130%2024%20200%2012S330%200%20382%2014C396%2018%20400%2034%20400%2050C400%2070%20396%2084%20382%2088C320%20100%20270%2082%20200%2092S70%20100%2018%2086C5%2082%200%2068%200%2050C0%2032%205%2020%2018%2016Z'%2F%3E%3C%2Fsvg%3E");
+        --shore-b: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20400%20100'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M16%2012C90%2022%20150%200%20220%2010S340%2024%20384%2012C397%2010%20400%2032%20400%2050C400%2068%20397%2088%20384%2090C330%2082%20260%20100%20190%2090S60%2080%2016%2090C4%2092%200%2070%200%2050C0%2030%204%2010%2016%2012Z'%2F%3E%3C%2Fsvg%3E");
+        --pool: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20400%20100'%20preserveAspectRatio%3D'none'%3E%3Cpath%20d%3D'M30%2022C90%204%20150%2030%20210%2014S330%202%20372%2022C396%2034%20398%2052%20392%2066C384%2084%20350%2096%20300%2092C240%2088%20200%20100%20140%2094S40%2092%2016%2074C0%2062%202%2034%2030%2022Z'%2F%3E%3C%2Fsvg%3E");
+      }
+      .shore-a,
+      .shore-b,
+      .pool {
+        -webkit-mask: var(--m) center / 100% 100% no-repeat;
+        mask: var(--m) center / 100% 100% no-repeat;
+      }
+      .shore-a {
+        --m: var(--shore-a);
+      }
+      .shore-b {
+        --m: var(--shore-b);
+      }
+      .pool {
+        --m: var(--pool);
+      }
+
+      /* Estanque detrás de Lunito: Lunito está de pie en su agua. */
+      .stage-pool {
+        position: absolute;
+        left: -14%;
+        right: -14%;
+        top: 40%;
+        bottom: -2%;
+        z-index: 0;
+        background: radial-gradient(
+          ellipse at 50% 30%,
+          color-mix(in oklab, var(--water-1) 70%, #fff),
+          var(--water-1) 70%
+        );
+      }
+      .orbit svg.rings,
+      .stage,
+      .moon {
+        z-index: 1;
+      }
+      .orbit svg.rings {
+        position: absolute;
+      }
+
+      /* Estanque de la constelación. */
+      .crew-pool {
+        position: absolute;
+        left: 2%;
+        right: 2%;
+        top: 14%;
+        bottom: 4%;
+        background: radial-gradient(
+          ellipse at 50% 40%,
+          color-mix(in oklab, var(--water-1) 65%, #fff),
+          var(--water-1) 75%
+        );
+      }
+      .constellation > svg,
+      .node {
+        z-index: 1;
+      }
+
+      /* Cada gráfica descansa en su estanque, con línea violeta y puntos. */
+      .row .plot {
+        isolation: isolate;
+      }
+      .row .plot::before {
+        content: "";
+        position: absolute;
+        inset: -8px -6px -2px -10px;
+        z-index: -1;
+        background: color-mix(in oklab, var(--water-1) 55%, #fff);
+        -webkit-mask: var(--shore-b) center / 100% 100% no-repeat;
+        mask: var(--shore-b) center / 100% 100% no-repeat;
+      }
+      .row:nth-child(2) .plot::before {
+        -webkit-mask-image: var(--shore-a);
+        mask-image: var(--shore-a);
+      }
+
+      /* Filas en forma de gota, alternando lila y menta (tareas, ajustes, síntomas). */
+      .tasks li,
+      .switch,
+      .link-row,
+      .chip {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .tasks li:nth-child(odd),
+      .chip:nth-child(odd) {
+        background: linear-gradient(
+          100deg,
+          var(--water-2),
+          color-mix(in oklab, var(--water-2) 55%, #fff)
+        );
+        -webkit-mask: var(--shore-a) center / 100% 100% no-repeat;
+        mask: var(--shore-a) center / 100% 100% no-repeat;
+      }
+      .tasks li:nth-child(even),
+      .chip:nth-child(even) {
+        background: linear-gradient(
+          100deg,
+          var(--water-1),
+          color-mix(in oklab, var(--water-1) 50%, #fff)
+        );
+        -webkit-mask: var(--shore-b) center / 100% 100% no-repeat;
+        mask: var(--shore-b) center / 100% 100% no-repeat;
+      }
+      .tasks li {
+        padding: 16px 22px;
+      }
+      .chip {
+        min-height: 56px;
+        padding: 0 18px;
+      }
+      .chip.sel {
+        color: var(--action);
+      }
+      #v-ajustes .panel {
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      #v-ajustes .panel h3 {
+        padding: 0 6px 6px;
+      }
+      .switch,
+      .link-row {
+        padding: 14px 24px;
+        margin-top: 8px;
+        border-top: 0;
+      }
+      .switch:nth-of-type(odd),
+      .link-row:nth-of-type(odd) {
+        background: linear-gradient(
+          100deg,
+          var(--water-2),
+          color-mix(in oklab, var(--water-2) 50%, #fff)
+        );
+        -webkit-mask: var(--shore-a) center / 100% 100% no-repeat;
+        mask: var(--shore-a) center / 100% 100% no-repeat;
+      }
+      .switch:nth-of-type(even),
+      .link-row:nth-of-type(even) {
+        background: linear-gradient(
+          100deg,
+          var(--water-1),
+          color-mix(in oklab, var(--water-1) 50%, #fff)
+        );
+        -webkit-mask: var(--shore-b) center / 100% 100% no-repeat;
+        mask: var(--shore-b) center / 100% 100% no-repeat;
+      }
+      #v-ajustes .fine {
+        padding: 0 8px;
+      }
+
+      /* Paneles: superficie clara con un brillo lila suave, sin bordes duros. */
+      .panel {
+        background: linear-gradient(
+          160deg,
+          var(--surface),
+          color-mix(in oklab, var(--water-2) 30%, var(--surface))
+        );
+        box-shadow: 0 18px 40px -24px
+          color-mix(in oklab, var(--action) 35%, transparent);
+        border-radius: 28px;
+      }
+
+      /* Check-in: Lunito en su estanque y la orilla lila abajo. */
+      .ci-stage svg,
+      .ci-stage .stage {
+        z-index: 1;
+      }
+      .sensor {
+        position: relative;
+        padding-top: 34px;
+      }
+      .sensor::before {
+        content: "";
+        position: absolute;
+        inset: 0 -4% -20px;
+        z-index: -1;
+        background: linear-gradient(
+          var(--water-2),
+          color-mix(in oklab, var(--water-2) 60%, #fff)
+        );
+        -webkit-mask: var(--shore-a) center / 100% 100% no-repeat;
+        mask: var(--shore-a) center / 100% 100% no-repeat;
+      }
+
+      /* Check-in y compañero: violeta de Lunito en degradado, no un bloque oscuro. */
+      .checkin {
+        background: linear-gradient(
+          115deg,
+          var(--action),
+          color-mix(in oklab, var(--action) 55%, var(--action-soft))
+        );
+        color: #fff;
+        box-shadow: 0 20px 40px -22px var(--action);
+      }
+      .checkin .label {
+        color: rgb(255 255 255 / 0.8);
+      }
+      .checkin h2 em {
+        color: #fff;
+        opacity: 0.92;
+      }
+      .checkin .go {
+        background: #fff;
+        color: var(--action);
+        box-shadow: 0 0 0 6px rgb(255 255 255 / 0.25);
+      }
+      .checkin .go::after {
+        border-color: rgb(255 255 255 / 0.7);
+      }
+      .checkin::before {
+        background: radial-gradient(
+          260px circle at var(--mx, 80%) var(--my, 50%),
+          rgb(255 255 255 / 0.28),
+          transparent 70%
+        );
+      }
+
+      #v-equipo .side > *,
+      #v-ajustes .side > * {
+        min-height: max-content;
+      }
+      .sky {
+        background-image: none;
+      }
+
+      /* Charquito: el agua está justo donde Lunito está parado, no de fondo. */
+      .puddle {
+        position: absolute;
+        left: 50%;
+        translate: -50% 0;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 50%;
+        background: radial-gradient(
+          closest-side,
+          color-mix(in oklab, var(--water-1) 95%, #fff),
+          color-mix(in oklab, var(--water-1) 70%, transparent) 62%,
+          transparent
+        );
+      }
+      .puddle::before,
+      .puddle::after {
+        content: "";
+        position: absolute;
+        inset: 14% 10%;
+        border-radius: 50%;
+        border: 1.5px solid rgb(255 255 255 / 0.9);
+        opacity: 0;
+        animation: puddle 4.2s ease-out infinite;
+      }
+      .puddle::after {
+        animation-delay: -2.1s;
+      }
+      @keyframes puddle {
+        0% {
+          scale: 0.55;
+          opacity: 0.95;
+        }
+        100% {
+          scale: 1.05;
+          opacity: 0;
+        }
+      }
+      .orbit > .puddle {
+        top: 64%;
+        width: 72%;
+        height: 20%;
+      }
+      .node {
+        --d: 112px;
+      }
+      .node.me {
+        --d: 148px;
+      }
+      .node > .puddle {
+        top: calc(var(--d) * 0.72);
+        width: calc(var(--d) * 1.7);
+        height: calc(var(--d) * 0.5);
+      }
+      .node .disc,
+      .node b,
+      .node .role,
+      .node .word {
+        position: relative;
+        z-index: 1;
+      }
+      .pick {
+        --d: 96px;
+      }
+      .pick.sel {
+        --d: 150px;
+      }
+      .pick > .puddle {
+        top: calc(var(--d) * 0.72);
+        width: calc(var(--d) * 1.6);
+        height: calc(var(--d) * 0.46);
+      }
+      .pick .disc,
+      .pick b,
+      .pick small {
+        position: relative;
+        z-index: 1;
+      }
+      .ci-stage > .puddle {
+        top: 74%;
+        width: 120%;
+        height: 30%;
+      }
+      @media (max-width: 900px) {
+        .node {
+          --d: 72px;
+        }
+        .node.me {
+          --d: 96px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .puddle::before,
+        .puddle::after {
+          animation: none;
+        }
+      }
+
+      /* Barra inferior clara sobre una orilla lila, como en la referencia. */
+      nav.tabs {
+        background: linear-gradient(
+          100deg,
+          var(--water-2),
+          color-mix(in oklab, var(--water-2) 55%, #fff)
+        );
+        box-shadow: none;
+        border-radius: 0;
+        padding: 10px 18px;
+        -webkit-mask: var(--shore-a) center / 100% 100% no-repeat;
+        mask: var(--shore-a) center / 100% 100% no-repeat;
+      }
+      nav.tabs button {
+        color: var(--ink-soft);
+      }
+      nav.tabs button[aria-current] {
+        color: var(--action);
+        background: color-mix(in oklab, #fff 70%, transparent);
+      }
+
+      /* Emergencia como en la referencia: píldora blanca con borde y texto rojo. */
+      .top .sos,
+      .full-top .sos {
+        background: #fff;
+        color: var(--alert-text);
+        box-shadow: inset 0 0 0 1.5px
+          color-mix(in oklab, var(--alert) 55%, transparent);
+      }
+
+      /* Las lunas y los Lunitos de la tripulación respiran muy despacio. */
+      .node .disc {
+        animation: bob 6s ease-in-out infinite alternate;
+      }
+      .node:nth-child(3) .disc {
+        animation-delay: -1.5s;
+      }
+      .node:nth-child(4) .disc {
+        animation-delay: -3s;
+      }
+      .node:nth-child(5) .disc {
+        animation-delay: -4.5s;
+      }
+      @keyframes bob {
+        from {
+          transform: translateY(-3px);
+        }
+        to {
+          transform: translateY(4px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .node .disc {
+          animation: none;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .view.on {
+          display: block;
+        }
+        .sky,
+        .col-a {
+          border-right: 0;
+          padding: 18px 16px 24px;
+        }
+        .constellation {
+          height: 420px;
+          flex: none;
+        }
+        .node .disc {
+          width: 84px;
+        }
+        .node.me .disc {
+          width: 110px;
+        }
+        .chips {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .gauge-panel {
+          grid-template-columns: 1fr;
+        }
+        .em-grid,
+        .con-grid {
+          grid-template-columns: 1fr;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        .em-band h1 {
+          font-size: 26px;
+        }
+        .ci-title {
+          font-size: 32px;
+        }
+        .full {
+          overflow-y: auto;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .app {
+          display: block;
+          height: auto;
+        }
+        .top {
+          padding: 12px 16px;
+          gap: 12px;
+        }
+        .telemetry span:not(:first-child),
+        .who span {
+          display: none;
+        }
+        .sos {
+          min-height: 44px;
+          padding: 0 14px;
+        }
+        .stage-col {
+          padding: 96px 16px 24px;
+          border-right: 0;
+          border-bottom: 1px solid var(--orbit);
+        }
+        .hello {
+          top: 18px;
+          left: 16px;
+        }
+        .hello h1 {
+          font-size: 26px;
+        }
+        .hello h1 em {
+          font-size: 26px;
+        }
+        .corner {
+          display: none;
+        }
+        .orbit {
+          height: auto;
+          width: min(100%, 400px);
+        }
+        .moon {
+          width: 25%;
+        }
+        .moon .tag {
+          font-size: 12px;
+        }
+        .voice {
+          margin-top: 30px;
+        }
+        .voice .say {
+          font-size: 25px;
+        }
+        .side {
+          padding: 20px 16px 120px;
+        }
+        .rows {
+          grid-template-rows: none;
+        }
+        .row {
+          height: 110px;
+          grid-template-columns: 110px 1fr;
+        }
+        .duo {
+          grid-template-columns: 1fr;
+        }
+        nav.tabs button span {
+          display: none;
+        }
+        .preview {
+          top: auto;
+          bottom: 86px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .spin,
+        .checkin .go::after {
+          animation: none;
+        }
+        * {
+          transition-duration: 0ms !important;
+        }
+      }
+
+      /* ——— Celular y tablet vertical ——— */
+      @media (max-width: 900px) {
+        .telemetry {
+          display: none;
+        }
+        .who span {
+          display: none;
+        }
+        .top {
+          gap: 10px;
+        }
+        .top .sos {
+          margin-left: 0;
+        }
+        .orbit {
+          width: min(80vw, 380px);
+          height: auto;
+        }
+        .moon {
+          width: 27%;
+        }
+        .voice .state {
+          flex-wrap: wrap;
+          justify-content: center;
+          row-gap: 4px;
+        }
+        .voice .state small {
+          flex-basis: 100%;
+          order: 3;
+        }
+        .voice .state button {
+          order: 4;
+        }
+        .preview {
+          display: none;
+        }
+        .sky-note {
+          display: none;
+        }
+        .constellation {
+          height: 520px;
+          margin-top: 12px;
+        }
+        .node .disc {
+          width: 72px;
+        }
+        .node.me .disc {
+          width: 96px;
+        }
+        .node b {
+          font-size: 17px;
+        }
+        .stage-col {
+          padding-top: 104px;
+        }
+      }
+      @media (min-width: 600px) and (max-width: 900px) {
+        .orbit {
+          width: min(66vw, 520px);
+        }
+        .moon {
+          width: 22%;
+        }
+        .stage-col {
+          padding-bottom: 48px;
+        }
+        .duo {
+          grid-template-columns: 1fr 1fr;
+        }
+        .chips {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .side {
+          padding: 24px 32px 120px;
+        }
+        .hello h1 {
+          font-size: 34px;
+        }
+        .hello h1 em {
+          font-size: 32px;
+        }
+      }
+      em {
+        font-style: normal;
+      }
+      /* Opciones para la voz de Lunito (solo maqueta). */
+      [data-voice="nunito"] {
+        --voice: "Nunito", system-ui, sans-serif;
+      }
+      [data-voice="outfit"] {
+        --voice: "Outfit", system-ui, sans-serif;
+      }
+      [data-voice="quicksand"] {
+        --voice: "Quicksand", system-ui, sans-serif;
+      }
+      [data-voice="bricolage"] {
+        --voice: "Bricolage Grotesque", system-ui, sans-serif;
+      }
+      .voice .say,
+      .ci-say,
+      .breath-say,
+      .arc-note,
+      .sheet .lunito,
+      .hello h1 em,
+      .ci-title em,
+      .checkin h2 em,
+      .stage .slot p {
+        font-weight: 700;
+      }
+      [data-voice="outfit"]
+        :is(
+          .voice .say,
+          .ci-say,
+          .breath-say,
+          .arc-note,
+          .sheet .lunito,
+          .hello h1 em,
+          .ci-title em,
+          .checkin h2 em,
+          .stage .slot p
+        ),
+      [data-voice="bricolage"]
+        :is(
+          .voice .say,
+          .ci-say,
+          .breath-say,
+          .arc-note,
+          .sheet .lunito,
+          .hello h1 em,
+          .ci-title em,
+          .checkin h2 em,
+          .stage .slot p
+        ) {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <div class="brand"><i aria-hidden="true"></i>Nóstos</div>
+        <div class="telemetry label">
+          <span>Día <b>042</b></span>
+          <span>Fase <b>Tránsito</b></span>
+          <span>Hora a bordo <b>06:42</b></span>
+          <span>Retraso con Tierra <b>4 s</b></span>
+        </div>
+        <div class="who"><span>Ana</span><i class="av">AN</i></div>
+        <button class="sos press" data-go="emergencia" type="button">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          >
+            <path d="M12 9v4M12 17h.01" />
+            <path
+              d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+            />
+          </svg>
+          Emergencia
+        </button>
+      </header>
+
+      <main class="view on" data-view="inicio" id="v-inicio">
+        <section class="stage-col" aria-label="Así estás hoy">
+          <div class="hello">
+            <p class="label">Así estás hoy</p>
+            <h1>Buenos días, <em>Ana</em></h1>
+          </div>
+          <div class="corner">
+            <p class="label">Última lectura</p>
+            <p>06:31 · sensor</p>
+          </div>
+          <div class="orbit" id="orbit">
+            <svg class="rings" viewBox="0 0 600 600" aria-hidden="true">
+              <defs>
+                <path
+                  id="ring-text"
+                  d="M300,300 m-158,0 a158,158 0 1,1 316,0 a158,158 0 1,1 -316,0"
+                />
+              </defs>
+              <g id="ticks"></g>
+              <circle
+                cx="300"
+                cy="300"
+                r="235"
+                fill="none"
+                stroke="var(--orbit)"
+                stroke-dasharray="2 7"
+                stroke-linecap="round"
+              />
+              <circle
+                cx="300"
+                cy="300"
+                r="190"
+                fill="none"
+                stroke="var(--orbit)"
+              />
+              <g class="spin rev">
+                <text
+                  font-family="JetBrains Mono"
+                  font-size="10.5"
+                  letter-spacing="4.2"
+                  fill="var(--ink-soft)"
+                  opacity="0.75"
+                >
+                  <textPath href="#ring-text">
+                    LUNITO · COMPAÑERO DE ANA · TRIPULACIÓN NÓSTOS · DÍA 042 ·
+                    LUNITO · COMPAÑERO DE ANA ·
+                  </textPath>
+                </text>
+              </g>
+              <g class="spin">
+                <circle
+                  cx="490"
+                  cy="300"
+                  r="4.5"
+                  fill="var(--ink)"
+                  opacity="0.5"
+                />
+              </g>
+              <g class="spin rev">
+                <circle cx="300" cy="18" r="3.5" fill="var(--action)" />
+              </g>
+            </svg>
+            <span class="puddle" aria-hidden="true"></span>
+            <div class="stage" id="stage">
+              <div class="slot">
+                <p>
+                  <span class="label">Escenario 3D</span>Lunito está<br />llegando
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="voice">
+            <p class="say" id="say"></p>
+            <p class="state" id="state"></p>
+          </div>
+        </section>
+
+        <aside class="side">
+          <article class="checkin" id="checkin">
+            <div>
+              <p class="label">Check-in de hoy · 60 s</p>
+              <h2>Cuéntale a Lunito <em>cómo amaneciste</em></h2>
+            </div>
+            <button
+              class="go press"
+              data-go="checkin"
+              type="button"
+              aria-label="Hacer check-in"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <rect x="9" y="2" width="6" height="12" rx="3" />
+                <path d="M5 10a7 7 0 0 0 14 0M12 17v5" />
+              </svg>
+            </button>
+          </article>
+
+          <section class="evo" aria-labelledby="evo-t">
+            <header>
+              <div>
+                <h2 id="evo-t">Tu evolución</h2>
+                <p class="label range" id="range">9–15 nov</p>
+              </div>
+              <div class="seg" id="seg" data-m="week">
+                <i class="pill" aria-hidden="true"></i>
+                <button
+                  type="button"
+                  class="press"
+                  aria-pressed="true"
+                  data-m="week"
+                >
+                  Semana
+                </button>
+                <button
+                  type="button"
+                  class="press"
+                  aria-pressed="false"
+                  data-m="month"
+                >
+                  Mes
+                </button>
+              </div>
+            </header>
+            <div class="rows" id="rows"></div>
+          </section>
+
+          <div class="duo">
+            <section class="panel" aria-labelledby="todo-t">
+              <h3 class="label" id="todo-t">Qué hacer hoy <span>1/3</span></h3>
+              <ul class="todo">
+                <li>
+                  <label
+                    ><input type="checkbox" checked /><span
+                      >Check-in de la noche</span
+                    ></label
+                  >
+                </li>
+                <li>
+                  <label
+                    ><input type="checkbox" /><span
+                      >Respiración guiada · 3 min</span
+                    ></label
+                  >
+                </li>
+                <li>
+                  <label
+                    ><input type="checkbox" /><span
+                      >Enviar ánimo a Omar</span
+                    ></label
+                  >
+                </li>
+              </ul>
+            </section>
+            <section class="panel" aria-labelledby="crew-t">
+              <h3 class="label" id="crew-t">Tripulación <span>4</span></h3>
+              <div class="crew" id="crew"></div>
+              <div class="meter">
+                <p>Autonomía de la fase <b>68 %</b></p>
+                <div class="bar"><i id="auto"></i></div>
+              </div>
+            </section>
+          </div>
+        </aside>
+      </main>
+      <!-- ═════════ EQUIPO ═════════ -->
+      <main class="view" data-view="equipo" id="v-equipo">
+        <section class="sky">
+          <div class="hello static">
+            <p class="label">Equipo · 4 tripulantes</p>
+            <h1>Tu <em>constelación</em></h1>
+          </div>
+          <p class="sky-note label">Solo estados en palabras · sin números</p>
+          <div class="constellation" id="constellation"></div>
+        </section>
+        <aside class="side">
+          <article class="checkin buddy">
+            <div>
+              <p class="label">Compañero del día</p>
+              <h2>Hoy acompañas a Omar <em>pregúntale cómo durmió</em></h2>
+            </div>
+            <button class="go press" type="button" aria-label="Enviar ánimo">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"
+                />
+              </svg>
+            </button>
+          </article>
+          <section class="panel gauge-panel">
+            <div>
+              <h3 class="label">Autonomía de la fase</h3>
+              <p class="gauge-sub">
+                Qué tanto resolvemos a bordo sin esperar a Tierra.
+              </p>
+              <p class="gauge-meta label">Meta de Tránsito <b>75 %</b></p>
+            </div>
+            <div class="gauge" id="gauge"></div>
+          </section>
+          <section class="panel">
+            <h3 class="label">Panel del comandante · RIDGE <span>Mei</span></h3>
+            <ul class="ridge" id="ridge"></ul>
+            <div class="swap">
+              <p>
+                <b>¿Intercambiar la caminata espacial de Ana con Omar?</b
+                ><br /><span>Ana lleva 3 noches durmiendo poco.</span>
+              </p>
+              <div>
+                <button class="btn small ghost press" type="button">
+                  Ahora no</button
+                ><button class="btn small main press" type="button">
+                  Intercambiar
+                </button>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <!-- ═════════ TAREAS ═════════ -->
+      <main class="view" data-view="tareas" id="v-tareas">
+        <section class="col-a">
+          <div class="hello static">
+            <p class="label">Tareas · jueves 15 nov</p>
+            <h1>Qué hacer <em>hoy</em></h1>
+          </div>
+          <ol class="tasks" id="tasks"></ol>
+          <article class="breath panel">
+            <div class="breath-orb" aria-hidden="true"><i></i><i></i></div>
+            <div>
+              <p class="label">Respiración guiada · 3 min</p>
+              <p class="breath-say">
+                “Respira conmigo: entra en 4, sale en 6.”
+              </p>
+              <button class="btn small main press" type="button">
+                Empezar con Lunito
+              </button>
+            </div>
+          </article>
+        </section>
+        <aside class="side kit">
+          <header class="kit-head">
+            <h2 class="h2">Botiquín</h2>
+            <label class="search"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" /></svg
+              ><input placeholder="¿Qué sientes?" aria-label="Buscar síntoma"
+            /></label>
+          </header>
+          <div class="chips" id="chips"></div>
+          <section class="panel assistant">
+            <p class="label">
+              Asistente · dolor de cabeza <span>paso 1 de 4</span>
+            </p>
+            <p class="q">¿Hace cuánto empezó?</p>
+            <div class="opts">
+              <button class="opt press">Menos de 1 h</button
+              ><button class="opt press">1 a 6 h</button
+              ><button class="opt press">Más de 6 h</button>
+            </div>
+            <p class="fine">
+              Guía de pasos, no diagnóstico. Contenido pendiente de validar
+              (docs/FUENTES.md).
+            </p>
+          </section>
+          <section class="panel">
+            <h3 class="label">Inventario <span>5 artículos</span></h3>
+            <ul class="stock" id="stock"></ul>
+          </section>
+        </aside>
+      </main>
+
+      <!-- ═════════ AJUSTES ═════════ -->
+      <main class="view" data-view="ajustes" id="v-ajustes">
+        <section class="col-a profiles">
+          <div class="hello static">
+            <p class="label">Ajustes · perfil</p>
+            <h1>¿Quién está <em>a bordo?</em></h1>
+          </div>
+          <div class="arc" id="arc"></div>
+          <p class="arc-note">Cada tripulante tiene su propio Lunito.</p>
+        </section>
+        <aside class="side">
+          <section class="panel">
+            <h3 class="label">Compartir mi estado</h3>
+            <label class="switch"
+              ><span
+                ><b>Mostrar mi estado a la tripulación</b
+                ><small>Solo la palabra: Bien o Precaución.</small></span
+              ><input type="checkbox" checked
+            /></label>
+            <p class="fine">
+              Si estás en Atención no se publica: lo recibe el oficial médico
+              por su caso.
+            </p>
+          </section>
+          <section class="panel">
+            <h3 class="label">Lunito</h3>
+            <label class="switch"
+              ><span
+                ><b>Voz de Lunito</b
+                ><small>Te habla en el check-in.</small></span
+              ><input type="checkbox" checked
+            /></label>
+            <label class="switch"
+              ><span
+                ><b>Menos movimiento</b
+                ><small>Lunito y las órbitas se quedan quietos.</small></span
+              ><input type="checkbox"
+            /></label>
+          </section>
+          <section class="panel links">
+            <h3 class="label">Misión</h3>
+            <button class="link-row press" data-go="tierra" type="button">
+              <span
+                ><b>Consola de Tierra</b
+                ><small>Lo que ve el cirujano de vuelo</small></span
+              >→
+            </button>
+            <button class="link-row press" type="button">
+              <span
+                ><b>Panel de la demo</b
+                ><small>/demo · controles ocultos</small></span
+              >→
+            </button>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <!-- ═════════ CHECK-IN (pantalla completa) ═════════ -->
+    <section class="full" data-view="checkin" id="v-checkin">
+      <header class="full-top">
+        <button
+          class="icon-btn press"
+          data-go="inicio"
+          type="button"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+        <div class="steps" id="ci-steps"><i class="on"></i><i></i><i></i></div>
+        <button class="sos press" data-go="emergencia" type="button">
+          Emergencia
+        </button>
+      </header>
+      <div class="ci">
+        <div class="ci-stage">
+          <svg viewBox="0 0 400 400" aria-hidden="true">
+            <circle
+              cx="200"
+              cy="200"
+              r="196"
+              fill="none"
+              stroke="var(--orbit)"
+              stroke-dasharray="2 7"
+              stroke-linecap="round"
+            />
+            <circle
+              cx="200"
+              cy="200"
+              r="160"
+              fill="none"
+              stroke="var(--orbit)"
+            />
+          </svg>
+          <span class="puddle" aria-hidden="true"></span>
+          <div class="stage">
+            <div class="slot">
+              <p><span class="label">Escenario 3D</span>Lunito saluda</p>
+            </div>
+          </div>
+        </div>
+        <p class="label" id="ci-kicker">Check-in del día · 60 s</p>
+        <h1 class="ci-title" id="ci-title">¡Hola! Qué gusto verte</h1>
+        <p class="ci-say" id="ci-say">“Hola, soy Lunito.”</p>
+        <button
+          class="mic press"
+          id="mic"
+          type="button"
+          aria-label="Hablar con Lunito"
+        >
+          <span class="ring"></span><span class="ring"></span
+          ><span class="ring"></span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <rect x="9" y="2" width="6" height="12" rx="3" />
+            <path d="M5 10a7 7 0 0 0 14 0M12 17v5" />
+          </svg>
+        </button>
+        <p class="listening" id="listening"><i></i> Escuchando…</p>
+        <button class="write press" type="button">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <rect x="2" y="6" width="20" height="12" rx="2" />
+            <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" /></svg
+          >Escribir respuesta
+        </button>
+      </div>
+      <footer class="sensor">
+        <span class="label">Sensor · MAX30102</span>
+        <div class="bar"><i id="sensor-bar"></i></div>
+        <span class="label"
+          ><b id="sensor-s">0</b> s · <b>71</b> lpm · <b>98</b> %</span
+        >
+      </footer>
+    </section>
+
+    <!-- ═════════ EMERGENCIA (pantalla completa, sin nada lúdico) ═════════ -->
+    <section class="full emergency" data-view="emergencia" id="v-emergencia">
+      <header class="em-band">
+        <div>
+          <p class="label">Emergencia a bordo · caso 042-1</p>
+          <h1>Omar · desmayo en el módulo de servicio</h1>
+          <p class="em-time">Abierto 06:58 · lo atiende Luis (CMO)</p>
+        </div>
+        <button class="em-close press" data-go="inicio" type="button">
+          Cerrar caso
+        </button>
+      </header>
+      <div class="em-grid">
+        <section class="em-panel">
+          <p class="label">Caso enviado a Tierra</p>
+          <p class="em-count" id="em-count">00:04</p>
+          <p class="em-sub">
+            Respuesta del cirujano en camino · retraso de comunicación 4 s
+          </p>
+          <button class="dictate press" type="button">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+            >
+              <rect x="9" y="2" width="6" height="12" rx="3" />
+              <path d="M5 10a7 7 0 0 0 14 0M12 17v5" /></svg
+            >Dictar lo que ves
+          </button>
+        </section>
+        <section class="em-panel">
+          <p class="label">Protocolo · pendiente de validar</p>
+          <ul class="em-check" id="em-check"></ul>
+        </section>
+        <section class="em-panel">
+          <p class="label">Registro del caso</p>
+          <ol class="em-log">
+            <li><b>06:58:12</b> Caso abierto por Luis</li>
+            <li><b>06:58:20</b> SpO₂ 93 % · pulso 58 lpm</li>
+            <li><b>06:58:31</b> Enviado a Tierra</li>
+            <li><b>06:59:02</b> Omar responde a la voz</li>
+          </ol>
+        </section>
+      </div>
+    </section>
+
+    <!-- ═════════ CONSOLA DE TIERRA (escritorio, densa) ═════════ -->
+    <section class="full console" data-view="tierra" id="v-tierra">
+      <header class="full-top con-top">
+        <div class="brand"><i aria-hidden="true"></i>Nóstos · Tierra</div>
+        <p class="label">Consola del cirujano de vuelo</p>
+        <p class="label link-ok"><i></i> Enlace estable · retraso 4 s</p>
+        <button
+          class="icon-btn press"
+          data-go="ajustes"
+          type="button"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+      </header>
+      <div class="con-grid">
+        <section class="panel sbar">
+          <h3 class="label">SBAR · caso 042-1 · Omar</h3>
+          <dl>
+            <dt>S</dt>
+            <dd>Desmayo breve en el módulo de servicio a las 06:58.</dd>
+            <dt>B</dt>
+            <dd>Durmió 5 h; sin síntomas en el check-in de ayer.</dd>
+            <dt>A</dt>
+            <dd>SpO₂ 93 %, pulso 58 lpm, responde a la voz.</dd>
+            <dt>R</dt>
+            <dd>Pendiente de la respuesta del cirujano.</dd>
+          </dl>
+        </section>
+        <section class="panel con-trend">
+          <h3 class="label">Pulso · últimos 7 días</h3>
+          <div class="plot" id="con-plot"></div>
+        </section>
+        <section class="panel">
+          <h3 class="label">Línea de tiempo</h3>
+          <ol class="em-log">
+            <li><b>06:58:12</b> Caso abierto a bordo</li>
+            <li><b>06:58:35</b> Recibido en Tierra</li>
+            <li><b>06:59:06</b> Nota de voz del CMO</li>
+          </ol>
+        </section>
+        <section class="panel">
+          <h3 class="label">Recursos a bordo</h3>
+          <ul class="stock" id="con-stock"></ul>
+        </section>
+        <section class="panel reply">
+          <h3 class="label">Responder a la nave</h3>
+          <textarea
+            rows="3"
+            placeholder="Llega a bordo como checklist…"
+          ></textarea>
+          <button class="btn small main press" type="button">
+            Enviar a la nave
+          </button>
+        </section>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Principal">
+      <button type="button" class="press" data-go="inicio" aria-current="page">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <circle cx="12" cy="12" r="3.5" />
+          <circle cx="12" cy="12" r="8.5" stroke-dasharray="2 3" /></svg
+        ><span>Inicio</span>
+      </button>
+      <button type="button" class="press" data-go="equipo">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <circle cx="5" cy="7" r="2" />
+          <circle cx="18" cy="5" r="2" />
+          <circle cx="12" cy="17" r="2" />
+          <path d="m6.7 8.2 4 7M16.5 6.4l-3.4 9M7 7l9-1.6" /></svg
+        ><span>Equipo</span>
+      </button>
+      <button type="button" class="press" data-go="tareas">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        >
+          <path d="m4 7 2 2 4-4M4 17l2 2 4-4M14 7h6M14 17h6" /></svg
+        ><span>Tareas</span>
+      </button>
+      <button type="button" class="press" data-go="ajustes">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"
+          /></svg
+        ><span>Ajustes</span>
+      </button>
+    </nav>
+
+    <div class="preview" role="group" aria-label="Vista previa de estados">
+      <span class="label">Paleta</span>
+      <button type="button" data-p="marea" aria-pressed="true">Marea</button>
+      <button type="button" data-p="lavanda" aria-pressed="false">
+        Lavanda
+      </button>
+      <button type="button" data-p="bruma" aria-pressed="false">Bruma</button>
+      <button type="button" data-p="marfil" aria-pressed="false">Marfil</button>
+      <button type="button" data-p="original" aria-pressed="false">
+        Anterior
+      </button>
+      <span class="label">Voz</span>
+      <button type="button" data-v="nunito" aria-pressed="true">Nunito</button>
+      <button type="button" data-v="outfit" aria-pressed="false">Outfit</button>
+      <button type="button" data-v="quicksand" aria-pressed="false">
+        Quicksand
+      </button>
+      <button type="button" data-v="bricolage" aria-pressed="false">
+        Bricolage
+      </button>
+      <span></span>
+      <span class="label">Estado</span>
+      <button type="button" data-s="ok" aria-pressed="true">Bien</button>
+      <button type="button" data-s="warn" aria-pressed="false">
+        Precaución
+      </button>
+      <button type="button" data-s="alert" aria-pressed="false">
+        Atención
+      </button>
+    </div>
+
+    <div class="scrim" id="scrim"></div>
+    <aside class="sheet" id="sheet" aria-hidden="true">
+      <button class="close press" type="button" id="close" aria-label="Cerrar">
+        ×
+      </button>
+      <p class="label" id="sh-kicker"></p>
+      <h2 id="sh-title"></h2>
+      <div class="big" id="sh-big"></div>
+      <p class="lunito" id="sh-text"></p>
+      <div class="plot" id="sh-plot"></div>
+      <div class="pending">
+        Rango de referencia: <b>pendiente de validar</b> (docs/FUENTES.md).
+        Lunito acompaña, no diagnostica.
+      </div>
+    </aside>
+
+    <script>
+      const ICON = {
+        bpm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></svg>',
+        hrv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/><path d="M3.2 12H9l1-2 2 4 1-2h7.8"/></svg>',
+        spo2: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7Z"/></svg>',
+      };
+      const CHECK =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      const BANG =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 6v8M12 18h.01"/></svg>';
+      const WORD = { ok: "Bien", warn: "Precaución", alert: "Atención" };
+
+      // Datos simulados (mismos valores que src/data/dashboard.ts).
+      const READINGS = {
+        ok: {
+          bpm: ["ok", 72],
+          hrv: ["ok", 45],
+          spo2: ["ok", 98],
+          say: "“Te veo tranquila hoy.”",
+          why: "Todo en tu rango habitual",
+        },
+        warn: {
+          bpm: ["warn", 79],
+          hrv: ["warn", 36],
+          spo2: ["ok", 97],
+          say: "“Hoy vamos con calma, ¿va?”",
+          why: "Pulso y HRV fuera de tu rango",
+        },
+        alert: {
+          bpm: ["ok", 74],
+          hrv: ["ok", 40],
+          spo2: ["alert", 90],
+          say: "“Avisemos al oficial médico.”",
+          why: "Oxígeno bajo, confirmado",
+        },
+      };
+      const META = {
+        bpm: {
+          name: "Pulso",
+          unit: "lpm",
+          angle: 180,
+          week: [70, 73, 71, 74, 72, 75],
+          month: [71, 72, 73, 72],
+          text: "“Late en tu brazo izquierdo, y yo late contigo.”",
+        },
+        hrv: {
+          name: "HRV",
+          unit: "ms",
+          angle: 0,
+          week: [48, 44, 47, 43, 46, 45],
+          month: [46, 45, 44, 45],
+          text: "“La leo en tu mano derecha. Cuando sube, respiro más lento.”",
+        },
+        spo2: {
+          name: "SpO₂",
+          unit: "%",
+          angle: 90,
+          week: [98, 98, 97, 98, 98, 97],
+          month: [98, 98, 97, 98],
+          text: "“Es el color de mi pancita.”",
+        },
+      };
+      const DAYS = ["L", "M", "X", "J", "V", "S", "D"],
+        DAY_N = [
+          "Lunes",
+          "Martes",
+          "Miércoles",
+          "Jueves",
+          "Viernes",
+          "Sábado",
+          "Domingo",
+        ];
+      const WEEKS = ["S1", "S2", "S3", "S4"],
+        WEEK_N = ["Semana 1", "Semana 2", "Semana 3", "Semana 4"];
+      const CREW = [
+        { id: "ANA", x: 50, y: 46, s: "warn", me: true },
+        { id: "LUIS", x: 14, y: 22, s: "ok" },
+        { id: "MEI", x: 86, y: 24, s: "ok" },
+        { id: "OMAR", x: 76, y: 82, s: "ok" },
+      ];
+      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let status = "ok",
+        mode = "week";
+
+      // Marcas de dial en el anillo exterior: identidad de instrumento.
+      const ticks = document.getElementById("ticks");
+      for (let d = 0; d < 360; d += 3) {
+        const a = (d * Math.PI) / 180,
+          long = d % 30 === 0,
+          r1 = 284,
+          r2 = long ? 270 : 278;
+        ticks.insertAdjacentHTML(
+          "beforeend",
+          `<line x1="${300 + r1 * Math.cos(a)}" y1="${300 + r1 * Math.sin(a)}" x2="${300 + r2 * Math.cos(a)}" y2="${300 + r2 * Math.sin(a)}" stroke="var(--ink)" stroke-opacity="${long ? 0.35 : 0.14}" stroke-width="${long ? 1.4 : 1}" />`,
+        );
+      }
+
+      // Lunas en su ángulo fijo sobre la órbita de radio 235.
+      const orbit = document.getElementById("orbit"),
+        moons = {};
+      Object.entries(META).forEach(([k, m], i) => {
+        const el = document.createElement("button");
+        el.className = "moon";
+        el.type = "button";
+        const a = (m.angle * Math.PI) / 180;
+        el.style.left = `${((300 + 235 * Math.cos(a)) / 600) * 100}%`;
+        el.style.top = `${((300 + 235 * Math.sin(a)) / 600) * 100}%`;
+        el.innerHTML = `${ICON[k]}<span class="name">${m.name}</span><span class="val">0</span><span class="unit">${m.unit}</span><span class="tag"><i></i><em style="font-style:normal"></em></span>`;
+        el.addEventListener("click", () => openSheet(k));
+        orbit.appendChild(el);
+        moons[k] = el;
+        setTimeout(() => el.classList.add("in"), 200 + i * 60);
+      });
+
+      // Tripulación como constelación.
+      const crew = document.getElementById("crew");
+      crew.innerHTML =
+        `<svg aria-hidden="true">${[
+          [0, 1],
+          [0, 2],
+          [0, 3],
+          [2, 3],
+        ]
+          .map(
+            ([a, b]) =>
+              `<line x1="${CREW[a].x}%" y1="${CREW[a].y}%" x2="${CREW[b].x}%" y2="${CREW[b].y}%" stroke="var(--ink)" stroke-opacity="0.18" />`,
+          )
+          .join("")}</svg>` +
+        CREW.map(
+          (c) =>
+            `<span class="star${c.me ? " me" : ""}" style="left:${c.x}%;top:${c.y}%;--c:var(--${c.s})" title="${WORD[c.s]}"><i></i>${c.id}</span>`,
+        ).join("");
+      setTimeout(
+        () => (document.getElementById("auto").style.width = "68%"),
+        50,
+      );
+
+      function countUp(el, to) {
+        if (reduced) return (el.textContent = to);
+        const from = Number(el.textContent) || 0,
+          t0 = performance.now();
+        const tick = (t) => {
+          const p = Math.min(1, (t - t0) / 600),
+            e = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(from + (to - from) * e);
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      function render() {
+        const r = READINGS[status];
+        Object.entries(moons).forEach(([k, el]) => {
+          const [s, v] = r[k];
+          el.style.setProperty("--c", `var(--${s})`);
+          el.style.setProperty("--ct", `var(--${s}-text)`);
+          el.querySelector("em").textContent = WORD[s];
+          el.setAttribute(
+            "aria-label",
+            `${META[k].name}: ${v} ${META[k].unit}, ${WORD[s]}`,
+          );
+          countUp(el.querySelector(".val"), v);
+        });
+        document.getElementById("say").textContent = r.say;
+        const st = document.getElementById("state");
+        st.style.setProperty("--c", `var(--${status})`);
+        st.innerHTML = `<span class="badge">${status === "ok" ? CHECK : BANG}</span>${WORD[status]} <small>· ${r.why} ·</small> <button type="button">Qué significa</button>`;
+        document.getElementById("stage").style.setProperty(
+          "--halo",
+          {
+            ok: "rgb(43 184 204 / 0.5)",
+            warn: "rgb(242 178 51 / 0.55)",
+            alert: "rgb(224 74 58 / 0.45)",
+          }[status],
+        );
+        renderRows();
+      }
+
+      function smooth(pts) {
+        let d = `M${pts[0].x},${pts[0].y}`;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const p0 = pts[i - 1] || pts[i],
+            p1 = pts[i],
+            p2 = pts[i + 1],
+            p3 = pts[i + 2] || p2;
+          d += `C${p1.x + (p2.x - p0.x) / 6},${p1.y + (p2.y - p0.y) / 6} ${p2.x - (p3.x - p1.x) / 6},${p2.y - (p3.y - p1.y) / 6} ${p2.x},${p2.y}`;
+        }
+        return d;
+      }
+
+      // Gráfica que se adapta al alto de su fila (el SVG mide su caja).
+      function chart(host, k) {
+        const [s, today] = READINGS[status][k],
+          m = META[k];
+        const values = mode === "week" ? [...m.week, today] : m.month;
+        const labels = mode === "week" ? DAYS : WEEKS,
+          names = mode === "week" ? DAY_N : WEEK_N;
+        const w = host.clientWidth || 300,
+          h = host.clientHeight || 90;
+        const lo = Math.min(...values) - 2,
+          hi = Math.max(...values) + 2;
+        const pad = { l: 6, r: 10, t: 12, b: 20 },
+          pw = w - pad.l - pad.r,
+          ph = h - pad.t - pad.b;
+        const pts = values.map((v, i) => ({
+          x: pad.l + (i / (labels.length - 1)) * pw,
+          y: pad.t + ph - ((v - lo) / (hi - lo)) * ph,
+        }));
+        const path = smooth(pts),
+          end = pts[pts.length - 1];
+        host.innerHTML = `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${m.name}: ${values.join(", ")}">
+      ${labels.map((l, i) => `<text x="${pad.l + (i / (labels.length - 1)) * pw}" y="${h - 3}" text-anchor="middle" font-size="11" fill="var(--ink-soft)" font-family="JetBrains Mono">${l}</text>`).join("")}
+      <path d="${path}L${end.x},${pad.t + ph}L${pts[0].x},${pad.t + ph}Z" fill="var(--water-2)" fill-opacity="0.9" />
+      <path class="line" d="${path}" pathLength="1" fill="none" stroke="var(--action)" stroke-width="2.2" stroke-linecap="round" />
+      ${pts
+        .slice(0, -1)
+        .map(
+          (p) =>
+            `<circle cx="${p.x}" cy="${p.y}" r="3.2" fill="var(--surface)" stroke="var(--action)" stroke-width="1.6" />`,
+        )
+        .join("")}
+      <line class="cross" y1="${pad.t - 6}" y2="${pad.t + ph}" stroke="var(--ink)" stroke-opacity="0.3" stroke-dasharray="3 3" visibility="hidden" />
+      <circle class="hov" r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2" visibility="hidden" />
+      <circle cx="${end.x}" cy="${end.y}" r="5.5" fill="var(--${s})" stroke="var(--bg)" stroke-width="2.5" />
+      <rect width="${w}" height="${h}" fill="transparent" />
+    </svg><div class="tip"><b></b><span></span></div>`;
+        const svg = host.querySelector("svg"),
+          tip = host.querySelector(".tip"),
+          cross = svg.querySelector(".cross"),
+          hov = svg.querySelector(".hov");
+        svg.addEventListener("pointermove", (e) => {
+          const b = svg.getBoundingClientRect(),
+            x = ((e.clientX - b.left) / b.width) * w;
+          const i = Math.round(
+              Math.max(0, Math.min(1, (x - pad.l) / pw)) * (labels.length - 1),
+            ),
+            p = pts[i];
+          cross.setAttribute("x1", p.x);
+          cross.setAttribute("x2", p.x);
+          cross.setAttribute("visibility", "visible");
+          hov.setAttribute("cx", p.x);
+          hov.setAttribute("cy", p.y);
+          hov.setAttribute("visibility", "visible");
+          tip.querySelector("b").textContent = `${values[i]} ${m.unit}`;
+          tip.querySelector("span").textContent = names[i];
+          tip.style.left = `${(p.x / w) * 100}%`;
+          tip.style.top = `${(p.y / h) * 100}%`;
+          tip.classList.add("on");
+        });
+        svg.addEventListener("pointerleave", () => {
+          tip.classList.remove("on");
+          cross.setAttribute("visibility", "hidden");
+          hov.setAttribute("visibility", "hidden");
+        });
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() =>
+            host.querySelector(".line").classList.add("in"),
+          ),
+        );
+      }
+
+      function renderRows() {
+        const box = document.getElementById("rows");
+        box.innerHTML = "";
+        Object.keys(META).forEach((k) => {
+          const [s, v] = READINGS[status][k],
+            m = META[k];
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `<div class="k"><span class="label">${m.name}</span><p class="v">${v}<small>${m.unit}</small></p><p class="st" style="color:var(--${s}-text)"><i></i>${WORD[s]}</p></div><div class="plot"></div>`;
+          box.appendChild(row);
+        });
+        requestAnimationFrame(() =>
+          box
+            .querySelectorAll(".plot")
+            .forEach((p, i) => chart(p, Object.keys(META)[i])),
+        );
+        document.getElementById("range").textContent =
+          mode === "week" ? "9–15 nov" : "Últimas 4 semanas";
+      }
+      addEventListener("resize", () => renderRows());
+
+      const sheet = document.getElementById("sheet"),
+        scrim = document.getElementById("scrim");
+      function openSheet(k) {
+        const [s, v] = READINGS[status][k],
+          m = META[k];
+        document.getElementById("sh-kicker").innerHTML =
+          `<span style="color:var(--${s}-text)">● ${WORD[s]}</span> · ${mode === "week" ? "Esta semana" : "Este mes"}`;
+        document.getElementById("sh-title").textContent = m.name;
+        document.getElementById("sh-big").innerHTML =
+          `${v}<small> ${m.unit}</small>`;
+        document.getElementById("sh-text").textContent = m.text;
+        sheet.classList.add("on");
+        scrim.classList.add("on");
+        sheet.setAttribute("aria-hidden", "false");
+        requestAnimationFrame(() =>
+          chart(document.getElementById("sh-plot"), k),
+        );
+      }
+      const closeSheet = () => {
+        sheet.classList.remove("on");
+        scrim.classList.remove("on");
+        sheet.setAttribute("aria-hidden", "true");
+      };
+      scrim.onclick = closeSheet;
+      document.getElementById("close").onclick = closeSheet;
+      addEventListener("keydown", (e) => e.key === "Escape" && closeSheet());
+
+      document
+        .getElementById("checkin")
+        .addEventListener("pointermove", (e) => {
+          const b = e.currentTarget.getBoundingClientRect();
+          e.currentTarget.style.setProperty("--mx", `${e.clientX - b.left}px`);
+          e.currentTarget.style.setProperty("--my", `${e.clientY - b.top}px`);
+        });
+      document.getElementById("seg").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        mode = b.dataset.m;
+        e.currentTarget.dataset.m = mode;
+        e.currentTarget
+          .querySelectorAll("button")
+          .forEach((x) => x.setAttribute("aria-pressed", x === b));
+        renderRows();
+      });
+      document.querySelector(".preview").addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        if (b.dataset.v) {
+          document.documentElement.dataset.voice = b.dataset.v;
+          document
+            .querySelectorAll(".preview [data-v]")
+            .forEach((x) => x.setAttribute("aria-pressed", x === b));
+          return;
+        }
+        if (b.dataset.p) {
+          document.documentElement.dataset.palette = b.dataset.p;
+          document
+            .querySelectorAll(".preview [data-p]")
+            .forEach((x) => x.setAttribute("aria-pressed", x === b));
+          return;
+        }
+        status = b.dataset.s;
+        document
+          .querySelectorAll(".preview [data-s]")
+          .forEach((x) => x.setAttribute("aria-pressed", x === b));
+        render();
+      });
+      render();
+
+      // ═════════ Pantallas extra (datos simulados de src/data/crew.ts e inventory.ts) ═════════
+      const TEAM = [
+        {
+          id: "ana",
+          name: "Ana",
+          role: "Especialista",
+          s: "warn",
+          x: 50,
+          y: 50,
+          me: true,
+        },
+        {
+          id: "luis",
+          name: "Luis",
+          role: "Oficial médico",
+          s: "ok",
+          x: 18,
+          y: 22,
+        },
+        { id: "mei", name: "Mei", role: "Comandante", s: "ok", x: 82, y: 22 },
+        { id: "omar", name: "Omar", role: "Ingeniero", s: "ok", x: 76, y: 84 },
+      ];
+      const el = (id) => document.getElementById(id);
+
+      // Constelación: líneas finas entre tripulantes y un disco por Lunito (vacío por ahora).
+      el("constellation").innerHTML =
+        `<svg aria-hidden="true">${[
+          [0, 1],
+          [0, 2],
+          [0, 3],
+          [1, 2],
+          [2, 3],
+        ]
+          .map(
+            ([a, b]) =>
+              `<line x1="${TEAM[a].x}%" y1="${TEAM[a].y}%" x2="${TEAM[b].x}%" y2="${TEAM[b].y}%" stroke="var(--ink)" stroke-opacity="0.2" stroke-dasharray="${a === 0 ? "0" : "3 5"}" />`,
+          )
+          .join("")}</svg>` +
+        TEAM.map(
+          (m) =>
+            `<div class="node${m.me ? " me" : ""}" style="left:${m.x}%;top:${m.y}%;--c:var(--${m.s});--ct:var(--${m.s}-text)"><span class="puddle"></span><span class="disc"><i></i></span><b>${m.name}${m.me ? " · tú" : ""}</b><span class="role">${m.role}</span><span class="word"><i></i>${WORD[m.s]}</span></div>`,
+        ).join("");
+
+      // Autonomía: medio círculo (patrón chart-08) con la marca de la meta.
+      (() => {
+        const r = 80,
+          c = Math.PI * r,
+          val = 0.68,
+          goal = 0.75;
+        const ga = Math.PI * (1 - goal),
+          gx = 100 + r * Math.cos(ga),
+          gy = 100 - r * Math.sin(ga);
+        el("gauge").innerHTML =
+          `<svg viewBox="0 0 200 112"><path d="M20 100a80 80 0 0 1 160 0" fill="none" stroke="var(--orbit)" stroke-width="14" stroke-linecap="round"/>
+    <path id="g-arc" d="M20 100a80 80 0 0 1 160 0" fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c}" style="transition:stroke-dashoffset 1s var(--ease) 200ms"/>
+    <line x1="${gx}" y1="${gy - 0}" x2="${100 + (r + 14) * Math.cos(ga)}" y2="${100 - (r + 14) * Math.sin(ga)}" stroke="var(--action)" stroke-width="3" stroke-linecap="round"/></svg><p>68 %</p>`;
+        window.fillGauge = () =>
+          requestAnimationFrame(
+            () => (el("g-arc").style.strokeDashoffset = c * (1 - val)),
+          );
+      })();
+
+      el("ridge").innerHTML = [
+        ["R", "Radiación", "ok"],
+        ["I", "Aislamiento", "warn"],
+        ["D", "Distancia de la Tierra", "ok"],
+        ["G", "Gravedad", "ok"],
+        ["E", "Ambiente cerrado", "ok"],
+      ]
+        .map(
+          ([l, n, s]) =>
+            `<li style="--ct:var(--${s}-text)"><b>${l}</b><span>${n}</span><span>${WORD[s]}</span></li>`,
+        )
+        .join("");
+
+      // Tareas del día.
+      el("tasks").innerHTML = [
+        ["07:00", "Check-in del día", "Con Lunito · 60 s", "I", true],
+        [
+          "09:30",
+          "Ejercicio en ARED",
+          "45 min · mantiene hueso y músculo",
+          "G",
+          false,
+        ],
+        ["13:00", "Respiración guiada", "3 min antes de comer", "I", false],
+        ["18:00", "Enviar ánimo a Omar", "Compañero del día", "I", false],
+        ["21:30", "Check-in de la noche", "Cómo te fue hoy", "I", false],
+      ]
+        .map(
+          ([t, a, b, r, d]) =>
+            `<li class="press${d ? " done" : ""}"><time>${t}</time><span class="dot"></span><span><strong>${a}</strong><small>${b}</small></span><span class="r" title="Peligro RIDGE">${r}</span></li>`,
+        )
+        .join("");
+      el("tasks").addEventListener("click", (e) =>
+        e.target.closest("li")?.classList.toggle("done"),
+      );
+
+      el("chips").innerHTML = [
+        "Dolor de cabeza",
+        "Náusea",
+        "Mareo",
+        "Insomnio",
+        "Congestión",
+        "Dolor muscular",
+      ]
+        .map(
+          (s, i) =>
+            `<button type="button" class="chip press${i === 0 ? " sel" : ""}">${s}</button>`,
+        )
+        .join("");
+
+      const STOCK = [
+        ["Paracetamol 325 mg", 24, 40, 12, "tabletas"],
+        ["Ibuprofeno 400 mg", 6, 30, 8, "tabletas"],
+        ["Sales de rehidratación", 10, 20, 5, "sobres"],
+        ["Vendas elásticas", 4, 8, 3, "rollos"],
+        ["Oxígeno portátil", 1, 3, 1, "cilindro"],
+      ];
+      const stockHTML = STOCK.map(([n, q, max, min, u]) => {
+        const s = q < min ? "alert" : q === min ? "warn" : null;
+        const word =
+          q < min ? "Bajo el mínimo" : q === min ? "En el mínimo" : "";
+        return `<li style="${s ? `--c:var(--${s});--ct:var(--${s}-text)` : ""}"><span>${n} ${word ? `<span class="warnword">· ${word}</span>` : ""}</span><span class="q">${q} ${u}</span><span class="bar"><i style="width:${(q / max) * 100}%"></i></span></li>`;
+      }).join("");
+      el("stock").innerHTML = stockHTML;
+      el("con-stock").innerHTML = stockHTML;
+
+      // Selección de perfil: el elegido al centro y los demás en su órbita.
+      const SLOTS = [
+        [13, 44],
+        [87, 44],
+        [50, 86],
+      ];
+      function renderArc(sel = "ana") {
+        let k = 0;
+        el("arc").innerHTML =
+          `<svg viewBox="0 0 100 80" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="50" cy="50" rx="37" ry="42" fill="none" stroke="var(--orbit)" stroke-dasharray="1 2" vector-effect="non-scaling-stroke"/></svg>` +
+          TEAM.map((m) => {
+            const [x, y] = m.id === sel ? [50, 38] : SLOTS[k++];
+            return `<button type="button" class="pick press${m.id === sel ? " sel" : ""}" data-id="${m.id}" style="left:${x}%;top:${y}%"><span class="puddle"></span><span class="disc">${m.name.slice(0, 2).toUpperCase()}</span><b>${m.name}</b><small>${m.role}</small></button>`;
+          }).join("");
+      }
+      renderArc();
+      el("arc").addEventListener("click", (e) => {
+        const b = e.target.closest(".pick");
+        if (b) renderArc(b.dataset.id);
+      });
+
+      // Check-in: saludo → pregunta → escuchando.
+      const CI = [
+        { t: "¡Hola! Qué gusto verte", s: "“Hola, soy Lunito.”" },
+        {
+          t: "¿Cómo amaneciste <em>hoy?</em>",
+          s: "“Cuéntame cómo te sientes.”",
+        },
+        {
+          t: "¿Cómo amaneciste <em>hoy?</em>",
+          s: "“Te escucho, tómate tu tiempo.”",
+          listen: true,
+        },
+      ];
+      let ciStep = 0,
+        sensorTimer;
+      function renderCI() {
+        const st = CI[ciStep];
+        el("ci-title").innerHTML = st.t;
+        el("ci-say").textContent = st.s;
+        document
+          .querySelector(".ci")
+          .classList.toggle("is-listening", !!st.listen);
+        el("ci-steps")
+          .querySelectorAll("i")
+          .forEach((d, i) => d.classList.toggle("on", i <= ciStep));
+      }
+      el("mic").addEventListener("click", () => {
+        if (ciStep === 2) {
+          ciStep = 0;
+          return go("inicio");
+        }
+        ciStep++;
+        renderCI();
+      });
+      function startSensor() {
+        clearInterval(sensorTimer);
+        let s = 0;
+        sensorTimer = setInterval(() => {
+          s = Math.min(60, s + 1);
+          el("sensor-s").textContent = s;
+          el("sensor-bar").style.width = `${(s / 60) * 100}%`;
+          if (s === 60) clearInterval(sensorTimer);
+        }, 250);
+      }
+
+      // Emergencia: protocolo marcable y contador del retraso.
+      el("em-check").innerHTML = [
+        "Asegurar el área",
+        "Ver si responde a la voz",
+        "Colocar el oxímetro",
+        "Avisar a la comandante",
+      ]
+        .map(
+          (t) =>
+            `<li><label><input type="checkbox" /><span>${t}</span></label></li>`,
+        )
+        .join("");
+      let emTimer;
+      function startCountdown() {
+        clearInterval(emTimer);
+        let s = 4;
+        el("em-count").textContent = "00:04";
+        emTimer = setInterval(() => {
+          s--;
+          el("em-count").textContent = s > 0 ? `00:0${s}` : "Recibido";
+          if (s <= 0) clearInterval(emTimer);
+        }, 1000);
+      }
+
+      // Navegación entre pantallas.
+      function go(view) {
+        document
+          .querySelectorAll(".view, .full")
+          .forEach((v) => v.classList.toggle("on", v.dataset.view === view));
+        const full = ["checkin", "emergencia", "tierra"].includes(view);
+        document.body.classList.toggle("fullscreen", full);
+        document
+          .querySelectorAll("nav.tabs [data-go]")
+          .forEach((b) =>
+            b.dataset.go === view
+              ? b.setAttribute("aria-current", "page")
+              : b.removeAttribute("aria-current"),
+          );
+        if (view === "inicio") renderRows();
+        if (view === "equipo") fillGauge();
+        if (view === "checkin") {
+          ciStep = 0;
+          renderCI();
+          startSensor();
+        }
+        if (view === "emergencia") startCountdown();
+        if (view === "tierra")
+          requestAnimationFrame(() => chart(el("con-plot"), "bpm"));
+      }
+      document.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-go]");
+        if (b) go(b.dataset.go);
+      });
+    </script>
+  </body>
+</html>

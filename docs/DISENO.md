@@ -2,6 +2,16 @@
 
 Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTEMA.md](SISTEMA.md) (sección 1); las pantallas, en la sección 9.
 
+## Maqueta integral aprobada · Órbita
+
+La referencia integral del rediseño está en [diseno/prototipos/orbita.html](diseno/prototipos/orbita.html). Se abre directamente en un navegador y reúne Inicio, Equipo, Tareas, Ajustes, Check-in, Emergencia y Tierra en los tamaños de escritorio, tablet y celular.
+
+- La maqueta fija la estructura, jerarquía, lenguaje visual, movimiento y adaptación responsive.
+- Las imágenes de abajo siguen fijando el contenido y el flujo de Inicio; cuando haya una diferencia puramente visual, manda la maqueta Órbita.
+- Es una referencia de diseño, no sustituye la aplicación React ni duplica sus datos o reglas de salud.
+- Cada responsable porta su pantalla según [REPARTO.md](REPARTO.md). Ariff conserva en exclusiva la estructura global, navegación y tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
+- El selector de paleta, voz y estado de la esquina es una herramienta de comparación de la maqueta y no forma parte del producto final.
+
 ## Referencias finales (modelo exacto del frontend)
 
 Estas imágenes son **la referencia exacta** de cómo se ve la app. Si algo de este documento o del código actual las contradice, mandan las imágenes. Los puntos donde chocaban con reglas anteriores ya están decididos abajo. Las demás pantallas todavía no tienen referencia final; se diseñarán después siguiendo este mismo estilo.
