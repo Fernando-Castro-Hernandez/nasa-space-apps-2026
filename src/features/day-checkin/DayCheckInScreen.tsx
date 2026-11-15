@@ -158,6 +158,9 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
     if (voice.status !== "idle") voice.cancel();
     lunitoVoice.stop();
     if (!log.transcript.trim()) setAnswer("text");
+    // Pidió escribir: se abre la hoja, aunque ya haya dicho ánimo y estrés
+    // (si no, Lunito lo repetiría y guardaría sin dejar escribir).
+    setEditing(true);
     log.write();
     send("write");
   };
@@ -167,6 +170,7 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
     lunitoVoice.stop();
     setAsked(false);
     setAnswer("voice");
+    setEditing(false);
     log.listen();
     send("tapMic");
   };
@@ -212,6 +216,14 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
     // `confirm` y `line` cambian en cada render; solo importa entrar a la lectura.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readback]);
+
+  // De voz a voz, una emergencia también se dice en voz alta: la hoja abre
+  // con el aviso y Lunito lo dice, sin esperar al resultado.
+  const urgentLine =
+    phase === "revisar" && answer === "voice" ? result.emergency : null;
+  useEffect(() => {
+    if (urgentLine) void lunitoVoice.say(urgentLine);
+  }, [urgentLine]);
 
   const goHome = () => {
     if (celebrates(result.status, urgent)) lunito.current?.play("cheer");

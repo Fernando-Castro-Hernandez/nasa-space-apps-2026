@@ -62,6 +62,33 @@ test("las respuestas cortas se entienden sin IA", () => {
   expect(quickAnswer("symptoms", "my head hurts")).toBeNull();
 });
 
+test("una frase larga no es una respuesta corta: la decide la IA", () => {
+  // "Una" y "one" son artículos, no un 1.
+  expect(quickAnswer("mood", "Tengo una energía increíble hoy")).toBeNull();
+  expect(quickAnswer("mood", "I'm having one of those great days")).toBeNull();
+  expect(
+    quickAnswer("stress", "Tengo una reunión que me preocupa mucho"),
+  ).toBeNull();
+  expect(quickAnswer("mood", "tengo una duda")).toBeNull();
+  expect(quickAnswer("mood", "un 4")?.mood).toBe(4);
+  expect(quickAnswer("stress", "uno")?.stress).toBe(1);
+  // Empezar con "no" no es decir "nada".
+  expect(
+    quickAnswer("symptoms", "No me siento bien, me duele la cabeza"),
+  ).toBeNull();
+  expect(
+    quickAnswer("symptoms", "No, well, actually I have a headache"),
+  ).toBeNull();
+  expect(quickAnswer("symptoms", "No, mareo")).toBeNull();
+  expect(quickAnswer("symptoms", "no")).toEqual(EMPTY_FIELDS);
+  // Un número que no son horas de sueño.
+  expect(quickAnswer("sleep", "Mal, me desperté 3 veces")).toBeNull();
+  expect(quickAnswer("sleep", "I went to bed at 11")).toBeNull();
+  expect(quickAnswer("sleep", "7")?.sleepHours).toBe(7);
+  expect(quickAnswer("sleep", "como 6 horas")?.sleepHours).toBe(6);
+  expect(quickAnswer("sleep", "6,5")?.sleepHours).toBe(6.5);
+});
+
 test("entiende un número suelto, en cifra o en palabra, en los dos idiomas", () => {
   expect(parseScale("4")).toBe(4);
   expect(parseScale("Four")).toBe(4);

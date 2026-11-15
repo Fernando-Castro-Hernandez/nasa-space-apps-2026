@@ -459,3 +459,64 @@ test("en Bien, al terminar de decir el resultado Lunito celebra", async () => {
   await act(async () => {});
   expect(lunitoImage()).toMatch(/saludo/);
 });
+
+test("de voz a voz, una emergencia corta la conversación: Lunito no sigue preguntando, la dice y abre la hoja con el acceso a Emergencia", async () => {
+  const warning =
+    "Eso puede ser una emergencia. Toca el botón rojo Emergencia ahora y avisa a Luis, tu oficial médico. Aquí sigo contigo.";
+  fakeSession("Me duele mucho el pecho y no puedo respirar");
+  extract.mockResolvedValue({
+    sleepHours: null,
+    sleepQuality: null,
+    mood: null,
+    stress: null,
+    symptoms: [],
+  });
+  render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
+  await act(async () => voiceOut.greeting.release());
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  const sheet = await screen.findByRole("dialog", { name: "Esto entendí" });
+  expect(
+    within(sheet)
+      .getByRole("link", { name: "Abrir Emergencia" })
+      .getAttribute("href"),
+  ).toBe("/emergencia");
+  expect(voiceOut.say).toHaveBeenLastCalledWith(warning);
+  expect(voiceOut.say).not.toHaveBeenCalledWith("¿Cuántas horas dormiste?");
+});
+
+test("'Escribir respuesta' a media conversación abre la hoja, aunque ya haya dicho ánimo y estrés", async () => {
+  fakeSession("Dormí cinco horas, ánimo cuatro, estrés dos");
+  extract.mockResolvedValue({
+    sleepHours: 5,
+    sleepQuality: null,
+    mood: 4,
+    stress: 2,
+    symptoms: [],
+  });
+  render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
+  await act(async () => voiceOut.greeting.release());
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+  // Solo faltan los síntomas: Lunito los pregunta y vuelve a escuchar.
+  await vi.waitFor(() =>
+    expect(voiceOut.say).toHaveBeenCalledWith(
+      "¿Algo te molesta, como dolor de cabeza o mareo?",
+    ),
+  );
+  await screen.findByText("Te toca · te escucho");
+
+  fireEvent.click(screen.getByRole("button", { name: "Escribir respuesta" }));
+  const sheet = await screen.findByRole("dialog", { name: "Esto entendí" });
+  expect(
+    within(sheet).getByRole<HTMLTextAreaElement>("textbox", {
+      name: "Tu respuesta",
+    }).value,
+  ).toBe("Dormí cinco horas, ánimo cuatro, estrés dos");
+  expect(screen.queryByRole("heading", { name: "Entendido" })).toBeNull();
+  // No se guardó sola: sigue en la hoja hasta que la persona confirma.
+  expect(localStorage.getItem("nostos.voice-log")).toBeNull();
+  fireEvent.click(within(sheet).getByRole("button", { name: "Listo" }));
+  expect(screen.getByText("Bitácora guardada")).toBeDefined();
+});

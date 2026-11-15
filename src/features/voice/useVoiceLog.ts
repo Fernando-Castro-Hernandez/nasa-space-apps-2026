@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { api } from "@/api/client";
 import { EMPTY_FIELDS, fieldsComplete } from "@/api/checkinFields";
 import type { CheckInFields } from "@/api/contract";
+import { detectEmergency } from "@/api/lunitoRules";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
 import { t } from "@/i18n";
 import {
@@ -116,7 +117,12 @@ export function useVoiceLog({
       asking ? fields : EMPTY_FIELDS,
       extracted ?? localFields(answer),
     );
-    const next = converse ? nextFollowUp(merged, asked.current) : null;
+    // Si lo dicho suena a emergencia, Lunito deja de preguntar: la hoja abre
+    // ya, con el aviso y el acceso a Emergencia (misma regla que el chat).
+    const next =
+      converse && !detectEmergency(full)
+        ? nextFollowUp(merged, asked.current)
+        : null;
     if (next) {
       asked.current.set(next, (asked.current.get(next) ?? 0) + 1);
       setAskCount((n) => n + 1);

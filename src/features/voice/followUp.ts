@@ -36,10 +36,10 @@ export const nextFollowUp = (
       (asked.get(question) ?? 0) < MAX_ASKS[question],
   ) ?? null;
 
+// "Una" no está: casi siempre es el artículo ("tengo una duda"), no el 1.
 const WORDS: Record<string, number> = {
   one: 1,
   uno: 1,
-  una: 1,
   two: 2,
   dos: 2,
   three: 3,
@@ -50,8 +50,7 @@ const WORDS: Record<string, number> = {
   cinco: 5,
 };
 
-const SCALE_WORD =
-  "[1-5]|one|uno|una|two|dos|three|tres|four|cuatro|five|cinco";
+const SCALE_WORD = "[1-5]|one|uno|two|dos|three|tres|four|cuatro|five|cinco";
 const toScale = (word: string) => WORDS[word.toLowerCase()] ?? Number(word);
 
 /**
@@ -67,33 +66,49 @@ export function parseScale(text: string): number | null {
   return values.size === 1 ? [...values][0]! : null;
 }
 
-/** "Siete", "7" o "7.5" contestando cuántas horas durmió, o null. */
+// Solo el número, con "horas" o una palabra de relleno delante: "7", "7.5
+// horas", "como 6", "slept 7 hours". "Me desperté 3 veces" o "a las 11" traen
+// un número que no son horas de sueño: eso lo decide la IA.
+const HOURS =
+  /^\W*(?:(?:i slept|slept|dorm[ií]|como|unas?|about|around|like)\s+)*(\d{1,2}(?:[.,]5)?)\s*(?:hours?|horas?|hrs?|h)?\W*$/i;
+
+/** "7", "7.5 horas" o "como 6" contestando cuántas horas durmió, o null. */
 function parseHours(text: string): number | null {
-  const found = text.match(/\b\d{1,2}(?:[.,]5)?\b/g);
-  if (found?.length !== 1) return null;
-  const hours = Number(found[0].replace(",", "."));
+  const found = HOURS.exec(text);
+  if (!found) return null;
+  const hours = Number(found[1]!.replace(",", "."));
   return hours <= 24 ? hours : null;
 }
 
 const NOTHING = /^\W*(no|nope|none|nothing|nada|ninguno|ninguna)\b/i;
 
+/** Una respuesta rápida es corta: "cuatro", "un 4", "no, nada". */
+const MAX_QUICK_WORDS = 3;
+const isShort = (text: string) =>
+  text.trim().split(/\s+/).filter(Boolean).length <= MAX_QUICK_WORDS;
+
 /**
  * La respuesta corta que se entiende sin IA: un número en las escalas, las
- * horas de sueño, o "no" a los síntomas. Todo lo demás lo ordena `extract`.
+ * horas de sueño, o "no" a los síntomas. Todo lo demás lo ordena `extract`:
+ * en una frase larga un número o un "no" pueden querer decir otra cosa
+ * ("tengo uno de esos días", "no me siento bien, me duele la cabeza").
  */
 export function quickAnswer(
   question: FollowUp,
   text: string,
 ): CheckInFields | null {
-  if (question === "mood" || question === "stress") {
-    const value = parseScale(text);
-    return value === null ? null : { ...EMPTY_FIELDS, [question]: value };
-  }
   if (question === "sleep") {
     const hours = parseHours(text);
     return hours === null ? null : { ...EMPTY_FIELDS, sleepHours: hours };
   }
-  return NOTHING.test(text) ? EMPTY_FIELDS : null;
+  if (!isShort(text)) return null;
+  if (question === "mood" || question === "stress") {
+    const value = parseScale(text);
+    return value === null ? null : { ...EMPTY_FIELDS, [question]: value };
+  }
+  // "No, mareo" empieza con "no" pero nombra un síntoma: no es un "nada".
+  const nothing = NOTHING.test(text) && localFields(text).symptoms.length === 0;
+  return nothing ? EMPTY_FIELDS : null;
 }
 
 // Sin IA (Worker apagado o sin red) la bitácora se entiende por palabras
