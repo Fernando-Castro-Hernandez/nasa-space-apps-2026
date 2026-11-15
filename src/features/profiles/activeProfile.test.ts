@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ME } from "@/data/crew";
-import { resolveProfile, setActiveProfile } from "./activeProfile";
+import {
+  resetActiveProfile,
+  resolveProfile,
+  setActiveProfile,
+} from "./activeProfile";
 
 describe("resolveProfile", () => {
   it("devuelve el perfil guardado si existe en la tripulación", () => {
@@ -23,6 +27,14 @@ describe("setActiveProfile", () => {
 
   it("ignora un id que no es de la tripulación", () => {
     setActiveProfile("fantasma");
+    expect(window.localStorage.getItem("nostos.profile")).toBeNull();
+  });
+});
+
+describe("resetActiveProfile", () => {
+  it("borra el perfil guardado", () => {
+    setActiveProfile("mei");
+    resetActiveProfile();
     expect(window.localStorage.getItem("nostos.profile")).toBeNull();
   });
 });

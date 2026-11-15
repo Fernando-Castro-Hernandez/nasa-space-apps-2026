@@ -11,6 +11,7 @@ import {
 import { crewMember } from "@/data/crew";
 import { openCase } from "@/features/emergency/caseLogic";
 import { saveCase } from "@/features/emergency/caseStore";
+import { resetActiveProfile } from "@/features/profiles/activeProfile";
 import { CO2_MODULE, setCo2Raised, useCo2Raised } from "./demoStore";
 
 const Simulated = () => (
@@ -59,6 +60,7 @@ export function DemoScreen() {
             onClick={() => {
               setCo2Raised(false);
               saveCase(null);
+              resetActiveProfile();
             }}
           >
             Reiniciar los datos de la demo
