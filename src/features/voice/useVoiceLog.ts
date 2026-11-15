@@ -7,6 +7,14 @@ import { api } from "@/api/client";
 import { EMPTY_FIELDS, fieldsComplete } from "@/api/checkinFields";
 import type { CheckInFields } from "@/api/contract";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
+import { t } from "@/i18n";
+import {
+  localFields,
+  mergeFields,
+  nextFollowUp,
+  quickAnswer,
+  type FollowUp,
+} from "./followUp";
 import { useVoiceInput, type VoiceInput } from "./useVoiceInput";
 import { saveVoiceLog } from "./voiceLogStore";
 
@@ -17,12 +25,18 @@ export type ConfirmedLog = { transcript: string; fields: CheckInFields };
 
 type Options = {
   onConfirm?: (log: ConfirmedLog) => void;
+  /** Manos libres: corta solo al callar y pregunta lo que falte (ánimo y estrés). */
+  converse?: boolean;
 };
 
 export type VoiceLogState = {
   voice: VoiceInput;
   /** "ask": falta hablar o escribir · "review": corregir · "saved": listo. */
   phase: "ask" | "review" | "saved";
+  /** Lo que Lunito va a preguntar a continuación (solo con `converse`). */
+  followUp: FollowUp | null;
+  /** Preguntas hechas hasta ahora: cambia aunque se repita la misma pregunta. */
+  askCount: number;
   transcript: string;
   fields: CheckInFields;
   /** "failed": la IA no pudo; los campos se llenan a mano. */
@@ -39,7 +53,10 @@ export type VoiceLogState = {
   confirm: () => void;
 };
 
-export function useVoiceLog({ onConfirm }: Options = {}): VoiceLogState {
+export function useVoiceLog({
+  onConfirm,
+  converse = false,
+}: Options = {}): VoiceLogState {
   const profile = useActiveProfile();
   const [phase, setPhase] = useState<VoiceLogState["phase"]>("ask");
   const [transcript, setTranscript] = useState("");
@@ -47,6 +64,9 @@ export function useVoiceLog({ onConfirm }: Options = {}): VoiceLogState {
   const [organizing, setOrganizing] =
     useState<VoiceLogState["organizing"]>("idle");
   const [organized, setOrganized] = useState("");
+  const [followUp, setFollowUp] = useState<FollowUp | null>(null);
+  const [askCount, setAskCount] = useState(0);
+  const asked = useRef(new Map<FollowUp, number>());
   // Solo cuenta la última petición: una respuesta vieja no pisa a la nueva.
   const request = useRef(0);
 
@@ -67,18 +87,57 @@ export function useVoiceLog({ onConfirm }: Options = {}): VoiceLogState {
     }
   }, []);
 
+  // Lo que dijo contestando una pregunta de Lunito se suma a lo anterior.
+  const hear = async (text: string) => {
+    const answer = text.trim();
+    const asking = followUp;
+    const full = asking ? `${transcript} ${answer}`.trim() : answer;
+    const id = ++request.current;
+    setTranscript(full);
+    setOrganized(full);
+    setOrganizing("working");
+    const quick = asking ? quickAnswer(asking, answer) : null;
+    const extracted: CheckInFields | null =
+      quick ??
+      (await api
+        .extract(
+          asking ? `${t(`voiceUi.followUp.${asking}`)} ${answer}` : answer,
+        )
+        .catch(() => null));
+    if (id !== request.current) return;
+    // HU-09: sin IA, los campos se llenan a mano en la hoja. En conversación,
+    // Lunito sigue preguntando y entiende lo que puede por palabras clave.
+    if (!extracted && !converse) {
+      setOrganizing("failed");
+      setPhase("review");
+      return;
+    }
+    const merged = mergeFields(
+      asking ? fields : EMPTY_FIELDS,
+      extracted ?? localFields(answer),
+    );
+    const next = converse ? nextFollowUp(merged, asked.current) : null;
+    if (next) {
+      asked.current.set(next, (asked.current.get(next) ?? 0) + 1);
+      setAskCount((n) => n + 1);
+    }
+    setFields(merged);
+    setOrganizing(extracted ? "idle" : "failed");
+    setFollowUp(next);
+    setPhase(next ? "ask" : "review");
+  };
+
   const voice = useVoiceInput({
     maxSeconds: VOICE_LOG_SECONDS,
-    onText: (text) => {
-      setTranscript(text);
-      setPhase("review");
-      void organizeText(text);
-    },
+    autoStop: converse,
+    onText: (text) => void hear(text),
   });
 
   return {
     voice,
     phase,
+    followUp,
+    askCount,
     transcript,
     fields,
     organizing,

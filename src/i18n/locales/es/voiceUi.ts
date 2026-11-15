@@ -17,6 +17,12 @@ export const voiceUi: Messages<typeof source> = {
     required: "Elige tu ánimo y tu estrés para terminar.",
     confirm: "Listo",
   },
+  followUp: {
+    sleep: "¿Cuántas horas dormiste?",
+    mood: "¿Y tu ánimo, del 1 al 5?",
+    stress: "¿Y qué tan estresado estás, del 1 al 5?",
+    symptoms: "¿Algo te molesta, como dolor de cabeza o mareo?",
+  },
   fields: {
     sleep: "Sueño",
     sleepHours: "Horas de sueño",

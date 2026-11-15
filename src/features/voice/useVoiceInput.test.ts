@@ -94,3 +94,31 @@ test("salir de la pantalla mientras el micrófono arranca no lo deja abierto", a
   await act(async () => ready.resolve(fake));
   expect(fake.cancel).toHaveBeenCalledOnce();
 });
+
+test("con autoStop, termina solo cuando la persona calla después de hablar", async () => {
+  vi.useFakeTimers();
+  try {
+    let level = 0.4;
+    const heard = Promise.withResolvers<string>();
+    const fake = {
+      level: () => level,
+      stop: vi.fn(() => heard.promise),
+      cancel: vi.fn(),
+    };
+    session.startVoiceSession.mockResolvedValue(fake);
+    const { result } = renderHook(() =>
+      useVoiceInput({ maxSeconds: 30, onText: vi.fn(), autoStop: true }),
+    );
+    await act(async () => result.current.start());
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(fake.stop).not.toHaveBeenCalled(); // sigue hablando
+    level = 0;
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(fake.stop).not.toHaveBeenCalled(); // pausa corta
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    expect(fake.stop).toHaveBeenCalledOnce();
+    expect(result.current.status).toBe("transcribing");
+  } finally {
+    vi.useRealTimers();
+  }
+});
