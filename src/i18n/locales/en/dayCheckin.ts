@@ -21,14 +21,28 @@ export const dayCheckin = {
     title: "How are you feeling this morning?",
     caption: "Tell me how you're feeling",
   },
+  // Lunito repite lo que entendió y guarda solo; "Change" abre la hoja.
+  readback: {
+    title: "Got it",
+    // {mood} y {stress} son de 1 a 5.
+    line: "Got it. Mood {mood} out of 5, stress {stress} out of 5.",
+    // Lo que se ve en pantalla (la frase de arriba es la que Lunito dice).
+    summary: "Mood {mood} of 5 · stress {stress} of 5",
+    change: "Change something",
+  },
   mic: {
     talk: "Talk to Lunito",
     stop: "Finish talking",
   },
+  // Etiqueta de la transcripción de lo que Lunito va entendiendo.
+  heard: "I heard:",
+  // Mientras Lunito habla, no es el turno de la persona.
+  asking: { caption: "Lunito is asking…" },
   listening: {
     starting: "Getting the microphone ready…",
-    caption: "Listening…",
-    hint: "Tap the wave when you're done · {seconds} s left",
+    caption: "Your turn · I'm listening",
+    // Se corta sola al callar; el botón "Finish talking" es por si acaso.
+    hint: "I'll stop when you pause",
   },
   thinking: {
     transcribing: "Turning your voice into text…",

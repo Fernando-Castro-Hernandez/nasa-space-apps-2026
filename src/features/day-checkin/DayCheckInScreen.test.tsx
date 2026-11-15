@@ -37,11 +37,20 @@ vi.mock("@/api/client", async (original) => {
 });
 
 // La voz de Lunito: solo importa qué dice y cuándo calla.
-const voiceOut = vi.hoisted(() => ({
-  say: vi.fn(async (_text: string) => {}),
-  stop: vi.fn(),
-  setThinking: vi.fn(),
-}));
+const voiceOut = vi.hoisted(() => {
+  // El saludo sigue sonando hasta que la prueba lo suelte: así Lunito no
+  // empieza a escuchar sola en las pruebas que tocan el micrófono.
+  const greeting = { release: () => {} };
+  return {
+    greeting,
+    say: vi.fn(async (text: string) => {
+      if (text.startsWith("¡Hola!"))
+        await new Promise<void>((resolve) => (greeting.release = resolve));
+    }),
+    stop: vi.fn(),
+    setThinking: vi.fn(),
+  };
+});
 vi.mock("@/features/lunito/lunitoVoice", async (original) => ({
   ...(await original<typeof import("@/features/lunito/lunitoVoice")>()),
   lunitoVoice: voiceOut,
@@ -123,7 +132,7 @@ test("saluda en voz alta y pasa sola a la pregunta", () => {
   expect(screen.getByText("Cuéntame cómo te sientes")).toBeDefined();
 });
 
-test("escucha de verdad, piensa y muestra lo que entendió; al confirmar guarda la bitácora con su hora", async () => {
+test("escucha de verdad, piensa, repite lo que entendió y deja corregirlo en la hoja; al confirmar guarda la bitácora con su hora", async () => {
   const fake = fakeSession();
   const heard = Promise.withResolvers<string>();
   fake.stop.mockReturnValue(heard.promise);
@@ -139,8 +148,8 @@ test("escucha de verdad, piensa y muestra lo que entendió; al confirmar guarda 
   fireEvent.click(screen.getByRole("button", { name: "Hablar con Lunito" }));
   // Lunito calla para no hablar encima de la grabación.
   expect(voiceOut.stop).toHaveBeenCalled();
-  await screen.findByText("Escuchando…");
-  expect(screen.getByText(/Toca la onda cuando termines/)).toBeDefined();
+  await screen.findByText("Te toca · te escucho");
+  expect(screen.getByText(/Paro cuando hagas una pausa/)).toBeDefined();
 
   fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
   await screen.findByText("Pasando tu voz a texto…");
@@ -149,6 +158,12 @@ test("escucha de verdad, piensa y muestra lo que entendió; al confirmar guarda 
     heard.resolve("Dormí cinco horas y me duele la cabeza"),
   );
 
+  // Ánimo y estrés completos: Lunito lo repite y se puede cambiar.
+  await screen.findByRole("heading", { name: "Entendido" });
+  expect(voiceOut.say).toHaveBeenLastCalledWith(
+    "Entendido. Ánimo 2 de 5, estrés 4 de 5.",
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Cambiar algo" }));
   const sheet = await screen.findByRole("dialog", { name: "Esto entendí" });
   expect(extract).toHaveBeenCalledWith(
     "Dormí cinco horas y me duele la cabeza",
@@ -172,6 +187,99 @@ test("escucha de verdad, piensa y muestra lo que entendió; al confirmar guarda 
   expect(saved.ana.fields.mood).toBe(2);
   expect(saved.ana.transcript).toBe("Dormí cinco horas y me duele la cabeza");
   expect(typeof saved.ana.savedAt).toBe("number");
+});
+
+test("de voz a voz: Lunito escucha sola, pregunta lo que falta, repite y guarda sin tocar la hoja", async () => {
+  const fake = fakeSession();
+  fake.stop
+    .mockResolvedValueOnce("Dormí cinco horas")
+    .mockResolvedValueOnce("cuatro")
+    .mockResolvedValueOnce("dos")
+    .mockResolvedValueOnce("no");
+  extract.mockResolvedValue({
+    sleepHours: 5,
+    sleepQuality: null,
+    mood: null,
+    stress: null,
+    symptoms: [],
+  });
+  render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
+
+  // Termina el saludo y empieza a escuchar, sin tocar el micrófono.
+  await act(async () => voiceOut.greeting.release());
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  // Falta el ánimo: lo pregunta en voz alta y vuelve a escuchar.
+  await vi.waitFor(() =>
+    expect(voiceOut.say).toHaveBeenCalledWith("¿Y tu ánimo, del 1 al 5?"),
+  );
+  await screen.findByText("Te toca · te escucho");
+  // La transcripción de lo que ya entendió se ve en pantalla.
+  expect(screen.getByText(/Dormí cinco horas/)).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  await vi.waitFor(() =>
+    expect(voiceOut.say).toHaveBeenCalledWith(
+      "¿Y qué tan estresado estás, del 1 al 5?",
+    ),
+  );
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  await vi.waitFor(() =>
+    expect(voiceOut.say).toHaveBeenCalledWith(
+      "¿Algo te molesta, como dolor de cabeza o mareo?",
+    ),
+  );
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  // "cuatro", "dos" y "no" se entienden sin ir a la IA: solo la primera frase pasó por ella.
+  expect(extract).toHaveBeenCalledOnce();
+  await vi.waitFor(() =>
+    expect(voiceOut.say).toHaveBeenCalledWith(
+      "Entendido. Ánimo 4 de 5, estrés 2 de 5.",
+    ),
+  );
+  expect(screen.queryByRole("dialog")).toBeNull();
+  await screen.findByRole(
+    "heading",
+    { name: "Pon el dedo en el sensor" },
+    { timeout: 4000 },
+  );
+  const saved = JSON.parse(localStorage.getItem("nostos.voice-log")!);
+  expect(saved.ana.fields).toMatchObject({ sleepHours: 5, mood: 4, stress: 2 });
+  expect(saved.ana.transcript).toBe("Dormí cinco horas cuatro dos no");
+}, 10_000);
+
+test("si no entiende el ánimo, Lunito lo vuelve a preguntar en voz alta y vuelve a escuchar", async () => {
+  const fake = fakeSession();
+  fake.stop
+    .mockResolvedValueOnce("Dormí cinco horas")
+    .mockResolvedValueOnce("más o menos");
+  extract.mockResolvedValue({
+    sleepHours: 5,
+    sleepQuality: null,
+    mood: null,
+    stress: null,
+    symptoms: [],
+  });
+  render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
+  await act(async () => voiceOut.greeting.release());
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  const mood = "¿Y tu ánimo, del 1 al 5?";
+  const asked = () =>
+    voiceOut.say.mock.calls.filter(([text]) => text === mood).length;
+  await vi.waitFor(() => expect(asked()).toBe(1));
+  await screen.findByText("Te toca · te escucho");
+  fireEvent.click(screen.getByRole("button", { name: "Terminar de hablar" }));
+
+  // La misma pregunta, otra vez: se dice y se vuelve a escuchar sola.
+  await vi.waitFor(() => expect(asked()).toBe(2));
+  await screen.findByText("Te toca · te escucho");
 });
 
 test("escribir abre la misma hoja con el texto vacío y Emergencia a un toque", () => {
@@ -204,7 +312,7 @@ test("escribir mientras escucha descarta la grabación sin transcribirla", async
   const fake = fakeSession();
   render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "Hablar con Lunito" }));
-  await screen.findByText("Escuchando…");
+  await screen.findByText("Te toca · te escucho");
   fireEvent.click(screen.getByRole("button", { name: "Escribir respuesta" }));
   expect(fake.cancel).toHaveBeenCalledOnce();
   expect(fake.stop).not.toHaveBeenCalled();

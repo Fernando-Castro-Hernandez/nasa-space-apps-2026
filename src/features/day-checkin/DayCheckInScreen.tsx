@@ -1,28 +1,29 @@
-// Check-in único del día (/buenos-dias, referencia 04). Lunito saluda,
-// pregunta, escucha de verdad (Whisper en el Worker; sin IA, el dictado del
-// navegador), piensa, muestra "Esto entendí" para corregir y guardar la
-// bitácora, ofrece el sensor y la prueba de reacción (opcionales) y dice el
+// Check-in único del día (/buenos-dias, referencia 04). Es una conversación
+// de voz a voz: Lunito saluda y pregunta en voz alta, escucha sola (Whisper en
+// el Worker; sin IA, el dictado del navegador) y corta al callar, pregunta
+// lo que falte (ánimo y estrés), repite lo que entendió y guarda la bitácora.
+// "Cambiar algo", o no entender del todo, abre la hoja "Esto entendí" para
+// corregir a mano. Después ofrece el sensor y la prueba de reacción (opcionales) y dice el
 // resultado del día: el mismo que muestra Inicio. Si algo falla, se escribe y
 // se termina igual. "Ahora no" sale en cualquier momento; con la bitácora ya
 // guardada, la salida termina el check-in y va a Inicio.
 // Si lo que dice la persona suena a emergencia, manda la misma regla que en la
 // conversación con Lunito: la hoja y el resultado lo muestran con el acceso a
 // Emergencia, Lunito lo dice y no celebra. La bitácora se guarda igual.
-import { Check, ChevronLeft, Keyboard, Mic } from "lucide-react";
+import { Check, ChevronLeft, Keyboard, Mic, Square } from "lucide-react";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { ActiveCaseBanner, EmergencyLink } from "@/components/emergency-access";
 import { useLunitoDashboard } from "@/data/lunitoDashboard";
 import { ReactionTest } from "@/features/check-in/ReactionTest";
 import { ResultView } from "@/features/check-in/ResultView";
 import { SensorStep } from "@/features/check-in/SensorStep";
-import { secondsLeft } from "@/features/check-in/simulation";
 import { useCheckInResult } from "@/features/check-in/useCheckInResult";
 import {
   LunitoAvatar,
   type LunitoAvatarHandle,
 } from "@/features/lunito/LunitoAvatar";
-import { lunitoVoice } from "@/features/lunito/lunitoVoice";
-import { useVoiceLog, VOICE_LOG_SECONDS } from "@/features/voice/useVoiceLog";
+import { lunitoVoice, useLunitoSpeaking } from "@/features/lunito/lunitoVoice";
+import { useVoiceLog } from "@/features/voice/useVoiceLog";
 import { VoiceLogSheet } from "@/features/voice/VoiceLogSheet";
 import { t } from "@/i18n";
 import "@/features/lunito-home/reference.css";
@@ -32,6 +33,7 @@ import {
   GREETING_MS,
   nextPhase,
   PHASE_VIEW,
+  READBACK_MS,
   resultImage,
   resultPose,
   TALKING,
@@ -46,6 +48,10 @@ type Props = {
   onSkip?: () => void;
 };
 
+/** El final de lo dicho, cortado en una palabra: cabe en tres líneas. */
+const tail = (text: string, max = 110) =>
+  text.length <= max ? text : `…${text.slice(-max).replace(/^\S*\s/, "")}`;
+
 const prefersReducedMotion = () =>
   typeof window.matchMedia === "function" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -55,6 +61,10 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   // La hoja dice "Esto entendí" tras hablar y repite la pregunta al escribir.
   const [answer, setAnswer] = useState<"voice" | "text">("text");
   const [spoken, setSpoken] = useState(false);
+  // Lunito terminó de preguntar: toca escuchar. Cada pregunta se escucha una vez.
+  const [asked, setAsked] = useState(false);
+  const speaking = useLunitoSpeaking();
+  const [editing, setEditing] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [reducedMotion] = useState(prefersReducedMotion);
   const lunito = useRef<LunitoAvatarHandle>(null);
@@ -62,7 +72,10 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   useEffect(() => {
     finish.current = onDone;
   });
-  const log = useVoiceLog({ onConfirm: () => send("confirm") });
+  const log = useVoiceLog({
+    onConfirm: () => send("confirm"),
+    converse: true,
+  });
   const { voice } = log;
   const day = useLunitoDashboard();
   const result = useCheckInResult(day, log.transcript);
@@ -71,12 +84,31 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   // Lunito saluda en voz alta. Antes del primer toque el navegador puede no
   // dejarlo sonar; el saludo ya está escrito en pantalla.
   useEffect(() => {
-    void lunitoVoice.say(t("dayCheckin.greeting.speech"));
+    const current = { live: true };
+    void lunitoVoice.say(t("dayCheckin.greeting.speech")).then(() => {
+      if (current.live) setAsked(true);
+    });
     return () => {
+      current.live = false;
       lunitoVoice.stop();
       lunitoVoice.setThinking(false);
     };
   }, []);
+
+  // Lo que falta (ánimo, estrés) lo pregunta Lunito en voz alta.
+  const { followUp, askCount } = log;
+  useEffect(() => {
+    if (!followUp) return;
+    const current = { live: true };
+    setAsked(false);
+    void lunitoVoice.say(t(`voiceUi.followUp.${followUp}`)).then(() => {
+      if (current.live) setAsked(true);
+    });
+    return () => {
+      current.live = false;
+    };
+    // `askCount` cambia también cuando se repite la misma pregunta.
+  }, [followUp, askCount]);
 
   useEffect(() => {
     if (phase !== "saludo") return;
@@ -90,6 +122,7 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
     error: voice.error,
     log: log.phase,
     organizing: log.organizing,
+    followUp: log.followUp,
   });
   useEffect(() => {
     if (event) send(event);
@@ -132,10 +165,53 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   const talk = () => {
     if (voice.engine === "none") return write();
     lunitoVoice.stop();
+    setAsked(false);
     setAnswer("voice");
     log.listen();
     send("tapMic");
   };
+
+  // Manos libres: al terminar de preguntar, escucha sin que toquen el micrófono.
+  // Si falló (sin permiso, sin palabras), no insiste: ahí sí se toca o se escribe.
+  const handsFree = voice.engine !== null && voice.engine !== "none";
+  useEffect(() => {
+    if (
+      (phase === "saludo" || phase === "pregunta") &&
+      asked &&
+      handsFree &&
+      !voice.error
+    )
+      if (voice.status === "idle") talk();
+  });
+
+  // Entendió ánimo y estrés por voz: lo repite y guarda solo. Una emergencia
+  // pasa por la hoja, donde se ve el aviso con el acceso a Emergencia.
+  const readback =
+    phase === "revisar" &&
+    answer === "voice" &&
+    !editing &&
+    !urgent &&
+    log.complete &&
+    log.organizing !== "working";
+  const { confirm } = log;
+  const line = t("dayCheckin.readback.line", {
+    mood: log.fields.mood ?? "?",
+    stress: log.fields.stress ?? "?",
+  });
+  useEffect(() => {
+    if (!readback) return;
+    const current = { live: true };
+    const dwell = new Promise((resolve) => setTimeout(resolve, READBACK_MS));
+    void Promise.all([lunitoVoice.say(line), dwell]).then(() => {
+      if (current.live) confirm();
+    });
+    return () => {
+      current.live = false;
+      lunitoVoice.stop();
+    };
+    // `confirm` y `line` cambian en cada render; solo importa entrar a la lectura.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readback]);
 
   const goHome = () => {
     if (celebrates(result.status, urgent)) lunito.current?.play("cheer");
@@ -145,13 +221,23 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   // Con la bitácora guardada, salir ya no pospone nada: el check-in está hecho.
   const saved = log.phase === "saved";
   const exit = phase === "resultado" ? undefined : saved ? onDone : onSkip;
-  const talking = TALKING.includes(phase) || phase === "revisar";
+  const talking = TALKING.includes(phase) || (phase === "revisar" && !readback);
   const view = PHASE_VIEW[phase];
   const pose =
     phase === "resultado"
       ? resultPose(result.status, spoken || leaving, urgent)
       : view.pose;
-  const question = t("dayCheckin.question.title");
+  // Lo que va entendiendo: lo ya dicho y, con el dictado del navegador, lo
+  // que está diciendo ahora.
+  const heard = tail(`${log.transcript} ${voice.live}`.trim());
+  const transcript = heard && (
+    <p className="day-transcript">
+      <b>{t("dayCheckin.heard")}</b> {heard}
+    </p>
+  );
+  const question = followUp
+    ? t(`voiceUi.followUp.${followUp}`)
+    : t("dayCheckin.question.title");
 
   return (
     <div className="day-checkin" data-phase={phase}>
@@ -188,14 +274,28 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
           </h1>
         ) : (
           <h1 key={talking ? "pregunta" : phase}>
-            {talking
-              ? question
-              : phase === "sensor"
-                ? t("checkin.sensor.title")
-                : phase === "reaccion"
-                  ? t("checkin.reaction.title")
-                  : t("checkin.result.title")}
+            {readback
+              ? t("dayCheckin.readback.title")
+              : talking
+                ? question
+                : phase === "sensor"
+                  ? t("checkin.sensor.title")
+                  : phase === "reaccion"
+                    ? t("checkin.reaction.title")
+                    : t("checkin.result.title")}
           </h1>
+        )}
+
+        {readback && (
+          <>
+            <p className="day-caption" aria-live="polite">
+              {t("dayCheckin.readback.summary", {
+                mood: log.fields.mood ?? "?",
+                stress: log.fields.stress ?? "?",
+              })}
+            </p>
+            {transcript}
+          </>
         )}
 
         {talking && (
@@ -206,7 +306,8 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
                   key="wave"
                   className="day-wave-button"
                   type="button"
-                  aria-label={t("dayCheckin.mic.stop")}
+                  aria-hidden="true"
+                  tabIndex={-1}
                   onClick={voice.stop}
                 >
                   <VoiceWave
@@ -244,15 +345,24 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
                     ? voice.status === "transcribing"
                       ? t("dayCheckin.thinking.transcribing")
                       : t("dayCheckin.thinking.organizing")
-                    : t("dayCheckin.question.caption")}
+                    : speaking
+                      ? t("dayCheckin.asking.caption")
+                      : t("dayCheckin.question.caption")}
             </p>
             {phase === "escucha" && voice.status === "listening" && (
-              <p className="day-hint">
-                {t("dayCheckin.listening.hint", {
-                  seconds: secondsLeft(voice.elapsed, VOICE_LOG_SECONDS),
-                })}
-              </p>
+              <>
+                <p className="day-hint">{t("dayCheckin.listening.hint")}</p>
+                <button
+                  className="day-stop-button"
+                  type="button"
+                  onClick={voice.stop}
+                >
+                  <Square aria-hidden="true" />
+                  {t("dayCheckin.mic.stop")}
+                </button>
+              </>
             )}
+            {transcript}
             {phase === "pregunta" && voice.error && (
               <p className="day-hint" role="alert">
                 {voice.error}
@@ -292,9 +402,18 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
             {t("dayCheckin.write")}
           </button>
         )}
+        {readback && (
+          <button
+            className="day-write-button"
+            type="button"
+            onClick={() => setEditing(true)}
+          >
+            {t("dayCheckin.readback.change")}
+          </button>
+        )}
       </footer>
 
-      {phase === "revisar" && (
+      {phase === "revisar" && !readback && (
         <VoiceLogSheet
           log={log}
           title={answer === "voice" ? t("voiceUi.sheet.heard") : question}
