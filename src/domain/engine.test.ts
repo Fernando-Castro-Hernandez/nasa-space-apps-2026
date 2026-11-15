@@ -164,6 +164,12 @@ describe("acciones del día (HU-14)", () => {
     for (const id of alerting) expect(RULES_WITH_ACTION).toContain(id);
   });
 
+  test("el límite de radiación cita la fuente de radiación, no NEWS2", () => {
+    const [a] = actionsFor([f("radiation-limit", "rojo")]);
+    expect(a!.id).toBe("dose-limit");
+    expect(a!.source?.name).toBe("OCHMO, radiación");
+  });
+
   test("las acciones sin fuente quedan marcadas como pendientes", () => {
     const [a] = actionsFor([f("hrv-low", "ambar")]);
     expect(a!.id).toBe("breathing");

@@ -112,7 +112,9 @@ export function spo2Rule(
         : doubtful("spo2", "E"),
     );
   }
-  const below94 = recent.some((v) => v < 94);
+  // La lectura de hoy también cuenta: un 92 % sin historial es Precaución.
+  const readings = latest ? [...recent, latest.value] : recent;
+  const below94 = readings.some((v) => v < 94);
   const m = mean(recent);
   const drop = isBaseline(base) && m !== null && base.mean - m >= 3;
   if (below94 || drop) {
