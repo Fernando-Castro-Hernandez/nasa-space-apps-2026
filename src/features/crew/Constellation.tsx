@@ -1,9 +1,10 @@
 // La constelación: los Lunitos de la tripulación con nombre y estado en
 // palabras, nunca números (regla 4 de Lunito, SISTEMA.md §1).
-import { CREW, ME, type CrewMember } from "@/data/crew";
+import { CREW, type CrewMember } from "@/data/crew";
 import type { Status } from "@/domain/vitals";
 import { STATUS_TOKEN } from "@/domain/status";
 import { cn } from "@/lib/utils";
+import { publicStatus, type Shared } from "./privacy";
 import ambar from "./assets/lunito-ambar.png";
 import rojo from "./assets/lunito-rojo.png";
 import verde from "./assets/lunito-verde.png";
@@ -30,9 +31,12 @@ type Props = {
   onSelect: (id: string) => void;
   /** Par unido por el compañero del día: se dibuja con línea punteada. */
   pair: [string, string] | null;
+  shared: Shared;
+  /** Perfil activo: lleva la marca "tú". */
+  me: string;
 };
 
-export function Constellation({ selected, onSelect, pair }: Props) {
+export function Constellation({ selected, onSelect, pair, shared, me }: Props) {
   return (
     <div className="relative h-80 w-full md:h-96">
       <svg
@@ -70,6 +74,8 @@ export function Constellation({ selected, onSelect, pair }: Props) {
         <Star
           key={c.id}
           member={c}
+          shared={shared}
+          isMe={c.id === me}
           x={POS[i]!.x}
           y={POS[i]!.y}
           active={selected === c.id}
@@ -82,35 +88,43 @@ export function Constellation({ selected, onSelect, pair }: Props) {
 
 type StarProps = {
   member: CrewMember;
+  shared: Shared;
+  isMe: boolean;
   x: number;
   y: number;
   active: boolean;
   onClick: () => void;
 };
 
-function Star({ member, x, y, active, onClick }: StarProps) {
+function Star({ member, shared, isMe, x, y, active, onClick }: StarProps) {
+  const status = publicStatus(member, shared);
+  const mood = status ? member.mood : "Sin compartir";
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      aria-label={`${member.name}: ${member.mood}`}
+      aria-label={`${member.name}: ${mood}`}
       className={cn(
         "absolute flex w-28 -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1 rounded-2xl p-2 transition-colors",
         active ? "bg-accent ring-2 ring-primary" : "hover:bg-muted",
       )}
       style={{ left: `${x}%`, top: `${y}%` }}
     >
-      <img src={IMG[member.status]} alt="" className="h-16 w-auto md:h-20" />
+      <img
+        src={IMG[status ?? "verde"]}
+        alt=""
+        className={cn("h-16 w-auto md:h-20", !status && "opacity-40 grayscale")}
+      />
       <span className="text-sm font-semibold">
         {member.name}
-        {member.id === ME && " · tú"}
+        {isMe && " · tú"}
       </span>
       <span
         className="text-xs font-semibold"
-        style={{ color: STATUS_TOKEN[member.status] }}
+        style={{ color: status ? STATUS_TOKEN[status] : undefined }}
       >
-        {member.mood}
+        {mood}
       </span>
     </button>
   );
