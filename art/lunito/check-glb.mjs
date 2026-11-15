@@ -16,12 +16,10 @@ const PARTS = [
   "eye_L",
   "eye_R",
   "mouth",
+  "arm_L",
+  "arm_R",
   "tail",
 ];
-
-// Partes del contrato que todavía no existen: se avisa, pero no hacen fallar la
-// revisión. Los brazos llegan en un PR aparte; al entregarlos, pasan a PARTS.
-const PENDING_PARTS = ["arm_L", "arm_R"];
 
 const MOUTH_KEYS = [
   "viseme_PP",
@@ -67,11 +65,6 @@ for (const name of PARTS) {
   else if (found.length > 1) errors.push(`La parte "${name}" está repetida`);
   else if (found[0].mesh === undefined)
     errors.push(`La parte "${name}" no tiene malla`);
-}
-
-for (const name of PENDING_PARTS) {
-  if (!nodes.some((n) => n.name === name))
-    notes.push(`Pendiente: falta la parte "${name}"`);
 }
 
 // Los orígenes son los pivotes que usa el código: ninguna parte debe traer

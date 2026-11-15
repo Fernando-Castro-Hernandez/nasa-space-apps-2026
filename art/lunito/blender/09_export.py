@@ -1,6 +1,6 @@
 """Paso 6 (docs/LUNITO-ARTE.md §7): exportar el GLB sin optimizar.
 
-Uso:  blender -b -P art/lunito/blender/08_export.py
+Uso:  blender -b -P art/lunito/blender/09_export.py
 Escribe art/lunito/out/lunito_raw.glb (carpeta temporal, fuera de git). Después
 se optimiza con gltf-transform, como indica el §7 de la guía.
 """
