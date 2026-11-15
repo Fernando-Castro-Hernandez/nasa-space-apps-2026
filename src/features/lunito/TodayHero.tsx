@@ -1,13 +1,29 @@
 // "Así estás hoy" (referencia 2): Lunito al centro y tres burbujas que salen de
 // él con una línea curva. Entra todo en secuencia: Lunito, burbujas, líneas.
 // Las medidas salen de la referencia (heroLayout.ts), una por tablet y otra por celular.
-import { useLayoutEffect, useRef, useState } from "react";
+import { lazy, Suspense, useLayoutEffect, useRef, useState } from "react";
 import { Droplet, Heart, HeartPulse, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCountUp, useReveal } from "./anim";
 import type { IndicatorView } from "./dashboardData";
 import { layoutFor, type Layout } from "./heroLayout";
+import type { Status } from "@/domain/vitals";
+import type { Motion } from "./motion";
 import { STATUS_VIEW } from "./theme";
+
+// El Lunito 3D del repo (public/lunito.glb, animado por Fernando). three.js pesa
+// cerca de 1 MB: se carga aparte para que Inicio abra rápido.
+const LunitoScene = lazy(() =>
+  import("./LunitoScene").then((m) => ({ default: m.LunitoScene })),
+);
+
+// Sin puntos de anclaje: las líneas del héroe ya llegan a brazo, mano y pancita.
+const noAnchors = () => [];
+const noop = () => {};
+// Mitad del ancho visible en unidades de escena. El canvas es más grande que
+// la caja de Lunito (CANVAS_PAD) para que no se corten branquias ni pies.
+const fill = () => 1.75;
+const CANVAS_PAD = 0.2;
 
 const ICON: Record<IndicatorView["key"], LucideIcon> = {
   bpm: Heart,
@@ -38,9 +54,14 @@ function useWidth() {
   return [ref, width] as const;
 }
 
-type BubbleProps = { item: IndicatorView; layout: Layout };
+type BubbleProps = {
+  item: IndicatorView;
+  layout: Layout;
+  /** Se resalta cuando el astronauta mira su gráfica en "Tu evolución". */
+  active: boolean;
+};
 
-function Bubble({ item, layout }: BubbleProps) {
+function Bubble({ item, layout, active }: BubbleProps) {
   const [W, H] = layout.size;
   const b = layout.bubbles[item.key];
   const t = layout.text;
@@ -52,8 +73,10 @@ function Bubble({ item, layout }: BubbleProps) {
   return (
     <div
       className={cn(
-        "absolute z-[2] flex flex-col items-center justify-center rounded-full border border-primary/10 bg-card text-center shadow-[0_12px_36px_oklch(0.6_0.12_295/0.16)] transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none",
-        on ? "scale-100 opacity-100" : "scale-50 opacity-0",
+        "absolute z-[2] flex flex-col items-center justify-center rounded-full border border-primary/10 bg-card text-center shadow-[0_12px_36px_oklch(0.6_0.12_295/0.16)] transition-[transform,opacity,box-shadow] duration-[400ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+        !on && "scale-90 opacity-0",
+        on && !active && "scale-100 opacity-100",
+        on && active && "scale-105 opacity-100 ring-2 ring-primary/25",
       )}
       style={{
         left: `${((b.cx - b.d / 2) / W) * 100}%`,
@@ -91,10 +114,16 @@ function Bubble({ item, layout }: BubbleProps) {
 
 export function TodayHero({
   items,
-  image,
+  status,
+  motion,
+  highlight,
 }: {
   items: IndicatorView[];
-  image: string;
+  /** Indicador que el astronauta está mirando en las gráficas. */
+  highlight: IndicatorView["key"] | null;
+  status: Status;
+  /** Cómo se mueve Lunito con la lectura (pulso, HRV, oxígeno). */
+  motion: Motion;
 }) {
   const [ref, width] = useWidth();
   const layout = layoutFor(width);
@@ -109,7 +138,7 @@ export function TodayHero({
       style={{ aspectRatio: `${W} / ${H}` }}
     >
       <svg
-        className="absolute inset-0 z-[1] size-full"
+        className="pointer-events-none absolute inset-0 z-[1] size-full"
         viewBox={`0 0 ${W} ${H}`}
         aria-hidden="true"
       >
@@ -151,24 +180,36 @@ export function TodayHero({
         })}
       </svg>
 
-      <img
-        src={image}
-        alt=""
+      <div
         className={cn(
-          "absolute transition-all duration-1000 ease-out motion-reduce:transition-none",
-          lunito
-            ? "translate-y-0 scale-100 opacity-100"
-            : "translate-y-4 scale-95 opacity-0",
+          "absolute transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+          lunito ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
         )}
         style={{
-          left: `${(layout.lunito.left / W) * 100}%`,
-          top: `${(layout.lunito.top / H) * 100}%`,
-          width: `${(layout.lunito.width / W) * 100}%`,
+          left: `${((layout.lunito.left - layout.lunito.width * CANVAS_PAD) / W) * 100}%`,
+          top: `${((layout.lunito.top - layout.lunito.width * CANVAS_PAD) / H) * 100}%`,
+          width: `${((layout.lunito.width * (1 + 2 * CANVAS_PAD)) / W) * 100}%`,
+          aspectRatio: "1",
         }}
-      />
+      >
+        <Suspense fallback={null}>
+          <LunitoScene
+            motion={motion}
+            status={status}
+            anchorsFor={noAnchors}
+            onProject={noop}
+            halfWidthFor={fill}
+          />
+        </Suspense>
+      </div>
 
       {items.map((i) => (
-        <Bubble key={i.key} item={i} layout={layout} />
+        <Bubble
+          key={i.key}
+          item={i}
+          layout={layout}
+          active={highlight === i.key}
+        />
       ))}
     </div>
   );

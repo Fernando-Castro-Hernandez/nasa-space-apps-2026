@@ -85,3 +85,14 @@ export function weekRange(now: Date) {
     ? `${start.getDate()}–${end.getDate()} de ${month(end)}`
     : `${start.getDate()} de ${month(start)} – ${end.getDate()} de ${month(end)}`;
 }
+
+/** Índice del dato más cercano a `x` (en unidades del área de la gráfica). */
+export function nearestIndex(
+  x: number,
+  count: number,
+  slots: number,
+  width: number,
+) {
+  const step = slots > 1 ? width / (slots - 1) : width;
+  return Math.min(count - 1, Math.max(0, Math.round(x / step)));
+}

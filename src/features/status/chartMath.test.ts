@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   domainFor,
+  nearestIndex,
   plotPoints,
   smoothPath,
   ticks,
@@ -76,5 +77,19 @@ describe("weekRange", () => {
     expect(weekRange(new Date(2026, 10, 30))).toBe(
       "30 de noviembre – 6 de diciembre",
     );
+  });
+});
+
+describe("nearestIndex", () => {
+  it("se ajusta al día más cercano", () => {
+    expect(nearestIndex(0, 7, 7, 300)).toBe(0);
+    expect(nearestIndex(26, 7, 7, 300)).toBe(1);
+    expect(nearestIndex(300, 7, 7, 300)).toBe(6);
+  });
+
+  it("nunca sale del rango de datos", () => {
+    expect(nearestIndex(-40, 7, 7, 300)).toBe(0);
+    expect(nearestIndex(900, 7, 7, 300)).toBe(6);
+    expect(nearestIndex(300, 3, 7, 300)).toBe(2);
   });
 });

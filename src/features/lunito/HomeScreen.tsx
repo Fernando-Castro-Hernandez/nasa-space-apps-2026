@@ -5,17 +5,20 @@ import { DASHBOARD_BASELINE, DASHBOARD_READINGS } from "@/data/dashboard";
 import { assessVitals } from "@/domain/vitals";
 import { useReadingIndex } from "@/features/demo/readingStore";
 import { EvolutionPanel } from "@/features/status/EvolutionPanel";
-import { indicatorsFor, reasonFor } from "./dashboardData";
+import { prefersReducedMotion } from "./anim";
+import { useState } from "react";
+import { indicatorsFor, reasonFor, type IndicatorView } from "./dashboardData";
+import { motionFor } from "./motion";
 import { StatusSummary } from "./StatusSummary";
-import { DASH_VARS, STATUS_VIEW } from "./theme";
+import { DASH_VARS } from "./theme";
 import { TodayHero } from "./TodayHero";
 
 export function HomeScreen() {
+  const [looking, setLooking] = useState<IndicatorView["key"] | null>(null);
   const index = useReadingIndex();
   const { reading } = DASHBOARD_READINGS[index]!;
   const vitals = assessVitals(reading, DASHBOARD_BASELINE);
   const items = indicatorsFor(reading, vitals);
-  const { image } = STATUS_VIEW[vitals.overall];
 
   return (
     <div
@@ -36,7 +39,16 @@ export function HomeScreen() {
               Tu bienestar, reflejado en Lunito
             </p>
           </header>
-          <TodayHero key={index} items={items} image={image} />
+          <TodayHero
+            key={index}
+            items={items}
+            status={vitals.overall}
+            highlight={looking}
+            motion={motionFor(reading, DASHBOARD_BASELINE, {
+              mode: "rest",
+              reducedMotion: prefersReducedMotion(),
+            })}
+          />
           <StatusSummary
             key={`s${index}`}
             status={vitals.overall}
@@ -46,7 +58,13 @@ export function HomeScreen() {
 
         <div className="hidden bg-border md:block" aria-hidden="true" />
 
-        <EvolutionPanel key={index} items={items} image={image} />
+        <EvolutionPanel
+          key={index}
+          items={items}
+          status={vitals.overall}
+          looking={looking}
+          onLook={setLooking}
+        />
       </div>
 
       <p className="mt-8 text-center text-xs text-muted-foreground">
