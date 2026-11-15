@@ -122,18 +122,18 @@ Todo lo que se haga por MCP se guarda también como script en `art/lunito/blende
 **Optimizar** paso por paso, sin `optimize` (une mallas y borraría las partes con nombre) y sin `simplify` (rompe las shape keys):
 
 ```bash
-npx @gltf-transform/cli dedup   art/lunito/out/lunito_raw.glb art/lunito/out/a.glb
-npx @gltf-transform/cli prune   art/lunito/out/a.glb art/lunito/out/b.glb
-npx @gltf-transform/cli resize  art/lunito/out/b.glb art/lunito/out/c.glb --width 1024 --height 1024
-npx @gltf-transform/cli meshopt art/lunito/out/c.glb public/lunito.glb
+pnpm dlx @gltf-transform/cli dedup   art/lunito/out/lunito_raw.glb art/lunito/out/a.glb
+pnpm dlx @gltf-transform/cli prune   art/lunito/out/a.glb art/lunito/out/b.glb
+pnpm dlx @gltf-transform/cli resize  art/lunito/out/b.glb art/lunito/out/c.glb --width 1024 --height 1024
+pnpm dlx @gltf-transform/cli meshopt art/lunito/out/c.glb public/lunito.glb
 ```
 
 Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es temporal y está en `.gitignore`.
 
 **Validar:**
 
-- `npx @gltf-transform/cli validate public/lunito.glb`: 0 errores.
-- `npx @gltf-transform/cli inspect public/lunito.glb`: revisar partes y número de shape keys.
+- `pnpm dlx @gltf-transform/cli validate public/lunito.glb`: 0 errores.
+- `pnpm dlx @gltf-transform/cli inspect public/lunito.glb`: revisar partes y número de shape keys.
 - `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si hay animaciones o si pesa más de 2 MB.
 - Vista previa con sliders de cada shape key: arrastrar el GLB a https://gltf-viewer.donmccurdy.com/ (se abre en el navegador, no se sube).
 - En la app: `pnpm dev` y abrir Mi Lunito. Debe verse y moverse igual que antes; las partes nuevas todavía no se animan.
@@ -144,7 +144,7 @@ Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es t
 - No hacer las 15 formas de boca completas: las 8 del §3 bastan.
 - No tocar nada en `src/`: la animación la hace Fernando.
 - No subir el `.blend` ni el modelo original de Meshy (pesan mucho): van en Drive. Al repo solo entran `art/lunito/blender/*.py`, `art/lunito/check-glb.mjs` y `public/lunito.glb`.
-- No agregar dependencias al `package.json`: usar `npx`.
+- No agregar dependencias al `package.json`: usar `pnpm dlx`.
 
 ## 9. Entrega
 

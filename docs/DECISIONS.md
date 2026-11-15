@@ -44,6 +44,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | Estado compartido en el navegador (perfil, privacidad, eventos de la demo) con `persistedStore` sobre localStorage hasta que exista D1.                                        | Un solo patrón en vez de copias; HU-29 lo sustituye.                                        |
 | 2026-11-14 | Lunito tiene voz: por ahora una voz sintética genérica; la voz final se elige después. La boca sigue lo que dice.                                                              | Lunito habla primero (SISTEMA.md §1).                                                       |
 | 2026-11-14 | Fernando anima a Lunito y Viridiana prepara su arte 3D con 8 formas de boca, no 15 (`docs/LUNITO-ARTE.md`).                                                                    | El español se pronuncia como se escribe; 8 formas bastan.                                   |
+| 2026-11-15 | Referencias visuales finales de check-in del día, "Así estás hoy" y "Tu evolución" en `docs/DISENO.md`; el día empieza con el check-in.                                        | Modelo exacto a seguir en el frontend.                                                      |
 
 ## Abierto
 

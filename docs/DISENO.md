@@ -2,6 +2,69 @@
 
 Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTEMA.md](SISTEMA.md) (sección 1); las pantallas, en la sección 9.
 
+## Referencias finales (modelo exacto del frontend)
+
+Estas imágenes son **la referencia exacta** de cómo se ve la app. Si algo de este documento o del código actual las contradice, mandan las imágenes, salvo los puntos marcados como **pendiente de decidir** abajo. Las demás pantallas todavía no tienen referencia final; se diseñarán después siguiendo este mismo estilo.
+
+### Flujo del día
+
+1. **Al abrir la app al inicio del día**, lo primero es el check-in conversacional con Lunito (referencia 1). No se entra directo al dashboard.
+2. **Al terminar ese ejercicio**, la app pasa a "Así estás hoy" (referencia 2).
+3. "Tu evolución" (referencia 3) muestra las tendencias; en tablet va junto a "Así estás hoy" y en celular, debajo o en su propia vista.
+
+### 1 · Check-in del día
+
+![Check-in del día: saludo, pregunta y escucha](diseno/referencias/01-checkin-del-dia.png)
+
+Tres estados, una sola idea por pantalla:
+
+- **Saludo:** Lunito saluda con la mano. Título "¡Hola! Qué gusto verte". Micrófono y "Hola, soy Lunito".
+- **Pregunta:** "¿Cómo amaneciste hoy?". Micrófono y "Cuéntame cómo te sientes".
+- **Escuchando:** misma pregunta; el micrófono se convierte en una onda de voz animada y aparece "● Escuchando…".
+- En los tres estados está la opción **"Escribir respuesta"** con ícono de teclado, para responder sin voz.
+- Lunito grande y centrado, título grande, mucho aire, sin tarjetas ni barra de navegación.
+
+### 2 · Así estás hoy
+
+![Así estás hoy en celular y tablet](diseno/referencias/02-asi-estas-hoy.png)
+
+- Título "Así estás hoy" y subtítulo "Tu bienestar, reflejado en Lunito".
+- Lunito al centro. Tres **burbujas redondas** salen de él con una línea curva fina. Cada burbuja lleva ícono, nombre, unidad técnica en pequeño y el valor grande en cian:
+  - **Pulso** (corazón): 72 lpm.
+  - **Variabilidad cardíaca · HRV** (corazón con pulso): 45 ms.
+  - **Oxígeno en sangre · SpO₂** (gota): 98 %.
+- Debajo, el estado en una palabra con ícono: "✓ Bien". Leyenda de tres estados: **Bien** (cian), **Precaución** (amarillo) y **Atención** (rojo). Enlace "Qué significa" para explicar el semáforo.
+- En tablet: Lunito a la izquierda y "Tu evolución" a la derecha, separados por una línea vertical fina.
+
+### 3 · Tu evolución
+
+![Tu evolución en celular](diseno/referencias/03-tu-evolucion.png)
+
+- Título "Tu evolución" y subtítulo "Tu bienestar a lo largo del tiempo". Lunito pequeño arriba a la derecha.
+- Selector **Semana / Mes** y el rango de fechas ("9–15 de noviembre").
+- Una gráfica de área suave por indicador (pulso, HRV, SpO₂) con días L–D, eje con tres valores y el último valor grande en cian, con un punto cian al final de la línea.
+- Cierre: "Cada día cuenta. Observa tus cambios."
+
+### Estilo común
+
+- Fondo lila muy claro, sin bordes duros; tarjetas y burbujas blancas con sombra suave.
+- Títulos grandes y redondeados en gris violeta; valores en **cian**; líneas de gráficas en lila y cian.
+- Barra inferior con cuatro pestañas: **Inicio, Equipo, Tareas y Ajustes**, con la activa en lila.
+- Ícono de sol arriba a la derecha.
+
+### Pendiente de decidir
+
+Las referencias chocan con reglas ya acordadas en estos puntos. No se cambian en el código hasta que el equipo decida:
+
+- **Botón Emergencia:** `SISTEMA.md` §7.5 pide que esté siempre visible, y las referencias no lo muestran. Hay que decidir dónde va, sin quitarlo.
+- **Navegación:** la barra inferior (Inicio, Equipo, Tareas, Ajustes) reemplaza a la barra lateral actual. Falta decidir dónde quedan Check-in, Botiquín y la consola de Tierra.
+- **Color de "Bien":** en las referencias es cian, el color natural de la pancita, y no verde. Si se adopta, el verde deja de usarse para estados.
+- **Nombres de estado:** "Bien / Precaución / Atención" en vez de "Todo en orden / Revisar / Atención".
+- **Línea base:** las gráficas de las referencias no muestran la línea punteada de "tu normal", que `SISTEMA.md` §9 pide.
+- **De qué parte del cuerpo sale cada dato:** en la referencia, las líneas van a los brazos y a la pancita. En el modelo 3D actual, el oxígeno sale de las branquias.
+- **Lunito saludando:** el modelo 3D no tiene brazos separados para animar el saludo. Hace falta separar los brazos del modelo o usar una animación hecha en Meshy.
+- **Ícono de sol:** no está definido qué hace; puede ser un cambio de tema claro u oscuro.
+
 ## Idea
 
 Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. La app es un shell con barra lateral (shadcn/ui) y el nombre de la pantalla siempre arriba.
