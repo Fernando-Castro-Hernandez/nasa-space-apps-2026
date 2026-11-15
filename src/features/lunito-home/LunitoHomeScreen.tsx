@@ -89,7 +89,7 @@ export function LunitoHomeScreen() {
           </button>
         ))}
       </fieldset>
-      <ReferenceNav />
+      <ReferenceNav pathname="/" />
     </div>
   );
 }

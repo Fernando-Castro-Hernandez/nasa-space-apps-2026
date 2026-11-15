@@ -1,0 +1,245 @@
+/* cqw here measures the 440px column, not the full desktop width. */
+.tasks-page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+.tasks-inner {
+  padding: 1.1cqw 5.3cqw 6cqw;
+}
+.tasks-page h1 {
+  margin: 0;
+  font-size: 11cqw;
+  line-height: 1.1;
+  font-weight: 850;
+  letter-spacing: -0.2cqw;
+  color: var(--reference-ink-strong);
+}
+.tasks-count {
+  margin: 1cqw 0 3.5cqw;
+  font-size: 5.4cqw;
+}
+/* Native <progress>: reset its UA look, then paint track and value per engine. */
+.tasks-bar {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 2.9cqw;
+  border: 0;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  overflow: hidden;
+}
+.tasks-bar::-webkit-progress-bar {
+  background: var(--reference-lavender-100);
+}
+/* Separate rules: a browser drops a whole rule with a selector it does not know. */
+.tasks-bar::-webkit-progress-value {
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    var(--reference-action),
+    var(--reference-violet)
+  );
+}
+.tasks-bar::-moz-progress-bar {
+  border-radius: 99px;
+  background: linear-gradient(
+    90deg,
+    var(--reference-action),
+    var(--reference-violet)
+  );
+}
+.tasks-list {
+  position: relative;
+  margin: 3cqw -5.3cqw 0;
+  padding: 7cqw 5.3cqw;
+}
+/* The blob keeps a margin inside its viewBox, so the box overshoots the list
+   for the visible shape to cover every row. */
+.tasks-list .marea {
+  inset: -10cqw 0 auto;
+  width: 100%;
+  height: calc(100% + 26cqw);
+  opacity: 0.8;
+}
+.tasks-list ul {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tasks-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  padding-block: 3.6cqw;
+}
+.tasks-row + .tasks-row {
+  border-top: 1px solid var(--reference-line);
+}
+.tasks-row label {
+  display: flex;
+  align-items: center;
+  gap: 4.5cqw;
+  min-height: 44px;
+  flex: 1;
+  cursor: pointer;
+}
+.tasks-row input {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 8cqw;
+  height: 8cqw;
+  min-width: 24px;
+  min-height: 24px;
+  margin: 0;
+  border: 0.5cqw solid var(--reference-ink-strong);
+  border-radius: 2.2cqw;
+  background: transparent;
+}
+.tasks-row input:checked {
+  background: var(--reference-action);
+  border-color: var(--reference-action);
+}
+.tasks-row input:checked::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  top: 14%;
+  width: 24%;
+  height: 48%;
+  border: solid var(--reference-surface);
+  border-width: 0 0.9cqw 0.9cqw 0;
+  transform: rotate(45deg);
+}
+.tasks-row input:disabled {
+  cursor: default;
+}
+.tasks-row span {
+  display: grid;
+}
+.tasks-row strong {
+  font-size: 5.2cqw;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--reference-ink-strong);
+}
+.tasks-row small {
+  font-size: 4.4cqw;
+}
+.tasks-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5cqw;
+  min-height: 44px;
+  padding-inline: 5cqw;
+  border-radius: 99px;
+  background: var(--reference-action);
+  color: var(--reference-surface);
+  font-size: 4.6cqw;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 1.5cqw 3cqw var(--reference-shadow-violet);
+}
+.tasks-start svg,
+.tasks-kit svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+.tasks-soon {
+  font-style: normal;
+  font-size: 3.6cqw;
+  font-weight: 800;
+  color: var(--reference-ink-soft);
+}
+.tasks-aurora {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 3cqw;
+  margin-top: 2cqw;
+  padding: 3cqw 6cqw 3cqw 2cqw;
+  border-radius: 12cqw;
+  background: var(--reference-lavender-50);
+  opacity: 0.9;
+}
+.tasks-aurora img {
+  width: 24cqw;
+  flex: none;
+}
+.tasks-aurora div {
+  flex: 1;
+  display: grid;
+}
+.tasks-aurora strong {
+  font-size: 5cqw;
+  line-height: 1.2;
+  color: var(--reference-ink-strong);
+}
+.tasks-aurora span {
+  font-size: 4.2cqw;
+}
+.tasks-aurora > svg {
+  width: 8cqw;
+  height: 8cqw;
+  flex: none;
+  color: var(--reference-ink-strong);
+}
+.tasks-aurora .tasks-soon {
+  position: absolute;
+  right: 6cqw;
+  bottom: 2cqw;
+}
+.tasks-reminder {
+  display: flex;
+  align-items: center;
+  gap: 4cqw;
+  margin-top: 3cqw;
+  padding: 4cqw 2cqw;
+  border-top: 1px solid var(--reference-line);
+}
+.tasks-reminder > svg {
+  width: 8cqw;
+  height: 8cqw;
+  flex: none;
+}
+.tasks-reminder div {
+  flex: 1;
+  display: grid;
+}
+.tasks-reminder strong {
+  font-size: 5cqw;
+  color: var(--reference-ink-strong);
+}
+.tasks-reminder button {
+  min-height: 44px;
+  padding-inline: 3cqw;
+  font-size: 4.8cqw;
+  font-weight: 700;
+  color: var(--reference-action);
+}
+.tasks-reminder button:disabled {
+  color: var(--reference-ink-soft);
+}
+.tasks-kit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  margin-top: 2cqw;
+  padding: 4cqw 2cqw;
+  border-top: 1px solid var(--reference-line);
+  font-size: 5cqw;
+  font-weight: 800;
+  color: var(--reference-action);
+  text-decoration: none;
+}

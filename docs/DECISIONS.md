@@ -54,7 +54,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-15 | Autonomía: una sola métrica, casos bien atendidos (resueltos a bordo o escalados a tiempo), meta de 100 % en todas las fases. No hay meta de 75 %.                                                                                                                                                                                                                                                                                                      | Una meta de "resolver sin Tierra" premia no escalar un caso grave.                                            |
 | 2026-11-15 | El compañero del día y el balanceador no revelan el motivo: acciones neutras de una lista fija y solo el peligro ("Precaución por Aislamiento").                                                                                                                                                                                                                                                                                                        | Privacidad (HU-26 y HU-27).                                                                                   |
 | 2026-11-14 | El modelo de Lunito se optimiza sin `meshopt` (1.4 MB). Sus brazos se separan de `body` y `belly` con un parche pintado en la textura. Detalle en `docs/LUNITO-ARTE.md`.                                                                                                          | `meshopt` mueve los orígenes de la animación; los brazos estaban en dos mallas.             |
-| 2026-11-15 | El Inicio de las PNG vive en `/referencia` para compararlo con Órbita, que sigue en `/`; el inicio del día solo lo antecede a él. Sus pantallas (`src/features/lunito-home`) miden en `cqw` contra el ancho de cada página y el escritorio solo elige ese ancho (dos columnas centradas de hasta 440 px desde 768 px). Colores solo como tokens `--reference-*`; las manchas `Marea` son formas cerradas. Usa `@fontsource-variable/nunito` 5.3.0 solo en esas pantallas. | No pisar la referencia aprobada (Órbita) y dejar un modelo de tamaño estable para las pantallas siguientes. |
+| 2026-11-15 | Por decisión de Fernando, las pantallas Marea de Ariff son las de la app: Inicio (`/`), Equipo (`/tripulacion`), Tareas (`/tareas`) y Configuración (`/ajustes`), con su propia barra inferior; el día empieza con el check-in de `/buenos-dias`. Las de Órbita salen de las rutas (el código se conserva). Viven en `src/features/lunito-home`: miden en `cqw` contra el ancho de cada página, el escritorio solo elige ese ancho (hasta 440–480 px, un solo breakpoint en 768 px), colores solo como tokens `--reference-*` y manchas `Marea` cerradas. Equipo incluye la autonomía de la tripulación (HU-17, HU-30) y, solo para el comandante, el balanceador (HU-27), reutilizando `AutonomyCard` y `LoadBalancer`. Lo que no existe en el producto (estilos de Lunito, notificaciones, recordatorios) se dibuja desactivado con "Próximamente". | Revisión de Fernando en #32. |
 
 ### Implementación de Órbita · 2026-11-15
 
@@ -66,7 +66,7 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 
 ## Abierto
 
-- Nada por ahora.
+- **"Próximamente" de Tareas y Configuración** (estilos de Lunito, notificaciones, recordatorios): no están en el PRD; falta decidir si entran.
 
 ## Para más adelante
 
