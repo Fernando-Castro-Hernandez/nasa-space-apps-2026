@@ -11,6 +11,7 @@ Fuente de verdad sobre quién construye cada parte del producto. Las historias y
 - Nadie espera una integración real: cada consumidor usa datos simulados o un adaptador local que respete el contrato acordado.
 - Ariff integra la estructura, la navegación y los estilos globales. Las demás personas entregan componentes exportables con estilos dentro de su módulo.
 - Una dependencia nueva requiere acuerdo y registro en [DECISIONS.md](DECISIONS.md).
+- **2026-11-14 · Primera versión de las pantallas.** Con acuerdo del equipo, Ariff construyó una primera versión de todas las pantallas, cada una en la carpeta de su responsable. Desde ahí, cada responsable la toma y la mantiene según la tabla de abajo.
 
 ## Responsables
 

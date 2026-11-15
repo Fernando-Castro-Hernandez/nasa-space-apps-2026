@@ -35,6 +35,10 @@ Registro corto de lo que el equipo ya decidió y de lo que sigue abierto. Cuando
 | 2026-11-14 | Lunito es agente: actúa solo, propone o nunca actúa según el caso. La IA habla, las reglas deciden.                                                                            | Que un modelo pequeño nunca tome una decisión de salud.                                     |
 | 2026-11-14 | El trabajo se divide por módulos y pantallas según `docs/REPARTO.md`; Viridiana lleva el hardware y los cinco carriles restantes avanzan con adaptadores o contenido validado. | Evitar choques de archivos y que una integración pendiente frene el desarrollo.             |
 | 2026-11-14 | Ariff es responsable de la estructura de la app, la navegación y los estilos globales.                                                                                         | Centralizar la integración visual y evitar cambios simultáneos en los archivos raíz.        |
+| 2026-11-14 | Tema claro con la paleta de Lunito; verde, ámbar y rojo solo para estados. Sustituye al tema oscuro de `DISENO.md`.                                                            | Pedido de diseño: claro y pensado para tablet.                                              |
+| 2026-11-14 | UI con shadcn/ui (Base UI, Tailwind 4) y componentes del catálogo del equipo; gráficas con Recharts.                                                                           | Componentes listos y consistentes.                                                          |
+| 2026-11-14 | Lunito en 3D con three.js y React Three Fiber; modelo de Meshy separado en partes con nombre.                                                                                  | Lunito es el centro del dashboard.                                                          |
+| 2026-11-14 | Router propio sobre el History API, sin librería.                                                                                                                              | Siete rutas; no justifican una dependencia.                                                 |
 
 ## Abierto
 

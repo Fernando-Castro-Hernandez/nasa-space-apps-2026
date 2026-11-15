@@ -4,7 +4,7 @@ Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTE
 
 ## Idea
 
-Profesional pero limpio. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. Fondo de noche espacial oscura y una luna clara detrás de Lunito en la pantalla de inicio.
+Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. La app es un shell con barra lateral (shadcn/ui) y el nombre de la pantalla siempre arriba.
 
 ## Lunito
 
@@ -22,31 +22,39 @@ El semáforo vive en su pancita:
 - El color nunca va solo: siempre lo acompaña una palabra (regla 3 de Lunito).
 - Pendiente: cómo distinguir al Lunito de cada tripulante (color de aletas o un accesorio).
 
+## Lunito en 3D
+
+- Modelo: `public/lunito.glb`, generado con Meshy y separado en partes con nombre (`body`, `belly`, `gill_L/R_1..3`, `eye_L`, `eye_R`) para animar cada una.
+- Nada se pinta encima del modelo: la pancita **gira su tono** (cian → verde, ámbar o rojo) y conserva su textura; las branquias se aclaran u oscurecen según el oxígeno.
+- Movimiento con sentido: la pancita late al ritmo del pulso, el cuerpo respira según la HRV. En reposo flota, se balancea y parpadea. Con `prefers-reduced-motion` se queda quieto.
+- Las imágenes 2D de `diseno/` se usan donde no conviene un canvas 3D (constelación, emergencia).
+
 ## Colores
 
-| Uso                  | Color     |
-| -------------------- | --------- |
-| Fondo                | `#0B0D1F` |
-| Fondo elevado        | `#1A1C3A` |
-| Texto                | `#F2F0FA` |
-| Texto secundario     | `#A9A6C4` |
-| Acento (Lunito, voz) | `#B9A6FF` |
-| Estado verde         | `#3CE1A0` |
-| Estado ámbar         | `#FFB840` |
-| Estado rojo          | `#FF5A6E` |
-| Banner de emergencia | `#C8243B` |
+Los tokens viven en `src/index.css` (variables de shadcn/ui en OKLCH).
 
-Verde, ámbar y rojo se usan **solo** para estados, nunca como decoración.
+| Uso              | Token                           |
+| ---------------- | ------------------------------- |
+| Fondo            | `--background` (lila muy claro) |
+| Tarjetas         | `--card` (blanco)               |
+| Texto            | `--foreground`                  |
+| Texto secundario | `--muted-foreground`            |
+| Primario         | `--primary` (lila de Lunito)    |
+| Estado verde     | `--status-ok`                   |
+| Estado ámbar     | `--status-warn`                 |
+| Estado rojo      | `--status-alert`                |
+
+Verde, ámbar y rojo se usan **solo** para estados, nunca como decoración, y siempre con una palabra.
 
 ## Tipografía
 
-- Títulos y números: **Space Grotesk** (500 y 600).
-- Texto: **Inter** (400, 500 y 600).
+- **Inter** para todo; jerarquía por tamaño y peso.
 - Mínimo 15 px para texto de lectura y botones de al menos 44 px de alto: se usa flotando y con prisa.
 
 ## Patrones
 
-- Tarjetas con fondo blanco al 5 % y borde blanco al 8 %, esquinas de 18 a 20 px.
-- Botón principal: píldora clara (`#F2F0FA`) con texto oscuro, 56 px de alto.
+- Tarjetas de shadcn (`Card`) con borde suave y esquinas redondeadas.
+- Botón principal: `--primary` con texto claro, al menos 44 px de alto.
+- Botón **Emergencia** rojo en el header de todas las pantallas.
 - Gráficas de 7 días con la línea base punteada.
 - En emergencia desaparece todo lo lúdico: banner rojo, alto contraste y nada de animaciones decorativas.
