@@ -13,3 +13,4 @@ Reglas del archivo:
 - 2026-11-06 · Si pnpm bloquea un paquete por ser demasiado reciente, fija una versión anterior en vez de agregar una excepción. El bloqueo existe para evitar paquetes comprometidos recién publicados.
 - 2026-11-14 · No pases `public/lunito.glb` por `gltf-transform meshopt`: cuantiza y mueve el origen de cada parte, y el código anima alrededor de esos orígenes. `art/lunito/check-glb.mjs` lo detecta.
 - 2026-11-14 · En Windows, el instalador del catálogo de shadcn falla con rutas `C:\` ("unknown scheme"). Sirve la carpeta del catálogo en localhost y usa `shadcn add http://127.0.0.1:PUERTO/.../registry.json`.
+- 2026-11-15 · Para mostrar algo con el atributo `hidden` no lo sobrescribas con CSS: el preflight de Tailwind lo oculta con `!important` dentro de una capa, y eso le gana a cualquier regla sin capa. Quita el atributo desde React (ver `useWide`).

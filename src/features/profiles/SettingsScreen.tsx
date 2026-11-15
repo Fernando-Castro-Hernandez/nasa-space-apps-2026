@@ -15,6 +15,9 @@ export function SettingsScreen() {
         <a href="/demo" className="orbita-setting-link">
           Panel de la demo <span aria-hidden="true">→</span>
         </a>
+        <a href="/referencia" className="orbita-setting-link">
+          Inicio de referencia <span aria-hidden="true">→</span>
+        </a>
       </section>
     </div>
   );

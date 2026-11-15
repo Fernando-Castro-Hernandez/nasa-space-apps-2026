@@ -1,0 +1,177 @@
+.today-page {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 1.1cqw 5.3cqw 0;
+}
+.today-page h1,
+.data-heading-row h1 {
+  margin: 0;
+  font-size: 8.6cqw;
+  line-height: 1.12;
+  font-weight: 850;
+  letter-spacing: -0.15cqw;
+}
+.today-status {
+  display: flex;
+  align-items: center;
+  gap: 2.4cqw;
+  margin-top: 1.5cqw;
+  font-size: 6.5cqw;
+  line-height: 1.2;
+}
+.status-check {
+  background: var(--reference-ok);
+  border-radius: 50%;
+  width: 7.6cqw;
+  height: 7.6cqw;
+  display: grid;
+  place-items: center;
+  color: var(--reference-surface);
+}
+.status-check svg {
+  width: 5.6cqw;
+  stroke-width: 4;
+}
+.today-status[data-status="ambar"] .status-check {
+  background: var(--status-warn);
+}
+.today-status[data-status="rojo"] .status-check {
+  background: var(--status-alert);
+}
+.today-status strong {
+  font-weight: 800;
+}
+.status-divider {
+  height: 5.5cqw;
+  width: 1px;
+  background: var(--reference-line-strong);
+  margin-inline: 1.5cqw;
+}
+.today-status > button {
+  color: var(--reference-action);
+  font-size: 4.2cqw;
+  font-weight: 850;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+.today-scene {
+  position: relative;
+  margin: 5.2cqw -5.3cqw 0;
+  height: min(90cqw, calc(100% - 26cqw - 88px));
+}
+.marea-hero {
+  inset: -13cqw 0 auto;
+  width: 100%;
+  height: 108cqw;
+}
+/* max-height + contain keep Lunito inside the scene when a short screen
+   caps the scene height. */
+.today-lunito {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 82%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.metric-connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 1px 2px var(--reference-glow));
+}
+.metric-bubble {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 5.4cqw 1fr;
+  align-content: center;
+  column-gap: 0.7cqw;
+  padding: 2.1cqw 2.4cqw;
+  border-radius: 99px;
+  background: linear-gradient(
+    125deg,
+    var(--reference-surface),
+    var(--reference-lavender-50)
+  );
+  box-shadow: 0 0.7cqw 1.1cqw var(--reference-shadow);
+  border: 1px solid var(--reference-lavender-50);
+  color: var(--reference-ink);
+  line-height: 1.05;
+}
+.metric-bubble svg {
+  width: 5.4cqw;
+  height: 5.4cqw;
+  color: var(--reference-action);
+  stroke-width: 1.8;
+}
+.metric-bubble span {
+  font-size: 3.25cqw;
+  font-weight: 750;
+  letter-spacing: -0.12cqw;
+}
+.metric-bubble strong {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 6.25cqw;
+  font-weight: 850;
+  white-space: nowrap;
+  margin-top: 0.7cqw;
+}
+.metric-bubble small {
+  font-size: 5cqw;
+  font-weight: 850;
+}
+/* Connector ends land at 28cqw (pulse) and 44.4cqw (HRV); keep each inside
+   its bubble when moving them. */
+.bubble-pulse {
+  top: 19.5cqw;
+  right: 2%;
+  width: 29%;
+  min-height: 15.4cqw;
+}
+.bubble-hrv {
+  top: 41.5cqw;
+  right: 1.5%;
+  width: 30.5%;
+  min-height: 18cqw;
+}
+.bubble-oxygen {
+  top: 42.2cqw;
+  left: 2%;
+  width: 29%;
+  min-height: 18.3cqw;
+}
+.my-lunito {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3cqw;
+  min-height: 44px;
+  font-weight: 850;
+  font-size: 4.7cqw;
+}
+.my-lunito svg {
+  width: 5.5cqw;
+  height: 5.5cqw;
+}
+.swipe-invitation {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5cqw;
+  width: 100%;
+  min-height: 44px;
+  font-size: 3.7cqw;
+  font-style: italic;
+}
+.swipe-invitation svg {
+  width: 4.3cqw;
+  height: 4.3cqw;
+}

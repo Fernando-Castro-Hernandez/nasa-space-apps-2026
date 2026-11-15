@@ -9,6 +9,7 @@ import { CrewScreen } from "@/features/crew/CrewScreen";
 import { EmergencyScreen } from "@/features/emergency/EmergencyScreen";
 import { GroundConsoleScreen } from "@/features/emergency/GroundConsoleScreen";
 import { HomeScreen } from "@/features/lunito/HomeScreen";
+import { LunitoHomeScreen } from "@/features/lunito-home/LunitoHomeScreen";
 import { MedicineScreen } from "@/features/medicine/MedicineScreen";
 import { StatusScreen } from "@/features/status/StatusScreen";
 import { SettingsScreen } from "@/features/profiles/SettingsScreen";
@@ -31,6 +32,13 @@ export const ROUTES: Route[] = [
   { path: "/tareas", title: "Qué hacer hoy", Screen: TasksScreen, shell: true },
   { path: "/demo", title: "Panel de la demo", Screen: DemoScreen, shell: true },
   { path: "/", title: "Mi Lunito", Screen: HomeScreen, shell: true },
+  // Inicio from the PNG references, kept apart from Órbita to compare them.
+  {
+    path: "/referencia",
+    title: "Inicio de referencia",
+    Screen: LunitoHomeScreen,
+    shell: false,
+  },
   { path: "/estado", title: "Mi estado", Screen: StatusScreen, shell: true },
   { path: "/check-in", title: "Check-in", Screen: CheckInScreen, shell: true },
   {
