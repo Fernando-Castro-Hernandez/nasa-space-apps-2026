@@ -118,12 +118,23 @@ export const PHASE_VIEW: Record<Phase, PhaseView> = {
 };
 
 /**
- * Lunito en el resultado: mientras lo dice, habla solo (followVoice); al
- * terminar, celebra que hiciste tu check-in (se premian acciones, no valores).
- * En Atención no celebra: te cuida (SISTEMA.md §1).
+ * ¿Lunito celebra el check-in? Se premian acciones, no valores; pero en
+ * Atención, o si la bitácora habla de una emergencia, no celebra: te cuida
+ * (SISTEMA.md §1).
  */
-export function resultPose(status: StatusCode, finished: boolean): LunitoPose {
-  if (status === "rojo") return "caring";
+export const celebrates = (status: StatusCode, emergency: boolean) =>
+  status !== "rojo" && !emergency;
+
+/**
+ * Lunito en el resultado: mientras lo dice, habla solo (followVoice); al
+ * terminar, celebra que hiciste tu check-in, si `celebrates` lo permite.
+ */
+export function resultPose(
+  status: StatusCode,
+  finished: boolean,
+  emergency = false,
+): LunitoPose {
+  if (!celebrates(status, emergency)) return "caring";
   if (finished) return "celebrating";
   return status === "verde" ? "idle" : "caring";
 }

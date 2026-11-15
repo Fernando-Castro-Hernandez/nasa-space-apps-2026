@@ -4,6 +4,10 @@ export const dayCheckin = {
   lunito: "Lunito",
   // Salida en cualquier momento: pospone el check-in y lleva a Inicio.
   notNow: "Not now",
+  // La misma salida con la bitácora ya guardada: el check-in ya cuenta como
+  // hecho, así que termina y va a Inicio, igual que el botón del resultado.
+  // Corto: cabe en una línea junto a Emergencia a 390 px.
+  finish: "Go to Home",
   write: "Type your answer",
   greeting: {
     // Dos exclamaciones, una por línea, como en la referencia 04.

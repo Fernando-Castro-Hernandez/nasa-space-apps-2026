@@ -10,6 +10,8 @@ export const emergency = {
     chooseBoth: "Choose the person and what happened",
     choosePerson: "Now choose the person",
     chooseWhat: "Now choose what happened",
+    // Con el último caso ya cerrado, Emergencia abre uno nuevo y deja verlo.
+    lastCase: "View the last case · {name}, closed at {time}",
   },
   // Opciones de "¿Qué pasó?". La clave es el código que se guarda en el caso,
   // así el caso se lee en cualquier idioma.
@@ -69,12 +71,6 @@ export const emergency = {
     groundOrder: "Ground instruction: {text}",
     orderDone: "Done: {text}",
     closed: "Case closed",
-    // Notas de muestra para la demo cuando no hay micrófono ni dictado.
-    samples: {
-      eyesOpen: "Opened their eyes, slow to respond",
-      dizzy: "Says they felt dizzy before going down",
-      breathing: "Breathing normally, normal skin color",
-    },
   },
   close: {
     button: "Close case",

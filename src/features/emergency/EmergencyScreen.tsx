@@ -11,7 +11,7 @@ import { crewMember, MISSION } from "@/data/crew";
 import { t } from "@/i18n";
 import lunitoRojo from "./assets/lunito-rojo.png";
 import { closeCase, type EmergencyCase, whatLabel } from "./caseLogic";
-import { saveCase, updateCase, useCase, useNow } from "./caseStore";
+import { updateCase, useCase, useNow } from "./caseStore";
 import { CaseTimeline } from "./CaseTimeline";
 import { DictateButton } from "./DictateButton";
 import { countdown, formatTime, responseEta } from "./link";
@@ -70,7 +70,16 @@ function GroundLink({ c, now }: { c: EmergencyCase; now: number }) {
 }
 
 /** Cerrar pide confirmación; ya cerrado, se puede empezar un caso nuevo. */
-function CloseCase({ c, name }: { c: EmergencyCase; name: string }) {
+function CloseCase({
+  c,
+  name,
+  onNew,
+}: {
+  c: EmergencyCase;
+  name: string;
+  /** "Nuevo caso": vuelve al formulario; el caso cerrado queda guardado. */
+  onNew: () => void;
+}) {
   const [asking, setAsking] = useState(false);
   const keepOpen = useRef<HTMLButtonElement>(null);
   // "Cerrar caso" o, ya cerrado, "Nuevo caso".
@@ -91,7 +100,7 @@ function CloseCase({ c, name }: { c: EmergencyCase; name: string }) {
       <button
         ref={closeButton}
         type="button"
-        onClick={() => saveCase(null)}
+        onClick={onNew}
         className="em-secondary em-tap"
       >
         {t("emergency.close.newCase")}
@@ -144,8 +153,16 @@ function CloseCase({ c, name }: { c: EmergencyCase; name: string }) {
 export function EmergencyScreen() {
   const c = useCase();
   const closed = c?.closedAt !== undefined;
+  // Un caso cerrado se ve solo si estuvo abierto aquí (al cerrarlo, sigue su
+  // registro) o si se pidió verlo. Si ya estaba cerrado al llegar, Emergencia
+  // abre un caso nuevo: siempre a un toque, con el último caso como constancia.
+  const [shownId, setShownId] = useState<string | null>(null);
+  if (c && !closed && shownId !== c.id) setShownId(c.id);
   const now = useNow(c !== null && !closed);
-  if (!c) return <OpenCaseForm />;
+  if (!c || (closed && shownId !== c.id))
+    return (
+      <OpenCaseForm last={c} onShowLast={() => setShownId(c?.id ?? null)} />
+    );
 
   const person = crewMember(c.personId);
   const opened = formatTime(c.openedAt);
@@ -198,7 +215,7 @@ export function EmergencyScreen() {
             {t("emergency.log.title")}
           </h2>
           <CaseTimeline events={c.events} live />
-          <CloseCase c={c} name={person.name} />
+          <CloseCase c={c} name={person.name} onNew={() => setShownId(null)} />
         </section>
       </div>
     </div>

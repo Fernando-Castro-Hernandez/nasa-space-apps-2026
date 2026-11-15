@@ -6,6 +6,7 @@ export const dayCheckin: Messages<typeof source> = {
   region: "Conversación con Lunito",
   lunito: "Lunito",
   notNow: "Ahora no",
+  finish: "Ir a Inicio",
   write: "Escribir respuesta",
   greeting: {
     hello: "¡Hola!",

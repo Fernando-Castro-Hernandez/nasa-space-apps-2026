@@ -2,8 +2,10 @@
 // Todo sale de las reglas (SISTEMA.md §1: "la IA habla, las reglas deciden"):
 // el estado es el de la lectura de Inicio, las acciones son las del día que
 // siguen pendientes (las mismas de Tareas) y la frase es la de lunitoRules.
+// Si la bitácora habla de una emergencia, manda la misma regla que en la
+// conversación con Lunito: la frase de emergencia en lugar de la del estado.
 import type { LunitoContext } from "@/api/contract";
-import { stateLine } from "@/api/lunitoRules";
+import { detectEmergency, emergencyLine, stateLine } from "@/api/lunitoRules";
 import { translate, type Locale } from "@/i18n/translate";
 
 /** Más de dos acciones ya no se recuerdan al salir del check-in. */
@@ -16,11 +18,15 @@ export type CheckInResult = {
   actions: string[];
   /** Lo que Lunito dice en voz alta. */
   line: string;
+  /** La frase de emergencia, si la bitácora habla de una; si no, null. */
+  emergency: string | null;
 };
 
 export function checkInResult(
   context: Omit<LunitoContext, "checkInDone">,
   locale: Locale,
+  /** Lo que la persona dijo o escribió en la bitácora. */
+  transcript = "",
 ): CheckInResult {
   const done = { ...context, checkInDone: true };
   // En Atención, lo único que se pide es avisar al oficial médico (o repetir la
@@ -35,10 +41,14 @@ export function checkInResult(
               }),
         ]
       : context.pendingActions.slice(0, MAX_RESULT_ACTIONS);
+  const emergency = detectEmergency(transcript)
+    ? emergencyLine(context, locale)
+    : null;
   return {
     status: context.status,
     reason: context.reason,
     actions,
-    line: stateLine(done, locale),
+    line: emergency ?? stateLine(done, locale),
+    emergency,
   };
 }

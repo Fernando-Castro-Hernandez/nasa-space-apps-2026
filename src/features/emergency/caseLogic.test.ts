@@ -6,7 +6,6 @@ import {
   checkOrder,
   checkStep,
   closeCase,
-  dictationSample,
   eventText,
   latestVitals,
   openCase,
@@ -49,13 +48,10 @@ describe("caso de emergencia", () => {
     expect(vitalsOf(latestVitals(c)!)).toEqual({ bpm: 58, spo2: 97 });
   });
 
-  test("dictar agrega notas simuladas en orden", () => {
-    const c = addNote(addNote(opened(), min(1)), min(2));
-    const notes = c.events.filter((e) => e.kind === "note");
-    expect(notes.map(eventText)).toEqual([
-      `“${dictationSample(0)}”`,
-      `“${dictationSample(1)}”`,
-    ]);
+  test("una nota vacía no se registra: el caso nunca inventa lo que alguien dijo", () => {
+    const c = opened();
+    expect(addNote(c, min(1), "")).toBe(c);
+    expect(addNote(c, min(1), "   ")).toBe(c);
   });
 
   test("una nota dictada guarda lo que se dijo, con su hora", () => {
@@ -104,7 +100,6 @@ describe("el caso se lee en el idioma activo", () => {
 
   test("un caso abierto en español se lee entero en inglés", () => {
     let c = checkStep(opened(), "sensor", min(4));
-    c = addNote(c, min(5));
     c = addNote(c, min(6), "le di oxígeno");
     c = addOrder(c, "Mantener en reposo", min(20));
     c = closeCase(checkOrder(c, "o1", min(25)), min(30));
@@ -115,14 +110,24 @@ describe("el caso se lee en el idioma activo", () => {
       "Case opened: Ana · Fainted",
       "Put the sensor on their finger",
       "Sensor vitals: 58\u00a0bpm, 97%\u00a0SpO2",
-      `“${dictationSample(0)}”`,
       // Lo que dijo una persona es una cita: no se traduce.
       "“le di oxígeno”",
       "Ground instruction: Mantener en reposo",
       "Done: Mantener en reposo",
       "Case closed",
     ]);
-    expect(dictationSample(0)).toBe("Opened their eyes, slow to respond");
+  });
+
+  test("una nota de muestra de una versión anterior se lee como se guardó", () => {
+    const old = {
+      id: "e2",
+      at: T0,
+      kind: "note" as const,
+      text: "“Abrió los ojos, responde lento”",
+      params: { sample: 0 },
+    };
+    setLocale("en");
+    expect(eventText(old)).toBe(old.text);
   });
 
   test("un caso guardado antes de los códigos se muestra como estaba", () => {

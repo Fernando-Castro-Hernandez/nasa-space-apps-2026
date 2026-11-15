@@ -70,5 +70,9 @@ export function useTodayVoiceLog(profile: string): VoiceLog | null {
   return logOfDay(store.use(), profile, dayKey(new Date()));
 }
 
+/** Lo mismo que `useTodayVoiceLog`, fuera de un componente. */
+export const todayVoiceLog = (profile: string) =>
+  logOfDay(store.get(), profile, dayKey(new Date()));
+
 /** Reinicio del panel /demo (HU-28). */
 export const resetVoiceLogs = store.clear;

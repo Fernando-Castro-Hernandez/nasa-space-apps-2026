@@ -24,7 +24,11 @@ describe("resumen SBAR", () => {
   });
 
   test("situación con persona, qué pasó, hora y última nota", () => {
-    const c = addNote(openCase("ana", "Ana", "Se desmayó", T0), T0 + 60_000);
+    const c = addNote(
+      openCase("ana", "Ana", "Se desmayó", T0),
+      T0 + 60_000,
+      "Abrió los ojos, responde lento",
+    );
     const s = buildSbar(c, "Ana", []);
     expect(s.situation).toContain("Ana: se desmayó a las 14:03");
     expect(s.situation).toContain("Abrió los ojos");

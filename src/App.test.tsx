@@ -6,18 +6,36 @@ import { ROUTES } from "@/app/routes";
 import { crewMember } from "@/data/crew";
 import { openCase, WHAT_HAPPENED } from "@/features/emergency/caseLogic";
 import { saveCase } from "@/features/emergency/caseStore";
+import { setActiveProfile } from "@/features/profiles/activeProfile";
+import { saveVoiceLog } from "@/features/voice/voiceLogStore";
 import { setLocale } from "@/i18n";
 import { App } from "./App";
 
 // jsdom no tiene WebGL: la escena 3D se prueba a mano, aquí se reemplaza.
 vi.mock("@/features/lunito/LunitoScene", () => ({ LunitoScene: () => null }));
 
+const fields = {
+  sleepHours: 7,
+  sleepQuality: "buena" as const,
+  mood: 4,
+  stress: 2,
+  symptoms: [],
+};
+
 // El check-in de la mañana es de otra área: aquí solo importa el contrato
-// con la estructura (terminar o posponer).
+// con la estructura (terminar o posponer) y que guarda la bitácora a medio
+// camino, antes del sensor y del resultado.
 vi.mock("@/features/day-checkin/DayCheckInScreen", () => ({
   DayCheckInScreen: (props: { onDone: () => void; onSkip: () => void }) => (
     <main>
       <h1>Check-in de la mañana</h1>
+      <button
+        onClick={() =>
+          saveVoiceLog("ana", { transcript: "Dormí bien", fields })
+        }
+      >
+        Guardar bitácora
+      </button>
       <button onClick={props.onDone}>Listo</button>
       <button onClick={props.onSkip}>Ahora no</button>
     </main>
@@ -129,6 +147,57 @@ test("el check-in viejo redirige al único check-in, el de la mañana", () => {
   ).toBeDefined();
 });
 
+test("con la bitácora de hoy guardada, Inicio ya no pide el check-in aunque se haya salido a medias", () => {
+  saveVoiceLog("ana", { transcript: "Dormí bien", fields });
+  render(<App />);
+
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+});
+
+test("guardar la bitácora no corta el check-in: sigue hasta terminarlo", () => {
+  render(<App />);
+  act(() => screen.getByRole("button", { name: "Guardar bitácora" }).click());
+  expect(
+    screen.getByRole("heading", { name: "Check-in de la mañana" }),
+  ).toBeDefined();
+
+  act(() => screen.getByRole("button", { name: "Listo" }).click());
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+});
+
+test("si sale a Emergencia a medio check-in, al volver a Inicio ya no empieza de cero", () => {
+  render(<App />);
+  act(() => screen.getByRole("button", { name: "Guardar bitácora" }).click());
+  act(() => navigate("/emergencia"));
+  act(() => navigate("/"));
+
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+});
+
+test("el check-in de la mañana es de cada perfil: tras el de Ana, Luis tiene el suyo", () => {
+  render(<App />);
+  act(() => screen.getByRole("button", { name: "Listo" }).click());
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+
+  act(() => setActiveProfile("luis"));
+  act(() => navigate("/"));
+  expect(
+    screen.getByRole("heading", { name: "Check-in de la mañana" }),
+  ).toBeDefined();
+});
+
+test("el formato viejo de la marca (una fecha suelta) salta el check-in en todo el dispositivo", () => {
+  const d = new Date();
+  localStorage.setItem(
+    "nostos.day-start",
+    `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`,
+  );
+  setActiveProfile("luis");
+  render(<App />);
+
+  expect(screen.getByRole("heading", { name: "Así estás hoy" })).toBeDefined();
+});
+
 test("con el día ya iniciado, Inicio abre Así estás hoy", () => {
   finishDayStart();
   render(<App />);
@@ -165,6 +234,8 @@ test("con un caso abierto, toda la app muestra la franja roja con quién y el ca
     });
     expect(banner.getAttribute("href")).toBe("/emergencia");
     expect(screen.getByRole("link", { name: "Ver caso" })).toBeDefined();
+    // "Ver caso" una sola vez: el botón de la cabecera; la franja es su enlace.
+    expect(screen.getAllByText("Ver caso")).toHaveLength(1);
     expect(screen.queryByRole("link", { name: "Emergencia" })).toBeNull();
   }
 

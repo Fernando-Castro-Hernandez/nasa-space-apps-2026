@@ -88,10 +88,10 @@ test("un sí en el descarte lleva al cirujano de vuelo con la persona elegida", 
   pick(/Dolor de cabeza/);
   fireEvent.click(screen.getAllByRole("button", { name: "Sí" })[0]!);
   pick(/Ver qué hacer/);
+  // El título dice qué hacer; el botón, a dónde lleva.
+  expect(screen.getByText("Contacta al cirujano de vuelo")).toBeDefined();
   expect(
-    screen
-      .getByRole("link", { name: /Contacta al cirujano de vuelo/ })
-      .getAttribute("href"),
+    screen.getByRole("link", { name: "Ir a Emergencia" }).getAttribute("href"),
   ).toBe("/emergencia?quien=luis");
 });
 

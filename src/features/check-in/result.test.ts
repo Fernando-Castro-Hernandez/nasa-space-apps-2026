@@ -55,6 +55,36 @@ test("en Atención la única acción es avisar al oficial médico", () => {
   expect(result.line).toContain("Let Luis, your crew medical officer, know.");
 });
 
+test("si la bitácora habla de una emergencia, Lunito manda a Emergencia en lugar de decir el estado", () => {
+  const result = checkInResult(
+    ana,
+    "es",
+    "No puedo respirar y me duele el pecho",
+  );
+  expect(result.emergency).toBe(
+    "Eso puede ser una emergencia. Toca el botón rojo Emergencia ahora y avisa a Luis, tu oficial médico. Aquí sigo contigo.",
+  );
+  expect(result.line).toBe(result.emergency);
+  // El estado del día sigue siendo el de las lecturas.
+  expect(result.status).toBe("verde");
+  expect(
+    checkInResult({ ...ana, name: "Luis" }, "en", "I can't breathe").line,
+  ).toBe(
+    "This could be an emergency. Tap the red Emergency button now. I'm right here with you.",
+  );
+});
+
+test("una bitácora normal no cambia lo que dice Lunito", () => {
+  const result = checkInResult(
+    ana,
+    "es",
+    "Dormí bien y me duele un poco la cabeza",
+  );
+  expect(result.emergency).toBeNull();
+  expect(result.line).toContain("Hoy tu estado es Bien");
+  expect(checkInResult(ana, "es").emergency).toBeNull();
+});
+
 test("si el oficial médico es quien hace el check-in, repite la medición", () => {
   const result = checkInResult(
     { ...ana, name: "Luis", status: "rojo", reason: "oxígeno al 90%" },

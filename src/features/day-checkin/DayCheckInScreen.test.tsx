@@ -88,6 +88,13 @@ afterEach(() => {
 const pressed = (name: string) =>
   screen.getByRole("button", { name }).getAttribute("aria-pressed");
 
+/** La imagen de Lunito (sin WebGL): la de saludo es la del festejo. */
+const lunitoImage = () =>
+  screen
+    .getByRole("img", { name: "Lunito" })
+    .querySelector("img")!
+    .getAttribute("src");
+
 /** Escribe la respuesta, elige ánimo y estrés y guarda la bitácora. */
 function saveByWriting(text = "Dormí bien") {
   fireEvent.click(screen.getByRole("button", { name: "Escribir respuesta" }));
@@ -276,7 +283,7 @@ test("en Bien, el resultado propone las acciones del día que siguen pendientes"
   expect(screen.getByText("Respiración guiada · 5 min")).toBeDefined();
 });
 
-test("'Ahora no' pospone antes de guardar y termina después de guardar", () => {
+test("'Ahora no' pospone antes de guardar; después, la salida dice que termina y va a Inicio", () => {
   const onSkip = vi.fn();
   const onDone = vi.fn();
   render(<DayCheckInScreen onDone={onDone} onSkip={onSkip} />);
@@ -285,7 +292,62 @@ test("'Ahora no' pospone antes de guardar y termina después de guardar", () => 
   expect(onDone).not.toHaveBeenCalled();
 
   saveByWriting();
-  fireEvent.click(screen.getByRole("button", { name: "Ahora no" }));
+  expect(screen.queryByRole("button", { name: "Ahora no" })).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Ir a Inicio" }));
   expect(onDone).toHaveBeenCalledOnce();
   expect(onSkip).toHaveBeenCalledOnce();
+});
+
+test("una emergencia en la bitácora: se ve en la hoja y en el resultado, Lunito la dice y no celebra", async () => {
+  const urgent =
+    "Eso puede ser una emergencia. Toca el botón rojo Emergencia ahora y avisa a Luis, tu oficial médico. Aquí sigo contigo.";
+  const onDone = vi.fn();
+  render(<DayCheckInScreen onDone={onDone} onSkip={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "Escribir respuesta" }));
+  fireEvent.change(screen.getByRole("textbox", { name: "Tu respuesta" }), {
+    target: { value: "No puedo respirar y me duele el pecho" },
+  });
+
+  const sheet = screen.getByRole("dialog", { name: "¿Cómo amaneciste hoy?" });
+  const warning = within(sheet).getByRole("alert");
+  expect(warning.textContent).toContain(urgent);
+  expect(
+    within(warning)
+      .getByRole("link", { name: "Abrir Emergencia" })
+      .getAttribute("href"),
+  ).toBe("/emergencia");
+
+  // La bitácora se guarda igual.
+  fireEvent.click(screen.getByRole("button", { name: "Ánimo 4 de 5: bueno" }));
+  fireEvent.click(screen.getByRole("button", { name: "Estrés 2 de 5: poco" }));
+  fireEvent.click(screen.getByRole("button", { name: "Listo" }));
+  const saved = JSON.parse(localStorage.getItem("nostos.voice-log")!);
+  expect(saved.ana.transcript).toBe("No puedo respirar y me duele el pecho");
+
+  fireEvent.click(screen.getByRole("button", { name: "Saltar el sensor" }));
+  fireEvent.click(screen.getByRole("button", { name: "Saltar la prueba" }));
+  const result = screen.getByRole("alert");
+  expect(result.textContent).toContain(urgent);
+  expect(
+    within(result)
+      .getByRole("link", { name: "Abrir Emergencia" })
+      .getAttribute("href"),
+  ).toBe("/emergencia");
+  expect(voiceOut.say).toHaveBeenLastCalledWith(urgent);
+
+  // Termina de decirlo y no celebra, tampoco al salir.
+  await act(async () => {});
+  expect(lunitoImage()).not.toMatch(/saludo/);
+  fireEvent.click(screen.getByRole("button", { name: "Ir a Inicio" }));
+  expect(lunitoImage()).not.toMatch(/saludo/);
+});
+
+test("en Bien, al terminar de decir el resultado Lunito celebra", async () => {
+  render(<DayCheckInScreen onDone={vi.fn()} onSkip={vi.fn()} />);
+  saveByWriting();
+  fireEvent.click(screen.getByRole("button", { name: "Saltar el sensor" }));
+  fireEvent.click(screen.getByRole("button", { name: "Saltar la prueba" }));
+  expect(screen.queryByRole("alert")).toBeNull();
+  await act(async () => {});
+  expect(lunitoImage()).toMatch(/saludo/);
 });

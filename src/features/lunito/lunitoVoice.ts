@@ -174,19 +174,33 @@ function playFromBrowser(
   utterance.lang = LOCALE_TAG[locale];
   const voice = pickVoice(synth.getVoices(), locale);
   if (voice) utterance.voice = voice;
+  const duration = Math.max(1, text.length / BROWSER_SPEED);
 
   return new Promise<void>((resolve) => {
+    let guard = 0;
     const end = () => {
+      window.clearTimeout(guard);
       finish(id);
       resolve();
     };
+    // Seguro: algunas voces (las "Google" de red en Chrome) cortan las frases
+    // largas sin avisar "end", y Chrome puede descartar un speak() lanzado
+    // justo después de cancel(). Si tarda bastante más de lo esperado, la
+    // frase se da por terminada: la boca y "Lunito está hablando" no se pegan.
+    guard = window.setTimeout(
+      () => {
+        if (id === turn) synth.cancel();
+        end();
+      },
+      (duration * 1.5 + 2) * 1000,
+    );
     utterance.addEventListener("start", () => {
       // Ya le pidieron callar o decir otra cosa antes de empezar.
       if (id !== turn) return synth.cancel();
       speech = {
         id,
         timeline: timelineOf(text, locale),
-        duration: Math.max(1, text.length / BROWSER_SPEED),
+        duration,
         startedAt: seconds(),
         now: seconds,
         // Sin acceso al audio: un vaivén parejo en lugar del volumen real.

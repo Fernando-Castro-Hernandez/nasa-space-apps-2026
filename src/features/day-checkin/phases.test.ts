@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  celebrates,
   nextPhase,
   PHASE_VIEW,
   resultPose,
@@ -133,5 +134,16 @@ describe("resultPose", () => {
     expect(resultPose("ambar", false)).toBe("caring");
     expect(resultPose("rojo", false)).toBe("caring");
     expect(resultPose("rojo", true)).toBe("caring");
+  });
+
+  test("si la bitácora habla de una emergencia, cuida y no celebra en ningún estado", () => {
+    for (const status of ["verde", "ambar", "rojo"] as const) {
+      expect(resultPose(status, false, true)).toBe("caring");
+      expect(resultPose(status, true, true)).toBe("caring");
+      expect(celebrates(status, true)).toBe(false);
+    }
+    expect(celebrates("verde", false)).toBe(true);
+    expect(celebrates("ambar", false)).toBe(true);
+    expect(celebrates("rojo", false)).toBe(false);
   });
 });

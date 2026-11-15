@@ -10,6 +10,9 @@ const store = persistedStore<string>("nostos.profile", resolveProfile, String);
 
 export const useActiveProfile = store.use;
 
+/** El perfil activo, fuera de un componente. */
+export const activeProfile = store.get;
+
 export function setActiveProfile(id: string) {
   if (CREW.some((c) => c.id === id)) store.set(id);
 }

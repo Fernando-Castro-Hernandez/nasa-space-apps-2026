@@ -8,7 +8,7 @@
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef, type KeyboardEvent } from "react";
 import { LIMITS } from "@/api/contract";
-import { EmergencyLink } from "@/components/emergency-access";
+import { EmergencyLink, EmergencyNotice } from "@/components/emergency-access";
 import { t } from "@/i18n";
 import { FieldsEditor } from "./FieldsEditor";
 import type { VoiceLogState } from "./useVoiceLog";
@@ -18,6 +18,9 @@ type Props = {
   log: VoiceLogState;
   /** "Esto entendí" tras hablar; la pregunta del día al escribir. */
   title: string;
+  /** Si el texto habla de una emergencia, lo que dice Lunito (con el acceso
+   *  a Emergencia). La bitácora se puede guardar igual. */
+  emergency?: string | null;
   onClose: () => void;
 };
 
@@ -39,7 +42,7 @@ function trapTab(event: KeyboardEvent<HTMLDialogElement>) {
   }
 }
 
-export function VoiceLogSheet({ log, title, onClose }: Props) {
+export function VoiceLogSheet({ log, title, emergency, onClose }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const field = useRef<HTMLTextAreaElement>(null);
@@ -109,6 +112,8 @@ export function VoiceLogSheet({ log, title, onClose }: Props) {
                 className="voice-sheet-text"
               />
             </label>
+
+            {emergency && <EmergencyNotice line={emergency} />}
 
             {(log.stale || log.organizing === "failed") &&
               hasText &&

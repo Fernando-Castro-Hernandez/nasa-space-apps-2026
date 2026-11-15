@@ -1,6 +1,6 @@
 // Junta lo que el resultado del check-in necesita: la lectura del día (la misma
-// de Inicio), las acciones del día que siguen pendientes y quién es el oficial
-// médico. El cálculo está en `checkInResult`.
+// de Inicio), las acciones del día que siguen pendientes, quién es el oficial
+// médico y lo que dijo la persona. El cálculo está en `checkInResult`.
 import { DAY_ACTIONS } from "@/data/actions";
 import { CREW, MISSION } from "@/data/crew";
 import type { LunitoDashboard } from "@/data/lunitoDashboard";
@@ -8,7 +8,11 @@ import { useDailyActions } from "@/features/medicine/actionStore";
 import { t, useLocale } from "@/i18n";
 import { checkInResult, type CheckInResult } from "./result";
 
-export function useCheckInResult(day: LunitoDashboard): CheckInResult {
+export function useCheckInResult(
+  day: LunitoDashboard,
+  /** El texto de la bitácora: si habla de una emergencia, manda esa regla. */
+  transcript: string,
+): CheckInResult {
   const locale = useLocale();
   const actions = useDailyActions();
   const cmoName =
@@ -26,5 +30,6 @@ export function useCheckInResult(day: LunitoDashboard): CheckInResult {
       cmoName,
     },
     locale,
+    transcript,
   );
 }

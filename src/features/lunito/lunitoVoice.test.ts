@@ -65,8 +65,9 @@ test("useLunitoActivity se actualiza cuando Lunito empieza a pensar", () => {
   expect(result.current).toBe("idle");
 });
 
-/** Voz del navegador de mentira: jsdom no tiene `speechSynthesis`. */
-function fakeBrowserVoice() {
+/** Voz del navegador de mentira: jsdom no tiene `speechSynthesis`. Con
+ *  `starts: false`, el navegador descarta la frase sin avisar. */
+function fakeBrowserVoice({ starts = true } = {}) {
   class Utterance extends EventTarget {
     lang = "";
     voice: unknown = null;
@@ -83,7 +84,7 @@ function fakeBrowserVoice() {
       cancel: () => {},
       speak: (utterance: Utterance) => {
         spoken.push(utterance);
-        utterance.dispatchEvent(new Event("start"));
+        if (starts) utterance.dispatchEvent(new Event("start"));
       },
     },
   });
@@ -104,6 +105,44 @@ test("sin Worker, Lunito habla en inglés con la voz del navegador y lo dice en 
   spoken[0]!.dispatchEvent(new Event("end"));
   await done;
   expect(lunitoVoice.activity()).toBe("thinking");
+});
+
+test("si la voz del navegador nunca avisa que terminó, Lunito deja de hablar solo", async () => {
+  vi.useFakeTimers();
+  try {
+    const spoken = fakeBrowserVoice();
+    // 28 caracteres: unos 2 s a 14 c/s; el seguro salta a 2 × 1.5 + 2 = 5 s.
+    let finished = false;
+    void lunitoVoice.say("Hola, Ana. ¿Cómo amaneciste?").then(() => {
+      finished = true;
+    });
+    await vi.waitFor(() => expect(spoken).toHaveLength(1));
+    expect(lunitoVoice.activity()).toBe("speaking");
+
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(finished).toBe(false);
+    await vi.advanceTimersByTimeAsync(1100);
+    expect(finished).toBe(true);
+    expect(lunitoVoice.activity()).toBe("idle");
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test("si el navegador descarta la frase y ni siquiera empieza, tampoco se queda esperando", async () => {
+  vi.useFakeTimers();
+  try {
+    fakeBrowserVoice({ starts: false });
+    let finished = false;
+    void lunitoVoice.say("Hola, Ana.").then(() => {
+      finished = true;
+    });
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(finished).toBe(true);
+    expect(lunitoVoice.activity()).toBe("idle");
+  } finally {
+    vi.useRealTimers();
+  }
 });
 
 test("en español, la voz del navegador sigue siendo la de México", async () => {

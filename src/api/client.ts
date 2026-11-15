@@ -27,6 +27,13 @@ export class ApiError extends Error {
   }
 }
 
+let healthCheck: Promise<boolean> | undefined;
+const RECHECK_MS = 30_000;
+
+/** Un "no" se vuelve a preguntar a los 30 s, por si solo fue un momento. */
+const recheckLater = () =>
+  setTimeout(() => (healthCheck = undefined), RECHECK_MS);
+
 async function call(
   path: string,
   init: RequestInit,
@@ -43,6 +50,12 @@ async function call(
     throw new ApiError(0, "Sin conexión con el servidor");
   }
   const type = response.headers.get("content-type") ?? "";
+  // 429: el Worker llegó a su límite de uso. Hasta volver a preguntar, la IA
+  // cuenta como no disponible y cada quien usa su respaldo sin ir a la red.
+  if (response.status === 429) {
+    healthCheck = Promise.resolve(false);
+    recheckLater();
+  }
   if (!response.ok) {
     const body = type.includes("json")
       ? ((await response.json().catch(() => null)) as ApiErrorBody | null)
@@ -61,9 +74,6 @@ const postJson = (body: unknown): RequestInit => ({
   body: JSON.stringify(body),
 });
 
-let healthCheck: Promise<boolean> | undefined;
-const RECHECK_MS = 30_000;
-
 /** Sin IA no vale la pena ni preguntar: quien llama pasa a su respaldo. */
 async function requireAi() {
   if (!(await api.aiAvailable()))
@@ -71,14 +81,15 @@ async function requireAi() {
 }
 
 export const api = {
-  /** ¿Hay Worker con IA? Un "sí" vale toda la sesión; un "no" se vuelve a
-   *  preguntar a los 30 s, por si solo fue un corte de red. */
+  /** ¿Hay Worker con IA? Un "sí" vale toda la sesión, salvo que el Worker
+   *  responda 429; un "no" se vuelve a preguntar a los 30 s, por si solo fue
+   *  un corte de red o el límite de uso. */
   aiAvailable(): Promise<boolean> {
     healthCheck ??= call("/api/health", {}, 4000, "json")
       .then(async (r) => ((await r.json()) as HealthResponse).ai)
       .catch(() => false)
       .then((ok) => {
-        if (!ok) setTimeout(() => (healthCheck = undefined), RECHECK_MS);
+        if (!ok) recheckLater();
         return ok;
       });
     return healthCheck;

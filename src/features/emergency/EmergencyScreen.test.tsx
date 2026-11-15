@@ -8,11 +8,11 @@ import {
 } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { setLocale } from "@/i18n";
-import { dictationSample, openCase } from "./caseLogic";
+import { closeCase, openCase } from "./caseLogic";
 import { saveCase } from "./caseStore";
 import { EmergencyScreen } from "./EmergencyScreen";
 
-// jsdom no tiene micrófono ni Worker: el dictado usa la nota de muestra.
+// jsdom no tiene micrófono, dictado ni Worker: la nota se escribe.
 vi.mock("@/api/client", async (original) => {
   const actual = await original<typeof import("@/api/client")>();
   return {
@@ -92,18 +92,25 @@ test("al llegar a cero, la cuenta regresiva dice qué hacer", () => {
   ).toBeDefined();
 });
 
-test("dictar es un toque para empezar y otro para guardar", async () => {
+test("sin motor de voz la nota se escribe: el campo aparece directo y nada se inventa", async () => {
   openLuisCase();
   // Espera a saber que no hay motor de voz.
   await act(async () => {});
 
-  fireEvent.click(button("Dictar nota"));
-  expect(button("Escuchando… toca para guardar")).toBeDefined();
-  fireEvent.click(button("Escuchando… toca para guardar"));
+  expect(screen.queryByRole("button", { name: "Dictar nota" })).toBeNull();
+  const note = screen.getByRole("textbox", {
+    name: "Nota para el registro del caso",
+  });
+  expect(button("Guardar").hasAttribute("disabled")).toBe(true);
+  fireEvent.change(note, { target: { value: "Le di oxígeno" } });
+  fireEvent.click(button("Guardar"));
 
   const log = screen.getByRole("list", { name: "Registro del caso" });
-  expect(within(log).getByText(`“${dictationSample(0)}”`)).toBeDefined();
-  expect(button("Dictar nota")).toBeDefined();
+  expect(within(log).getByText("“Le di oxígeno”")).toBeDefined();
+  const notes = storedCase().events.filter(
+    (e: { kind: string }) => e.kind === "note",
+  );
+  expect(notes).toHaveLength(1);
 });
 
 test("cerrar pide confirmación y, ya cerrado, el contador se detiene", () => {
@@ -127,15 +134,53 @@ test("cerrar pide confirmación y, ya cerrado, el contador se detiene", () => {
   expect(button("Nuevo caso")).toBeDefined();
 });
 
-test("un caso abierto en español se lee en inglés", () => {
+test("con el caso guardado ya cerrado, Emergencia abre un caso nuevo y deja ver el último", () => {
+  const opened = new Date(2026, 10, 15, 9, 0).getTime();
+  saveCase(
+    closeCase(
+      openCase("luis", "Luis", "fainted", opened),
+      opened + 20 * 60_000,
+    ),
+  );
+  render(<EmergencyScreen />);
+
+  // Lo primero es el formulario de un caso nuevo.
+  expect(openButton().textContent).toBe("Elige a la persona y qué pasó");
+  expect(screen.queryByText(/^Caso cerrado/)).toBeNull();
+
+  // El caso cerrado sigue a un toque, como constancia.
+  fireEvent.click(button("Ver el último caso · Luis, cerrado a las 09:20"));
+  expect(
+    screen.getByRole("heading", { level: 2, name: "Luis · Se desmayó" }),
+  ).toBeDefined();
+  expect(screen.getByText("Caso cerrado a las 09:20")).toBeDefined();
+
+  // "Nuevo caso" vuelve al formulario sin borrar el registro anterior.
+  fireEvent.click(button("Nuevo caso"));
+  expect(openButton().textContent).toBe("Elige a la persona y qué pasó");
+  expect(storedCase().closedAt).toBe(opened + 20 * 60_000);
+
+  fireEvent.click(button(/^Ana/));
+  fireEvent.click(button("Dolor en el pecho"));
+  fireEvent.click(button("Abrir emergencia · Ana"));
+  expect(
+    screen.getByRole("heading", { level: 2, name: "Ana · Dolor en el pecho" }),
+  ).toBeDefined();
+  expect(storedCase().closedAt).toBeUndefined();
+});
+
+test("un caso abierto en español se lee en inglés", async () => {
   openLuisCase();
   cleanup();
   setLocale("en");
   render(<EmergencyScreen />);
+  await act(async () => {});
 
   expect(
     screen.getByRole("heading", { level: 2, name: "Luis · Fainted" }),
   ).toBeDefined();
   expect(screen.getByText("Case opened: Luis · Fainted")).toBeDefined();
-  expect(button("Dictate a note")).toBeDefined();
+  expect(
+    screen.getByRole("textbox", { name: "Note for the case log" }),
+  ).toBeDefined();
 });

@@ -89,6 +89,8 @@ export const medicine = {
     selfCare: "You can take care of this yourself",
     cmo: "Tell the crew medical officer",
     surgeon: "Contact the flight surgeon",
+    // El botón bajo "Contact the flight surgeon": dice a dónde lleva.
+    toEmergency: "Go to Emergency",
     noLinkSource:
       "SNNOOP10, Do et al., Neurology 2019. Without communication, the crew medical officer acts without the flight surgeon (NTRS 20100016333).",
     co2: "Cabin CO₂ is high: check the ventilation first.",

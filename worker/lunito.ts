@@ -195,7 +195,13 @@ export async function lunitoReply(
   ai: Ai | undefined,
   { message, context, history = [], locale }: LunitoReplyRequest,
 ): Promise<LunitoReplyResponse> {
-  if (detectEmergency(message)) return emergencyReply(context, locale);
+  // El historial lo manda el cliente: una emergencia dicha antes tampoco
+  // llega al modelo, aunque el cliente la haya reenviado.
+  const said = [
+    message,
+    ...history.filter((t) => t.role === "user").map((t) => t.text),
+  ];
+  if (said.some(detectEmergency)) return emergencyReply(context, locale);
   if (!ai) return fallbackReply(context, locale);
 
   const messages: ChatMessage[] = [

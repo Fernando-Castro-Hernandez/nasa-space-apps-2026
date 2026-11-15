@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { setActiveProfile } from "@/features/profiles/activeProfile";
+import { saveVoiceLog } from "@/features/voice/voiceLogStore";
 import {
   dayKey,
   dayStartDue,
@@ -67,6 +69,58 @@ test("la posposición vale solo para el día en que se pidió", () => {
   snoozeDayStart();
   vi.setSystemTime(new Date(2026, 10, 16, 8));
   expect(dayStartDue()).toBe(true);
+});
+
+const fields = {
+  sleepHours: 7,
+  sleepQuality: "buena" as const,
+  mood: 4,
+  stress: 2,
+  symptoms: [],
+};
+
+test("terminar el check-in es de cada perfil: Luis tiene el suyo aunque Ana ya hizo el de ella", () => {
+  finishDayStart("ana");
+  expect(needsDayStart("ana")).toBe(false);
+  expect(needsDayStart("luis")).toBe(true);
+  expect(dayStartDue("luis")).toBe(true);
+});
+
+test("sin argumento, cuenta el perfil activo", () => {
+  setActiveProfile("mei");
+  finishDayStart();
+  expect(needsDayStart("mei")).toBe(false);
+  expect(needsDayStart("ana")).toBe(true);
+  setActiveProfile("ana");
+  expect(dayStartDue()).toBe(true);
+});
+
+test("con la bitácora de hoy guardada ya no está pendiente, aunque no se haya terminado", () => {
+  saveVoiceLog("ana", { transcript: "Dormí bien", fields });
+  expect(dayStartDue("ana")).toBe(false);
+  expect(dayStartDue("luis")).toBe(true);
+  // La bitácora de ayer no cuenta.
+  vi.setSystemTime(new Date(2026, 10, 16, 8));
+  expect(dayStartDue("ana")).toBe(true);
+});
+
+test("posponer también es de cada perfil", () => {
+  snoozeDayStart("ana");
+  expect(isDayStartSnoozed("ana")).toBe(true);
+  expect(isDayStartSnoozed("luis")).toBe(false);
+  expect(dayStartDue("luis")).toBe(true);
+});
+
+test("el formato viejo (una fecha suelta) vale como terminado hoy en este dispositivo", () => {
+  localStorage.setItem("nostos.day-start", dayKey());
+  for (const profile of ["ana", "luis", "mei", "omar"])
+    expect(needsDayStart(profile)).toBe(false);
+  // Al guardar con el formato nuevo no se pierde lo que ya decía el viejo.
+  finishDayStart("ana");
+  expect(needsDayStart("luis")).toBe(false);
+  // Una fecha vieja de otro día no cuenta.
+  localStorage.setItem("nostos.day-start", "2026-11-14");
+  expect(needsDayStart("ana")).toBe(true);
 });
 
 test("el reinicio de la demo olvida el check-in y su posposición", () => {

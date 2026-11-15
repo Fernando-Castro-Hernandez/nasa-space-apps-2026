@@ -9,12 +9,16 @@
 //
 // Las rutas de IA reciben el idioma de la persona (`locale`, "en" o "es"; en
 // transcribe, `?locale=`). Si no viene, responden en inglés.
+//
+// Las rutas de IA gastan la cuota diaria de Workers AI: solo responden a la
+// app (no a otras webs) y con un límite de uso por IP (`guardAi`).
 import {
   LIMITS,
   type ExtractResponse,
   type HealthResponse,
   type TranscribeResponse,
 } from "../src/api/contract";
+import { isUnsafe } from "../src/api/lunitoRules";
 import { audioType, extractFields, requireAi, speak, transcribe } from "./ai";
 import type { Env } from "./env";
 import {
@@ -67,6 +71,9 @@ const ROUTES: Record<string, Handler> = {
     const body = await readJson(request);
     const text = requireText(body.text, "text", LIMITS.speakChars);
     const locale = parseLocale(body.locale);
+    // La voz de Lunito no dice lo que Lunito no puede escribir.
+    if (isUnsafe(text))
+      throw new HttpError(422, "Lunito no puede decir ese texto");
     const audio = await speak(ai, text, locale, env.TTS_MODEL, env.TTS_SPEAKER);
     return new Response(audio, {
       headers: {
@@ -77,9 +84,31 @@ const ROUTES: Record<string, Handler> = {
   },
 };
 
+/** Todas las rutas menos health usan la IA (reply, también sin ella). */
+const usesAi = (route: string) => route !== "GET /api/health";
+
+/**
+ * Antes de gastar IA: el navegador marca `Sec-Fetch-Site: cross-site` cuando
+ * otra web llama a la API (la app es same-origin; curl no manda la cabecera,
+ * para eso está el límite). Después, el límite de uso por IP, si el binding
+ * está configurado: sin él, o si falla, la app sigue funcionando.
+ */
+async function guardAi(request: Request, env: Env) {
+  if (request.headers.get("sec-fetch-site") === "cross-site")
+    throw new HttpError(403, "Esta API solo responde a la app");
+  const key = request.headers.get("cf-connecting-ip") ?? "local";
+  const allowed = await env.AI_RATE_LIMIT?.limit({ key }).catch((error) => {
+    console.warn("No se pudo consultar el límite de uso", error);
+    return { success: true };
+  });
+  if (allowed && !allowed.success)
+    throw new HttpError(429, "Demasiadas peticiones a la IA: espera un minuto");
+}
+
 async function handleApi(request: Request, env: Env): Promise<Response> {
   const { pathname } = new URL(request.url);
-  const handler = ROUTES[`${request.method} ${pathname}`];
+  const route = `${request.method} ${pathname}`;
+  const handler = ROUTES[route];
   if (!handler) {
     const known = Object.keys(ROUTES).some((r) => r.endsWith(` ${pathname}`));
     return known
@@ -87,6 +116,7 @@ async function handleApi(request: Request, env: Env): Promise<Response> {
       : errorResponse(404, "Esa ruta de la API no existe");
   }
   try {
+    if (usesAi(route)) await guardAi(request, env);
     return await handler(request, env);
   } catch (error) {
     if (error instanceof HttpError)

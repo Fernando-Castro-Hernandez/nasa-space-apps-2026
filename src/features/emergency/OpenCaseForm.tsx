@@ -1,13 +1,21 @@
 // Primer paso de la emergencia: a quién le pasa y qué pasó. Un toque por
 // respuesta; el sensor no detecta un desmayo, siempre lo dispara una persona.
 // Con /emergencia?quien=<id> esa persona llega elegida. Cancelar no abre nada.
+// Si el último caso ya se cerró, queda a un toque al final, como constancia.
 import { Check, Siren } from "lucide-react";
 import { useState } from "react";
+import { casePersonName } from "@/app/activeCase";
 import { navigate } from "@/app/router";
 import { CREW } from "@/data/crew";
 import { t } from "@/i18n";
-import { openCase, WHAT_HAPPENED, type WhatCode } from "./caseLogic";
+import {
+  type EmergencyCase,
+  openCase,
+  WHAT_HAPPENED,
+  type WhatCode,
+} from "./caseLogic";
 import { saveCase } from "./caseStore";
+import { formatTime } from "./link";
 import { presetPerson } from "./preset";
 
 const CREW_IDS = CREW.map((c) => c.id);
@@ -32,7 +40,13 @@ function cancel() {
   else navigate("/");
 }
 
-export function OpenCaseForm() {
+type Props = {
+  /** El caso guardado: si ya se cerró, se ofrece verlo. */
+  last?: EmergencyCase | null;
+  onShowLast?: () => void;
+};
+
+export function OpenCaseForm({ last, onShowLast }: Props) {
   const [personId, setPersonId] = useState(() =>
     presetPerson(window.location.search, CREW_IDS),
   );
@@ -95,6 +109,19 @@ export function OpenCaseForm() {
             ))}
           </div>
         </section>
+
+        {last?.closedAt !== undefined && onShowLast && (
+          <button
+            type="button"
+            onClick={onShowLast}
+            className="em-last-case em-tap"
+          >
+            {t("emergency.form.lastCase", {
+              name: casePersonName(last),
+              time: formatTime(last.closedAt),
+            })}
+          </button>
+        )}
       </div>
 
       <div className="em-actions">

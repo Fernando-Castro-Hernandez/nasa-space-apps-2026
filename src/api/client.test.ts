@@ -89,3 +89,34 @@ test("si la persona cambia a español, las peticiones siguientes van en español
   for (const call of calls.slice(1))
     expect((call.body as { locale: string }).locale).toBe("es");
 });
+
+// Va al final: deja la IA "no disponible" hasta que pasa el tiempo de espera.
+test("un 429 (límite de uso) cuenta como IA no disponible por ahora: se usan los respaldos", async () => {
+  vi.useFakeTimers();
+  try {
+    const fetchMock = vi.fn(async (url: string) =>
+      url.startsWith("/api/voice/extract")
+        ? new Response(JSON.stringify({ error: "Demasiadas peticiones" }), {
+            status: 429,
+            headers: { "content-type": "application/json" },
+          })
+        : respond(url),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(api.extract("dormí mal")).rejects.toMatchObject({
+      status: 429,
+    });
+
+    // Lo siguiente ni sale a la red: quien llama pasa directo a su respaldo.
+    fetchMock.mockClear();
+    expect(await api.aiAvailable()).toBe(false);
+    await expect(api.speak("Hola")).rejects.toMatchObject({ status: 503 });
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    // A los 30 s vuelve a preguntar.
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(await api.aiAvailable()).toBe(true);
+  } finally {
+    vi.useRealTimers();
+  }
+});

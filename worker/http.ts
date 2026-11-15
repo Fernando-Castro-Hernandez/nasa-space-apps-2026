@@ -28,16 +28,38 @@ export const errorResponse = (status: number, message: string) =>
 /** Bytes con su propio búfer: sirven como cuerpo de una respuesta. */
 export type Bytes = Uint8Array<ArrayBuffer>;
 
-/** Lee el cuerpo sin pasar de `maxBytes`; no confía solo en Content-Length. */
+const tooBig = () => new HttpError(413, "El archivo es muy grande");
+
+/**
+ * Lee el cuerpo sin pasar de `maxBytes`. No confía en Content-Length: lee por
+ * trozos y corta en cuanto se pasa, sin leer (ni guardar) el resto.
+ */
 export async function readBytes(
   request: Request,
   maxBytes: number,
 ): Promise<Bytes> {
   const declared = Number(request.headers.get("content-length") ?? 0);
-  if (declared > maxBytes) throw new HttpError(413, "El archivo es muy grande");
-  const bytes = new Uint8Array(await request.arrayBuffer());
-  if (bytes.byteLength > maxBytes)
-    throw new HttpError(413, "El archivo es muy grande");
+  if (declared > maxBytes) throw tooBig();
+  if (!request.body) return new Uint8Array(0);
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > maxBytes) {
+      reader.cancel().catch(() => {});
+      throw tooBig();
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
   return bytes;
 }
 

@@ -35,7 +35,7 @@ export function HeadacheResult({ r }: { r: Result }) {
         ))}
         {r.level === "rojo" && (
           <>
-            <UrgentLink label={t("medicine.result.surgeon")} />
+            <UrgentLink label={t("medicine.result.toEmergency")} />
             <Source>{t("medicine.result.noLinkSource")}</Source>
           </>
         )}

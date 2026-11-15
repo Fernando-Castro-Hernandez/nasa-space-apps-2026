@@ -88,8 +88,9 @@ export type HealthResponse = { ok: true; ai: boolean };
 export type ApiErrorBody = { error: string };
 
 export const LIMITS = {
-  /** 30 s de audio comprimido caben de sobra. */
-  audioBytes: 2_000_000,
+  /** La app graba 30 s a 32 kbps (≈120 KB). Más que esto no es la app y
+   *  solo gastaría cuota de IA. */
+  audioBytes: 600_000,
   /** Transcripción de la bitácora. */
   textChars: 2000,
   /** Mensaje para Lunito. */

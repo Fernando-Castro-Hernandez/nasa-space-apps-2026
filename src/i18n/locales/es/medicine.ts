@@ -89,6 +89,7 @@ export const medicine: Messages<typeof source> = {
     selfCare: "Puedes cuidarte tú",
     cmo: "Avisa al oficial médico",
     surgeon: "Contacta al cirujano de vuelo",
+    toEmergency: "Ir a Emergencia",
     noLinkSource:
       "SNNOOP10, Do et al., Neurology 2019. Sin comunicación, el oficial médico actúa sin el cirujano (NTRS 20100016333).",
     co2: "El CO2 de la cabina está alto: revisa primero la ventilación.",

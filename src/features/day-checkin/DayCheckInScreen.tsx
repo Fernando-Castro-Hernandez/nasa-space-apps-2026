@@ -3,7 +3,11 @@
 // navegador), piensa, muestra "Esto entendí" para corregir y guardar la
 // bitácora, ofrece el sensor y la prueba de reacción (opcionales) y dice el
 // resultado del día: el mismo que muestra Inicio. Si algo falla, se escribe y
-// se termina igual. "Ahora no" sale en cualquier momento.
+// se termina igual. "Ahora no" sale en cualquier momento; con la bitácora ya
+// guardada, la salida termina el check-in y va a Inicio.
+// Si lo que dice la persona suena a emergencia, manda la misma regla que en la
+// conversación con Lunito: la hoja y el resultado lo muestran con el acceso a
+// Emergencia, Lunito lo dice y no celebra. La bitácora se guarda igual.
 import { Check, ChevronLeft, Keyboard, Mic } from "lucide-react";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { ActiveCaseBanner, EmergencyLink } from "@/components/emergency-access";
@@ -23,6 +27,7 @@ import { VoiceLogSheet } from "@/features/voice/VoiceLogSheet";
 import { t } from "@/i18n";
 import "@/features/lunito-home/reference.css";
 import {
+  celebrates,
   DONE_MS,
   GREETING_MS,
   nextPhase,
@@ -60,7 +65,8 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   const log = useVoiceLog({ onConfirm: () => send("confirm") });
   const { voice } = log;
   const day = useLunitoDashboard();
-  const result = useCheckInResult(day);
+  const result = useCheckInResult(day, log.transcript);
+  const urgent = result.emergency !== null;
 
   // Lunito saluda en voz alta. Antes del primer toque el navegador puede no
   // dejarlo sonar; el saludo ya está escrito en pantalla.
@@ -132,18 +138,18 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
   };
 
   const goHome = () => {
-    if (result.status !== "rojo") lunito.current?.play("cheer");
+    if (celebrates(result.status, urgent)) lunito.current?.play("cheer");
     setLeaving(true);
   };
 
   // Con la bitácora guardada, salir ya no pospone nada: el check-in está hecho.
-  const exit =
-    phase === "resultado" ? undefined : log.phase === "saved" ? onDone : onSkip;
+  const saved = log.phase === "saved";
+  const exit = phase === "resultado" ? undefined : saved ? onDone : onSkip;
   const talking = TALKING.includes(phase) || phase === "revisar";
   const view = PHASE_VIEW[phase];
   const pose =
     phase === "resultado"
-      ? resultPose(result.status, spoken || leaving)
+      ? resultPose(result.status, spoken || leaving, urgent)
       : view.pose;
   const question = t("dayCheckin.question.title");
 
@@ -154,7 +160,7 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
           {exit ? (
             <button type="button" className="reference-back" onClick={exit}>
               <ChevronLeft aria-hidden="true" />
-              {t("dayCheckin.notNow")}
+              {saved ? t("dayCheckin.finish") : t("dayCheckin.notNow")}
             </button>
           ) : (
             <span />
@@ -292,6 +298,7 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
         <VoiceLogSheet
           log={log}
           title={answer === "voice" ? t("voiceUi.sheet.heard") : question}
+          emergency={result.emergency}
           onClose={() => send("close")}
         />
       )}

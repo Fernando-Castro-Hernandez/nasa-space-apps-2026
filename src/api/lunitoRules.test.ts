@@ -218,6 +218,164 @@ test("en inglés, la emergencia y el respaldo también salen del diccionario", (
   );
 });
 
+// ---------- Tablas: emergencia (A1, B1) ----------
+
+// Las formas naturales de las cinco situaciones de "¿Qué pasó?" y las que
+// nadie dudaría en llamar emergencia, en los dos idiomas.
+const EMERGENCIES = [
+  // Se desmayó / inconsciencia
+  "me voy a desmayar",
+  "Luis perdió el conocimiento",
+  "Mei está inconsciente",
+  "Omar no despierta",
+  "I'm going to pass out",
+  "I think I'm going to faint",
+  "I feel faint",
+  "she collapsed",
+  "he's unconscious",
+  "Ana lost consciousness",
+  // Dolor de pecho
+  "tengo dolor de pecho",
+  "me duele mucho el pecho",
+  "opresión en el pecho",
+  "el pecho me duele",
+  "I have chest pains",
+  "chest pains since this morning",
+  "my chest is hurting",
+  "tightness in my chest",
+  // Le cuesta respirar
+  "me falta el aire",
+  "le falta aire",
+  "me ahogo",
+  "i cant breathe",
+  "I can't breathe",
+  "I'm short of breath",
+  "she can't catch her breath",
+  "he's struggling to breathe",
+  // Golpe fuerte
+  "me golpeé la cabeza",
+  "se golpeó fuerte",
+  "se pegó en la cabeza",
+  "un golpe en la cabeza",
+  "I bumped my head really hard",
+  "she banged her head",
+  // Infarto
+  "creo que es un infarto",
+  "es un ataque al corazón",
+  "I think I'm having a heart attack",
+  // Convulsión
+  "Omar tiene una convulsión",
+  "está convulsionando",
+  "Luis is having a seizure",
+  // Sangrado abundante
+  "estoy sangrando mucho",
+  "no para de sangrar",
+  "hay mucha sangre",
+  "I'm bleeding a lot",
+  "he's bleeding heavily",
+  "heavy bleeding from the arm",
+  "it won't stop bleeding",
+  // Atragantamiento
+  "se está atragantando",
+  "me atraganté con la comida",
+  "he's choking",
+];
+
+test.each(EMERGENCIES)("es emergencia: %s", (message) => {
+  expect(detectEmergency(message)).toBe(true);
+});
+
+// Plática normal, aunque use palabras parecidas: no manda a Emergencia.
+const NOT_EMERGENCIES = [
+  "I feel a little faint-hearted about the EVA",
+  "I had a faint headache this morning",
+  "I'm reading a book about choking hazards",
+  // La congestión es un síntoma de la bitácora, no una emergencia.
+  "I can't breathe through my nose",
+  "no puedo respirar por la nariz",
+  "me siento un poco mareado",
+  "me sangró un poco la nariz",
+  "I'm bleeding a little from a paper cut",
+  "my chest feels fine today",
+  "I'm out of breath after the workout",
+  "Mei me pegó la gripe",
+  "tengo congestión y me duele la espalda",
+];
+
+test.each(NOT_EMERGENCIES)("no es emergencia: %s", (message) => {
+  expect(detectEmergency(message)).toBe(false);
+});
+
+// ---------- Tablas: filtro de respuestas (M1, B1) ----------
+
+// Diagnósticos, medicamentos y cantidades: la respuesta de la IA se descarta.
+const UNSAFE_REPLIES = [
+  "Puede que tengas una infección leve.",
+  "Tienes fiebre, descansa un poco.",
+  "Parece una migraña. ¿Quieres abrir el Botiquín?",
+  "Tal vez sea deshidratación.",
+  "Seguro tienes gripe.",
+  "Podrías tener una infección.",
+  "Probablemente tengas ansiedad.",
+  "Es una conmoción, avísale a Mei.",
+  "Podrías tomar una pastilla para dormir.",
+  "Toma dos pastillas de prometazina.",
+  "Toma 2 aspirinas.",
+  "Toma dos aspirinas.",
+  "La escopolamina ayuda con el mareo.",
+  "La meclizina te puede ayudar.",
+  "Un medicamento para el mareo te vendría bien.",
+  "Try some dramamina.",
+  "That sounds like a migraine.",
+  "It could be a concussion, tell Mei.",
+  "It's probably dehydration.",
+  "You must have the flu.",
+  "You probably have an infection.",
+  "Take your motion sickness medicine.",
+  "You may want to take a couple of pills.",
+  "Some diphenhydramine could help you sleep.",
+];
+
+test.each(UNSAFE_REPLIES)("se descarta: %s", (text) => {
+  expect(isUnsafe(text)).toBe(true);
+  expect(cleanReply(text)).toBeNull();
+});
+
+// Lenguaje normal de Lunito, también cuando dice que no diagnostica.
+const SAFE_REPLIES = [
+  "I can't diagnose anything, but Mei can help. Want to tell her?",
+  "No puedo diagnosticar, pero Mei te puede ayudar.",
+  "This isn't a diagnosis, but Mei can take a look.",
+  "No es un diagnóstico: avísale a Mei si sigue.",
+  "I don't diagnose, but I can keep you company.",
+  "You must have had a long day, Ana. Want to do your check-in?",
+  "Sounds like you have a busy day ahead.",
+  "It could be a long day. Want to start with your check-in?",
+  "Tienes razón, Ana. ¿Hacemos tu check-in?",
+  "Parece que dormiste poco. ¿Hacemos tu check-in?",
+  "Podrías tener tu check-in listo en dos minutos.",
+  "I hear you felt a bit faint after the run.",
+];
+
+test.each(SAFE_REPLIES)("pasa: %s", (text) => {
+  expect(cleanReply(text)).toBe(text);
+});
+
+test("las frases fijas de Lunito pasan su propio filtro en los dos idiomas", () => {
+  for (const locale of ["en", "es"] as const) {
+    const lines = [
+      greeting(ana, locale),
+      stateLine({ ...ana, checkInDone: true }, locale),
+      stateLine({ ...ana, status: "rojo" }, locale),
+      stateLine({ ...ana, name: "Luis", status: "rojo" }, locale),
+      fallbackReply(ana, locale).text,
+      emergencyReply(ana, locale).text,
+      emergencyReply({ ...ana, name: "Luis" }, locale).text,
+    ];
+    for (const line of lines) expect(isUnsafe(line), line).toBe(false);
+  }
+});
+
 test("descarta dosis, medicamentos y diagnósticos en inglés", () => {
   for (const text of [
     "Take 400 mg of ibuprofen.",

@@ -32,7 +32,11 @@ export async function scrollToEnd(page: Page) {
 export const emergencyButton = (page: Page) =>
   page.getByRole("link", { name: "Emergency", exact: true });
 
-/** Elige un perfil en Settings; la app vuelve a Inicio. */
+/**
+ * Elige un perfil en Settings; la app vuelve a Inicio. El check-in de la
+ * mañana es de cada perfil: si el nuevo no lo ha hecho hoy, aparece y se
+ * pospone con "Not now".
+ */
 export async function chooseProfile(page: Page, name: string) {
   await page
     .getByRole("navigation", { name: "Main navigation" })
@@ -40,9 +44,11 @@ export async function chooseProfile(page: Page, name: string) {
     .click();
   await page.getByRole("button", { name: /^Change profile/ }).click();
   await page.getByRole("button", { name: new RegExp(`^${name}`) }).click();
-  await expect(
-    page.getByRole("heading", { name: "How you're doing today" }),
-  ).toBeVisible();
+  const home = page.getByRole("heading", { name: "How you're doing today" });
+  const notNow = page.getByRole("button", { name: "Not now" });
+  await expect(home.or(notNow)).toBeVisible();
+  if (await notNow.isVisible()) await notNow.click();
+  await expect(home).toBeVisible();
 }
 
 /** En el panel /demo, elige la lectura que muestra Inicio. */

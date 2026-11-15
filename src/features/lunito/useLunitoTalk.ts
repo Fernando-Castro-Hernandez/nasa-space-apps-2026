@@ -37,18 +37,25 @@ export function useLunitoTalk(context: LunitoContext): LunitoTalk {
   const [reply, setReply] = useState<LunitoReplyResponse | null>(null);
   const [heard, setHeard] = useState<string | null>(null);
   const [thinking, setThinking] = useState(false);
+  // Tras una emergencia, la invitación a Emergencia se queda el resto de la
+  // conversación, aunque la persona siga escribiendo.
+  const [emergency, setEmergency] = useState(false);
   const speaking = useLunitoSpeaking();
   const history = useRef<LunitoTurn[]>([]);
   const busy = useRef(false);
+  // La respuesta puede llegar con la conversación ya cerrada (se fue a
+  // Emergencia, cerró la hoja o cambió de idioma): entonces Lunito calla.
+  const alive = useRef(true);
 
   // Al salir de la pantalla Lunito deja de hablar.
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
       lunitoVoice.setThinking(false);
       lunitoVoice.stop();
-    },
-    [],
-  );
+    };
+  }, []);
 
   const locale = useLocale();
   const line = reply?.text ?? greeting(context, locale);
@@ -70,11 +77,16 @@ export function useLunitoTalk(context: LunitoContext): LunitoTalk {
           answer = await api
             .lunitoReply({ message, context, history: history.current })
             .catch(() => fallbackReply(context, locale));
-        history.current = [
-          ...history.current,
-          { role: "user" as const, text: message },
-          { role: "lunito" as const, text: answer.text },
-        ].slice(-LIMITS.historyTurns);
+        if (!alive.current) return;
+        // Un turno de emergencia nunca viaja a la IA, ni siquiera como
+        // historial del mensaje siguiente.
+        if (answer.suggest === "emergencia") setEmergency(true);
+        else
+          history.current = [
+            ...history.current,
+            { role: "user" as const, text: message },
+            { role: "lunito" as const, text: answer.text },
+          ].slice(-LIMITS.historyTurns);
         busy.current = false;
         lunitoVoice.setThinking(false);
         setThinking(false);
@@ -90,7 +102,7 @@ export function useLunitoTalk(context: LunitoContext): LunitoTalk {
   return {
     line,
     heard,
-    suggest: reply?.suggest ?? null,
+    suggest: emergency ? "emergencia" : (reply?.suggest ?? null),
     thinking,
     speaking,
     ask,

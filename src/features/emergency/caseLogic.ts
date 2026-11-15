@@ -23,8 +23,9 @@ export type CaseEvent = {
   /**
    * Datos de la frase, sin idioma. Según `kind`: open `{ name, what }`;
    * step `{ step }` (paso del protocolo) o `{ done }` (indicación de Tierra
-   * hecha); vitals `{ bpm, spo2 }`; note `{ said }` o `{ sample }` (nota de
-   * muestra); ground `{ order }`. Falta en los casos guardados antes.
+   * hecha); vitals `{ bpm, spo2 }`; note `{ said }`; ground `{ order }`.
+   * Falta en los casos guardados antes. (Las notas de muestra de versiones
+   * anteriores traen `{ sample }`: se leen como se guardaron.)
    */
   params?: Record<string, string | number>;
 };
@@ -107,13 +108,6 @@ export const PROTOCOL: ProtocolStep[] = [
 /** Lectura simulada del sensor de prototipo para la demo. */
 export const SENSOR_SAMPLE = { bpm: 58, spo2: 97 };
 
-const SAMPLES = ["eyesOpen", "dizzy", "breathing"] as const;
-
-/** Nota dictada de muestra número `n` (en orden y en ciclo), para la demo sin
- *  micrófono. */
-export const dictationSample = (n: number) =>
-  t(`emergency.log.samples.${SAMPLES[n % SAMPLES.length]!}`);
-
 /** Pulso y SpO2 de un evento de signos. Un caso guardado antes de `params`
  *  solo tiene la frase: sus dos primeros números son el pulso y la SpO2. */
 export function vitalsOf(e: CaseEvent) {
@@ -151,12 +145,9 @@ export function eventText(e: CaseEvent): string {
         : e.text;
     }
     case "note":
-      return t("emergency.log.note", {
-        text:
-          p.said === undefined
-            ? dictationSample(Number(p.sample))
-            : asText(p.said),
-      });
+      return p.said === undefined
+        ? e.text
+        : t("emergency.log.note", { text: asText(p.said) });
     case "ground":
       return t("emergency.log.groundOrder", { text: asText(p.order) });
     case "close":
@@ -213,17 +204,16 @@ export function checkStep(
   return next;
 }
 
-/** Nota dictada con hora. Sin `spoken` (demo sin micrófono) usa la siguiente
- *  nota de muestra. */
+/** Nota dictada o escrita, con hora. Es una cita de quien la dijo: una nota
+ *  vacía no se registra, y el caso nunca la inventa. */
 export function addNote(
   c: EmergencyCase,
   now: number,
-  spoken?: string,
+  said: string,
 ): EmergencyCase {
-  if (isClosed(c)) return c;
-  const said = spoken?.trim();
-  const notes = c.events.filter((e) => e.kind === "note").length;
-  return withEvent(c, now, "note", said ? { said } : { sample: notes });
+  const clean = said.trim();
+  if (!clean || isClosed(c)) return c;
+  return withEvent(c, now, "note", { said: clean });
 }
 
 export function addOrder(

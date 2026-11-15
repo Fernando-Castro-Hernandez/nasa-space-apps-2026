@@ -13,6 +13,7 @@ export const emergency: Messages<typeof source> = {
     chooseBoth: "Elige a la persona y qué pasó",
     choosePerson: "Ahora elige a la persona",
     chooseWhat: "Ahora elige qué pasó",
+    lastCase: "Ver el último caso · {name}, cerrado a las {time}",
   },
   // Opciones de "¿Qué pasó?". La clave es el código que se guarda en el caso,
   // así el caso se lee en cualquier idioma.
@@ -71,12 +72,6 @@ export const emergency: Messages<typeof source> = {
     groundOrder: "Indicación de Tierra: {text}",
     orderDone: "Hecho: {text}",
     closed: "Caso cerrado",
-    // Notas de muestra para la demo cuando no hay micrófono ni dictado.
-    samples: {
-      eyesOpen: "Abrió los ojos, responde lento",
-      dizzy: "Dice que se mareó antes de caer",
-      breathing: "Respira normal, color de piel normal",
-    },
   },
   close: {
     button: "Cerrar caso",

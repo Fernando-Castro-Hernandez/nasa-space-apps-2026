@@ -1,7 +1,9 @@
 // Cierre del check-in: el estado del día (la misma lectura que Inicio) con
 // palabra, ícono y color, 1 o 2 acciones de las reglas y el único aviso de
 // "no es un diagnóstico" del flujo. "Ir a Inicio" confirma antes de salir.
+// Si la bitácora habló de una emergencia, eso va primero, con su acceso.
 import { Check, OctagonAlert, TriangleAlert } from "lucide-react";
+import { EmergencyNotice } from "@/components/emergency-access";
 import { STATUS_LABEL } from "@/domain/status";
 import { t } from "@/i18n";
 import type { CheckInResult } from "./result";
@@ -22,6 +24,7 @@ export function ResultView({ result, leaving, onHome }: Props) {
 
   return (
     <div className="checkin-step">
+      {result.emergency && <EmergencyNotice line={result.emergency} />}
       <div className="result-today">
         <p>{t("checkin.result.today")}</p>
         <p className="result-status" data-status={result.status}>
