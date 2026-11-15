@@ -305,7 +305,7 @@ Nuestro flujo ataca esos cuatro puntos. Sigue el flujo que NASA propone para su 
 
 ## 9. Pantallas de la app
 
-Navegación con barra inferior: Lunito, Mi estado, Tripulación y Botiquín. Estética: noche espacial oscura, Lunito como única ilustración, verde, ámbar y rojo solo para estados, tipografía grande (se usa flotando y con prisa). Detalle en [DISENO.md](DISENO.md).
+Navegación con barra lateral (en celular, panel desplegable): Lunito, Mi estado, Check-in, Tripulación, Botiquín y la consola de Tierra. Estética: tema claro pensado para tablet, Lunito como única ilustración, verde, ámbar y rojo solo para estados, tipografía grande (se usa flotando y con prisa). Detalle en [DISENO.md](DISENO.md).
 
 1. **Inicio (Mi Lunito)**
    - Lunito sobre una luna, con la pancita del color de tu estado.

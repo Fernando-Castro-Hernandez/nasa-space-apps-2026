@@ -11,3 +11,4 @@ Reglas del archivo:
 ## Lecciones
 
 - 2026-11-06 · Si pnpm bloquea un paquete por ser demasiado reciente, fija una versión anterior en vez de agregar una excepción. El bloqueo existe para evitar paquetes comprometidos recién publicados.
+- 2026-11-14 · En Windows, el instalador del catálogo de shadcn falla con rutas `C:\` ("unknown scheme"). Sirve la carpeta del catálogo en localhost y usa `shadcn add http://127.0.0.1:PUERTO/.../registry.json`.
