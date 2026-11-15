@@ -52,6 +52,13 @@ export const emergency: Messages<typeof source> = {
       sensor: "Pon el sensor en su dedo",
       oxygen: "Revisar oxígeno del botiquín",
     },
+    sensor: {
+      live: "En vivo: {bpm}\u00a0lpm · {spo2}\u00a0%\u00a0SpO2",
+      waiting: "Sensor conectado · esperando una señal estable",
+      sample: "Sensor sin conectar · registra una muestra simulada",
+      connect: "Conectar sensor",
+      connecting: "Conectando…",
+    },
   },
   // Dictar una nota: un toque empieza, otro guarda.
   dictate: {
@@ -68,6 +75,8 @@ export const emergency: Messages<typeof source> = {
     title: "Registro del caso",
     opened: "Caso abierto: {name} · {what}",
     vitals: "Signos con sensor: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2",
+    vitalsSimulated:
+      "Signos simulados: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2",
     note: "“{text}”",
     groundOrder: "Indicación de Tierra: {text}",
     orderDone: "Hecho: {text}",

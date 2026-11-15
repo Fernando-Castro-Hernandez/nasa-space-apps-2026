@@ -36,6 +36,7 @@ export const home = {
     month: "Month",
     metric: "Metric",
     lastReading: "Last reading · {time}",
+    sensorReading: "Measured with the sensor · {time}",
     weekRange: "Weekly range",
     monthRange: "Monthly range",
     average: "Average",

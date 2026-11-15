@@ -14,7 +14,8 @@ export type DashboardMetric = DashboardSeries & {
   label: string;
   tech?: string;
   unit: string;
-  value: number;
+  /** El valor de hoy, o null si el sensor no midió este indicador. */
+  value: number | null;
   status: Status;
 };
 export type DashboardHazard = { key: Hazard; label: string; status: Status };
@@ -29,7 +30,8 @@ export type DashboardAutonomy = {
 };
 
 export type LunitoDashboard = {
-  source: "demo";
+  /** De dónde sale la lectura de hoy: la estación o la muestra de /demo. */
+  source: "demo" | "sensor";
   profile: Pick<CrewMember, "id" | "name" | "role">;
   reading: Reading & { time: string };
   /** Línea base personal con la que las reglas leen la lectura. */

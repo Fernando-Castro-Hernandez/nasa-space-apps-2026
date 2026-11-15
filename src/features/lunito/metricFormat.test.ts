@@ -17,3 +17,10 @@ test("el oxígeno es un porcentaje con el formato del idioma", () => {
   expect(metricText("spo2", 90, "%")).toBe("90%");
   expect(metricText("bpm", 1200, "bpm")).toBe("1,200 bpm");
 });
+
+test("un indicador sin medir se ve como una raya y se lee 'sin medir'", () => {
+  expect(metricParts("hrv", null, "ms")).toEqual(["–", ""]);
+  expect(metricText("hrv", null, "ms")).toBe("sin medir");
+  setLocale("en");
+  expect(metricText("hrv", null, "ms")).toBe("not measured");
+});

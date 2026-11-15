@@ -98,11 +98,30 @@ Por decisión de Fernando, sobre las pantallas Marea del #32.
 - **Avisos, una sola vez donde aportan:** "Prototipo. No es un diagnóstico." en el Botiquín, en el resultado del check-in y en Configuración; "Datos simulados para la demo" en Configuración y en la consola de Tierra. "Entorno · Commit" solo al final de `/demo`.
 - **Uso flotando en microgravedad:** objetivos táctiles de 48 px o más, texto de lectura de 15 px o más, nada que dependa de `hover` ni de mantener presionado, y los números se eligen con − y + en vez de teclado. Los criterios salen de NASA-STD-3001 Vol. 2 §10 (interfaces de la tripulación), el Human Integration Design Handbook de NASA y WCAG 2.2.
 
+### Sensor real por Bluetooth · 2026-11-15
+
+La app lee la estación de Viridiana (ESP32-C3 + MAX30102) por Web Bluetooth (`src/features/sensor/`, HU-04 y HU-07).
+
+- **Contrato de datos** (`protocol.ts`): el del firmware actual. Servicio `4fafc201-…`, característica `beb5483e-…`, un aviso por segundo con el texto `"pulso,spo2"` y `0` cuando no hay dato válido. La app también acepta un formato extendido, `"pulso,spo2,intervalo,…"` con `-1` para "hay dedo pero aún no hay señal", por si el firmware llega a mandar los intervalos entre latidos (HU-03, C1).
+- **La HRV queda "sin medir" con el firmware actual,** porque no manda intervalos entre latidos. No se rellena con un valor de muestra: el indicador muestra una raya, la gráfica no tiene punto de hoy y el estado sale del pulso, la SpO2 y la semana anterior de HRV.
+- **Validez de la medición** (`measurement.ts`, función pura): el contador de 60 s arranca con el primer valor válido; si se pierde la señal o el pulso salta más de 25 lpm entre dos segundos, vuelve a empezar y lo avisa; con menos de 30 s válidos no se guarda. La lectura es la mediana de los segundos válidos. Son parámetros de calibración del sensor, no umbrales de salud.
+- **La lectura real sustituye a la de muestra** en Inicio, Mi estado y el resultado del check-in, para ese perfil y ese día (`sensorReadingStore.ts`). Un escenario elegido en `/demo` (Precaución, Atención) manda sobre el sensor, y `/demo` permite quitar la lectura real.
+- **Lo que sigue simulado:** la línea base personal (la regla pide días previos al vuelo), el historial de la semana y los datos de la nave. Una lectura real se compara contra la línea base de muestra, así que el estado puede no corresponder a quien se mide.
+- **Rojo con dos lecturas seguidas:** una segunda medición del mismo día recuerda la anterior; el rojo por pulso o SpO2 solo se confirma si las dos lo dan, según las mismas reglas de `vitalRules.ts`.
+- **Sin estación, la lectura simulada sigue disponible y se dice:** "Usar una lectura simulada" en el check-in, y es lo único que hay en un navegador sin Web Bluetooth (iOS, Firefox). Es el respaldo de la demo mientras no exista la reproducción de sesiones grabadas (HU-05).
+- **Emergencia:** el paso "Pon el sensor en su dedo" registra lo que la estación mide en ese momento. Sin estación registra la muestra de la demo y el registro y el SBAR la marcan como simulada; con estación pero sin señal estable no registra signos.
+- **Conexión:** un toque en "Conectar sensor" por sesión (lo exige el navegador); si se pierde, reintenta sola tres veces y después ofrece reconectar. Requiere Chrome en una página HTTPS o en `localhost`.
+- **Wi-Fi descartado:** una página HTTPS no puede abrir un WebSocket sin cifrar hacia el ESP32, y conectarse a su red dejaría al dispositivo sin internet (voz e IA).
+- **Sin dependencias nuevas:** los tipos de Web Bluetooth que se usan están escritos a mano en `bluetooth.ts`.
+
 ## Abierto
 
 - **"Próximamente" de Tareas y Configuración** (estilos de Lunito, notificaciones, recordatorios): no están en el PRD; falta decidir si entran.
 - **Código que ya no usa ninguna ruta:** las pantallas Órbita que se decidió conservar y los archivos del check-in anterior, marcados `SIN USO`. Falta decidir si se retiran.
 - **Distinguir el Lunito de cada tripulante** en Equipo (hoy son iguales); colorear el cuerpo cambiaría la pancita, que es el estado.
+- **Firmware con intervalos entre latidos** (HU-03): sin ellos la HRV no se mide. Falta decidir si Viridiana lo agrega; la app ya acepta el formato extendido.
+- **Sesiones grabadas del sensor** (HU-05): no existen; el respaldo de la demo es la lectura simulada.
+- **Línea base de quien presenta la demo:** hoy es la de muestra.
 - **Traducciones clínicas del Botiquín y de Emergencia al inglés:** pendientes de que las revise una persona (lista en el PR).
 
 ## Para más adelante
