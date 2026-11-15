@@ -37,7 +37,7 @@ Fuente de verdad sobre quién construye cada parte del producto. Las historias y
 - Panel oculto `/demo`.
 - Tarjeta del compañero y aviso para el comandante.
 
-**Zona de archivos:** `src/features/profiles/`, `src/features/lunito/`, `src/features/crew/`, `src/features/status/`, `src/features/demo/` y `src/data/`.
+**Zona de archivos:** `src/features/profiles/`, `src/features/lunito/` (menos los archivos 3D de Lunito, que son de Fernando), `src/features/crew/`, `src/features/status/`, `src/features/demo/` y `src/data/`.
 
 ### Jenni · medición y experiencia del check-in
 
@@ -72,15 +72,17 @@ Fuente de verdad sobre quién construye cada parte del producto. Las historias y
 - Emergencias, registro del CMO y resumen SBAR.
 - Retraso de comunicación y consola del cirujano.
 - Recordatorios proactivos y reportes diario/semanal.
+- Animación 3D y voz de Lunito: movimiento con datos, boca sincronizada con la voz, expresiones y gestos ([LUNITO-ARTE.md](LUNITO-ARTE.md)).
 
 **Pantallas y superficies**
 
+- Lunito 3D que Mateo incrusta en Mi Lunito.
 - Bloque de bitácora por voz que Jenni incrusta en Check-in.
 - Emergencia a bordo, contador, checklist y línea de tiempo.
 - Consola de escritorio del cirujano de vuelo.
 - Reporte diario.
 
-**Zona de archivos:** `worker/`, `src/api/`, `src/features/voice/`, `src/features/emergency/` y `src/features/reports/`. Fernando es el único que modifica la configuración de D1 y Workers AI en `wrangler.jsonc`.
+**Zona de archivos:** `worker/`, `src/api/`, `src/features/voice/`, `src/features/emergency/`, `src/features/reports/` y los archivos 3D de Lunito en `src/features/lunito/` (`LunitoScene.tsx`, `LunitoGlb.tsx`, `LunitoPlaceholder.tsx`, `useLunitoMotion.ts`, `motion.ts`, `hueShift.ts` y los nuevos de boca y voz). Fernando es el único que modifica la configuración de D1 y Workers AI en `wrangler.jsonc`. Si para animar a Lunito necesita ajustar el código de Mateo que lo integra, lo hace sin cambiar su funcionalidad y lo avisa en el PR.
 
 ### Ariff · interpretación y botiquín
 
@@ -116,7 +118,7 @@ Fuente de verdad sobre quién construye cada parte del producto. Las historias y
 
 **Zona de archivos:** `docs/FUENTES.md` y, cuando exista, `src/content/health/`. Angie valida el contenido; Ariff conserva la propiedad de la lógica y Fernando la del flujo de emergencia.
 
-### Viridiana · estación de hardware
+### Viridiana · estación de hardware y arte 3D de Lunito
 
 **Historias:** HU-03 y HU-06.
 
@@ -126,15 +128,16 @@ Fuente de verdad sobre quién construye cada parte del producto. Las historias y
 - Mensajes Bluetooth LE.
 - Cuenta regresiva y pulso en la OLED.
 - Calibración y detección de dedo.
+- Arte 3D de Lunito en Blender: boca, expresiones, brazos y cola ([LUNITO-ARTE.md](LUNITO-ARTE.md)). Empieza cuando la estación ya manda datos.
 
-**Zona de archivos:** `firmware/`. Viridiana acuerda con Jenni el mensaje Bluetooth; la app no depende de detalles internos del firmware.
+**Zona de archivos:** `firmware/`, `art/lunito/` y `public/lunito.glb`. Viridiana acuerda con Jenni el mensaje Bluetooth; la app no depende de detalles internos del firmware. El modelo cumple el contrato de [LUNITO-ARTE.md](LUNITO-ARTE.md) §2 para que Fernando lo anime.
 
 ## Propiedad de las pantallas
 
 | Pantalla o bloque                | Responsable | Integraciones                            |
 | -------------------------------- | ----------- | ---------------------------------------- |
 | Selección de perfil              | Mateo       | API de Fernando                          |
-| Mi Lunito                        | Mateo       | Estado de Ariff y API de Fernando        |
+| Mi Lunito                        | Mateo       | Estado de Ariff y Lunito 3D de Fernando  |
 | Tripulación (Constelación)       | Mateo       | Estado de Ariff y API de Fernando        |
 | Check-in                         | Jenni       | Voz de Fernando y resultado de Ariff     |
 | Prueba de reacción               | Jenni       | Línea base de Ariff                      |
@@ -160,6 +163,7 @@ Antes de desarrollar, se fijan solo estos contratos:
 | Caso, eventos y SBAR      | Fernando          | Mateo y Ariff           |
 | Contenido de salud        | Angie             | Ariff y Fernando        |
 | API y datos persistidos   | Fernando          | Mateo, Jenni y Ariff    |
+| Modelo 3D de Lunito       | Viridiana         | Fernando                |
 
 Cada responsable mantiene su contrato. Un cambio incompatible se hace en un PR pequeño y se avisa a sus consumidores antes de integrarlo.
 
@@ -190,6 +194,7 @@ Viridiana sensor ──> Jenni check-in ──> Ariff interpretación ──> Ma
 Mateo feed simulado ──> Ariff eventos ambientales y botiquín
 Angie contenido ──> Ariff reglas y Fernando protocolos
 Fernando API/D1 <────── todos los módulos mediante su cliente
+Viridiana arte (lunito.glb) ──> Fernando Lunito 3D y voz ──> Mateo Mi Lunito
 ```
 
 Los PR se pueden integrar aunque una flecha todavía use un adaptador simulado. La sustitución del adaptador es una tarea separada y pequeña.
