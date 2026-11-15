@@ -1,110 +1,56 @@
-// Mi Lunito (SISTEMA.md §9.1): Lunito sobre una luna, tu estado en palabras,
-// el motivo en una línea y el check-in a un toque. Lunito es la única
-// ilustración.
-import { lazy, Suspense } from "react";
-import { ArrowRight, Mic } from "lucide-react";
-import { DAY_ACTIONS } from "@/data/actions";
-import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
-import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
+// Inicio (DISENO.md, referencia 2): "Así estás hoy" con Lunito y sus tres
+// burbujas, y "Tu evolución" al lado en tablet o debajo en celular. Datos de
+// muestra: la lectura se elige desde /demo.
+import { DASHBOARD_BASELINE, DASHBOARD_READINGS } from "@/data/dashboard";
 import { assessVitals } from "@/domain/vitals";
-import { headline } from "./headline";
-import { motionFor } from "./motion";
-
-// three.js pesa 1 MB: se carga aparte para que la app abra rápido.
-const LunitoScene = lazy(() =>
-  import("./LunitoScene").then((m) => ({ default: m.LunitoScene })),
-);
-
-// La demo arranca con poco descanso para que el inicio muestre ámbar.
-const reading = SAMPLE_READINGS.find(
-  (s) => s.name === "Poco descanso",
-)!.reading;
-
-const prefersReducedMotion = () =>
-  typeof window.matchMedia === "function" &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-// Sin datos alrededor, Lunito puede ocupar casi todo el ancho.
-const noAnchors = () => [];
-const noop = () => {};
-const frameLunito = () => 1.9;
+import { useReadingIndex } from "@/features/demo/readingStore";
+import { EvolutionPanel } from "@/features/status/EvolutionPanel";
+import { indicatorsFor, reasonFor } from "./dashboardData";
+import { StatusSummary } from "./StatusSummary";
+import { DASH_VARS, STATUS_VIEW } from "./theme";
+import { TodayHero } from "./TodayHero";
 
 export function HomeScreen() {
-  const vitals = assessVitals(reading, SAMPLE_BASELINE);
-  const motion = motionFor(reading, SAMPLE_BASELINE, {
-    mode: "rest",
-    reducedMotion: prefersReducedMotion(),
-  });
-  const color = STATUS_TOKEN[vitals.overall];
+  const index = useReadingIndex();
+  const { reading } = DASHBOARD_READINGS[index]!;
+  const vitals = assessVitals(reading, DASHBOARD_BASELINE);
+  const items = indicatorsFor(reading, vitals);
+  const { image } = STATUS_VIEW[vitals.overall];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-6 md:py-10">
-      <div className="relative aspect-square w-full max-w-md">
-        <div
-          aria-hidden="true"
-          className="absolute inset-[8%] rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 38% 34%, #ffffff 0%, oklch(0.95 0.025 295) 55%, oklch(0.9 0.04 295) 100%)",
-            boxShadow: "0 0 80px 10px oklch(0.85 0.06 295 / 45%)",
-          }}
-        />
-        <Suspense fallback={null}>
-          <LunitoScene
-            motion={motion}
+    <div
+      style={DASH_VARS}
+      className="mx-auto w-full max-w-6xl px-5 py-6 md:px-8 md:py-8"
+    >
+      <div className="grid gap-10 md:grid-cols-[minmax(0,1.05fr)_1px_minmax(0,1fr)] md:gap-8">
+        <section aria-labelledby="hoy-titulo" className="flex flex-col gap-4">
+          <header>
+            <h2
+              id="hoy-titulo"
+              className="text-4xl font-semibold"
+              style={{ color: "var(--dash-ink)" }}
+            >
+              Así estás hoy
+            </h2>
+            <p className="mt-1 text-lg text-muted-foreground">
+              Tu bienestar, reflejado en Lunito
+            </p>
+          </header>
+          <TodayHero key={index} items={items} image={image} />
+          <StatusSummary
+            key={`s${index}`}
             status={vitals.overall}
-            anchorsFor={noAnchors}
-            onProject={noop}
-            halfWidthFor={frameLunito}
+            reason={reasonFor(vitals)}
           />
-        </Suspense>
+        </section>
+
+        <div className="hidden bg-border md:block" aria-hidden="true" />
+
+        <EvolutionPanel key={index} items={items} image={image} />
       </div>
 
-      <div className="flex flex-col items-center gap-3 text-center">
-        <span
-          className="rounded-full border bg-card px-4 py-1.5 text-base font-semibold"
-          style={{ color, borderColor: color }}
-        >
-          {STATUS_LABEL[vitals.overall]}
-        </span>
-        <p className="max-w-md text-base text-muted-foreground">
-          {headline(vitals)}
-        </p>
-        <ul className="flex max-w-md flex-col gap-1 text-sm">
-          {DAY_ACTIONS.slice(0, 3).map((a) => (
-            <li key={a.id}>· {a.text}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="flex w-full max-w-md flex-col gap-3">
-        <a
-          href="/check-in"
-          className="flex h-14 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground hover:bg-primary/85"
-        >
-          <Mic className="size-5" aria-hidden="true" />
-          Hacer mi check-in
-        </a>
-        <p className="text-center text-xs text-muted-foreground">
-          Dale la mano a Lunito: pon tu dedo en el sensor para medirte.
-        </p>
-        <a
-          href="/check-in"
-          className="flex h-11 items-center justify-center gap-2 rounded-full text-sm font-medium text-primary hover:bg-accent"
-        >
-          Hablarle a Lunito
-        </a>
-        <a
-          href="/estado"
-          className="flex h-11 items-center justify-center gap-2 rounded-full text-sm font-medium text-primary hover:bg-accent"
-        >
-          Ver mi estado
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </a>
-      </div>
-
-      <p className="text-xs text-muted-foreground">
-        Última lectura 07:12 · prototipo, no es un diagnóstico.
+      <p className="mt-8 text-center text-xs text-muted-foreground">
+        Prototipo, no es un diagnóstico. Datos simulados.
       </p>
     </div>
   );
