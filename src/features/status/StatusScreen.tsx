@@ -15,7 +15,7 @@ import type { ScreenPoint } from "@/features/lunito/LunitoScene";
 import { anchorsFor, halfWidthFor, isNarrow } from "./sceneLayout";
 import { motionFor } from "@/features/lunito/motion";
 import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
-import { ME } from "@/data/crew";
+import { useActiveProfile } from "@/features/profiles/activeProfile";
 import { IndicatorCards, INDICATORS } from "./IndicatorCards";
 import { ShipFeedCard } from "./ShipFeedCard";
 import { SideCards } from "./SideCards";
@@ -41,6 +41,7 @@ const TABS: { key: IndicatorKey; label: string }[] = [
 ];
 
 export function StatusScreen() {
+  const me = useActiveProfile();
   const [sample, setSample] = useState(0);
   const [scene, setScene] = useState<{ points: ScreenPoint[]; width: number }>({
     points: [],
@@ -178,7 +179,7 @@ export function StatusScreen() {
         </CardContent>
       </Card>
 
-      <ShipFeedCard personId={ME} />
+      <ShipFeedCard personId={me} />
 
       <p className="col-span-12 text-center text-xs text-muted-foreground">
         Prototipo, no es un diagnóstico. Sensor sin validación médica. Historial
