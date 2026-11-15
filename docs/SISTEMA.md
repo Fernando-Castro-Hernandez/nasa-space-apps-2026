@@ -305,7 +305,7 @@ Nuestro flujo ataca esos cuatro puntos. Sigue el flujo que NASA propone para su 
 
 ## 9. Pantallas de la app
 
-Navegación con barra lateral (en celular, panel desplegable): Lunito, Mi estado, Check-in, Tripulación, Botiquín y la consola de Tierra. Estética: tema claro pensado para tablet, Lunito como única ilustración, verde, ámbar y rojo solo para estados, tipografía grande (se usa flotando y con prisa). Detalle en [DISENO.md](DISENO.md).
+Navegación con barra inferior: Inicio, Equipo, Tareas y Ajustes; la consola de Tierra queda fuera de la barra. El aspecto final lo fijan las referencias de [DISENO.md](DISENO.md), que mandan sobre esta sección donde no coincidan. Estética: tema claro pensado para tablet, Lunito como única ilustración, cian (Bien), amarillo (Precaución) y rojo (Atención) solo para estados, tipografía grande (se usa flotando y con prisa). Detalle en [DISENO.md](DISENO.md).
 
 1. **Inicio (Mi Lunito)**
    - Lunito sobre una luna, con la pancita del color de tu estado.
@@ -322,7 +322,7 @@ Navegación con barra lateral (en celular, panel desplegable): Lunito, Mi estado
 3. **Mi estado (el dashboard)**
    - Lunito pequeño con el semáforo y el motivo.
    - "Qué hacer hoy": 1 a 3 acciones marcables.
-   - Una tarjeta por indicador: valor, gráfica de 7 días, línea punteada de la línea base, estado en palabras y el peligro que lo afecta como etiqueta.
+   - Una tarjeta por indicador: valor, gráfica de 7 días, estado en palabras y el peligro que lo afecta como etiqueta.
    - Al tocar una tarjeta: gráfica grande y explicación simple.
 4. **Tripulación (la constelación)**
    - Los Lunitos de todos con nombre y estado en palabras, sin números.

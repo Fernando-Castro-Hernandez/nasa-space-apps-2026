@@ -4,7 +4,7 @@ Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTE
 
 ## Referencias finales (modelo exacto del frontend)
 
-Estas imágenes son **la referencia exacta** de cómo se ve la app. Si algo de este documento o del código actual las contradice, mandan las imágenes, salvo los puntos marcados como **pendiente de decidir** abajo. Las demás pantallas todavía no tienen referencia final; se diseñarán después siguiendo este mismo estilo.
+Estas imágenes son **la referencia exacta** de cómo se ve la app. Si algo de este documento o del código actual las contradice, mandan las imágenes. Los puntos donde chocaban con reglas anteriores ya están decididos abajo. Las demás pantallas todavía no tienen referencia final; se diseñarán después siguiendo este mismo estilo.
 
 ### Flujo del día
 
@@ -52,22 +52,28 @@ Tres estados, una sola idea por pantalla:
 - Barra inferior con cuatro pestañas: **Inicio, Equipo, Tareas y Ajustes**, con la activa en lila.
 - Ícono de sol arriba a la derecha.
 
-### Pendiente de decidir
+### Decidido sobre las referencias
 
-Las referencias chocan con reglas ya acordadas en estos puntos. No se cambian en el código hasta que el equipo decida:
+Donde las referencias chocaban con reglas anteriores, **mandan las referencias** (decisión del 2026-11-15). La única excepción es el botón Emergencia, que es una regla de seguridad:
 
-- **Botón Emergencia:** `SISTEMA.md` §7.5 pide que esté siempre visible, y las referencias no lo muestran. Hay que decidir dónde va, sin quitarlo.
-- **Navegación:** la barra inferior (Inicio, Equipo, Tareas, Ajustes) reemplaza a la barra lateral actual. Falta decidir dónde quedan Check-in, Botiquín y la consola de Tierra.
-- **Color de "Bien":** en las referencias es cian, el color natural de la pancita, y no verde. Si se adopta, el verde deja de usarse para estados.
-- **Nombres de estado:** "Bien / Precaución / Atención" en vez de "Todo en orden / Revisar / Atención".
-- **Línea base:** las gráficas de las referencias no muestran la línea punteada de "tu normal", que `SISTEMA.md` §9 pide.
-- **De qué parte del cuerpo sale cada dato:** en la referencia, las líneas van a los brazos y a la pancita. En el modelo 3D actual, el oxígeno sale de las branquias.
-- **Lunito saludando:** el modelo 3D no tiene brazos separados para animar el saludo. Hace falta separar los brazos del modelo o usar una animación hecha en Meshy.
-- **Ícono de sol:** no está definido qué hace; puede ser un cambio de tema claro u oscuro.
+- **Botón Emergencia:** sigue siempre visible en todas las pantallas, incluido el check-in del día (`SISTEMA.md` §7.5). Va arriba a la derecha, junto al ícono de sol, rojo y con la palabra "Emergencia".
+- **Navegación:** barra inferior con **Inicio, Equipo, Tareas y Ajustes**; desaparece la barra lateral.
+  - **Inicio:** al empezar el día, el check-in conversacional; después, "Así estás hoy" y "Tu evolución". Reemplaza a Mi Lunito, Mi estado y Check-in.
+  - **Equipo:** la Constelación de la tripulación.
+  - **Tareas:** las acciones del día y el Botiquín (síntomas, asistente de dolor de cabeza e inventario).
+  - **Ajustes:** selección de perfil y "Compartir mi estado".
+  - La consola de Tierra (`/tierra`) y el panel de la demo (`/demo`) quedan fuera de la barra: se abren por su dirección.
+- **Color de "Bien":** cian, el color natural de la pancita. El verde deja de usarse para estados.
+- **Nombres de estado:** **Bien**, **Precaución** y **Atención**. Donde otros documentos dicen verde, ámbar o amarillo, y rojo, se refieren a estos tres estados.
+- **Valores en las burbujas y gráficas:** van en el color del estado de su indicador (cian cuando está Bien), para que el color siga siendo solo de estado.
+- **Línea base:** las gráficas de "Tu evolución" no llevan la línea punteada. La línea base sigue decidiendo el semáforo y se muestra al cirujano en la consola de Tierra.
+- **De qué parte del cuerpo sale cada dato:** el pulso sale del brazo izquierdo, la HRV de la mano derecha y el oxígeno de la pancita, como en la referencia 2.
+- **Lunito saludando:** se anima con los brazos que prepara Viridiana según [LUNITO-ARTE.md](LUNITO-ARTE.md). Mientras tanto, Lunito saluda sin mover los brazos.
+- **Ícono de sol:** cambia entre tema claro y oscuro. El claro es el principal; el oscuro es secundario y puede llegar después.
 
 ## Idea
 
-Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. La app es un shell con barra lateral (shadcn/ui) y el nombre de la pantalla siempre arriba.
+Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. La app tiene barra inferior (Inicio, Equipo, Tareas y Ajustes) y el botón Emergencia siempre arriba.
 
 ## Lunito
 
@@ -75,20 +81,20 @@ Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la
 
 El semáforo vive en su pancita:
 
-| Verde                                    | Ámbar                                    | Rojo                                   |
-| ---------------------------------------- | ---------------------------------------- | -------------------------------------- |
-| ![Lunito verde](diseno/lunito-verde.png) | ![Lunito ámbar](diseno/lunito-ambar.png) | ![Lunito rojo](diseno/lunito-rojo.png) |
-| "Todo en orden"                          | "Revisar · motivo"                       | "Atención · motivo"                    |
+| Bien (cian)                | Precaución (amarillo)                    | Atención (rojo)                        |
+| -------------------------- | ---------------------------------------- | -------------------------------------- |
+| Pancita en su cian natural | ![Lunito ámbar](diseno/lunito-ambar.png) | ![Lunito rojo](diseno/lunito-rojo.png) |
+| "Bien"                     | "Precaución · motivo"                    | "Atención · motivo"                    |
 
 - `lunito-hoja.jpg`: hoja original (frente, perfil, espalda y tres cuartos).
-- `lunito-verde.png`, `lunito-ambar.png`, `lunito-rojo.png`: frente sin fondo, listas para usar en la app.
+- `lunito-ambar.png`, `lunito-rojo.png`: frente sin fondo, listas para usar en la app. `lunito-verde.png` queda de la versión anterior; para Bien se usa la pancita cian.
 - El color nunca va solo: siempre lo acompaña una palabra (regla 3 de Lunito).
 - Pendiente: cómo distinguir al Lunito de cada tripulante (color de aletas o un accesorio).
 
 ## Lunito en 3D
 
 - Modelo: `public/lunito.glb`, generado con Meshy y separado en partes con nombre (`body`, `belly`, `gill_L/R_1..3`, `eye_L`, `eye_R`) para animar cada una.
-- Nada se pinta encima del modelo: la pancita **gira su tono** (cian → verde, ámbar o rojo) y conserva su textura; las branquias se aclaran u oscurecen según el oxígeno.
+- Nada se pinta encima del modelo: la pancita queda en su cian natural cuando está Bien y **gira su tono** a amarillo o rojo y conserva su textura; las branquias se aclaran u oscurecen según el oxígeno.
 - Movimiento con sentido: la pancita late al ritmo del pulso, el cuerpo respira según la HRV. En reposo flota, se balancea y parpadea. Con `prefers-reduced-motion` se queda quieto.
 - Las imágenes 2D de `diseno/` se usan donde no conviene un canvas 3D (constelación, emergencia).
 - Lunito habla con voz: la boca sigue lo que dice, y tiene expresiones (nunca tristes ni enojadas) y gestos. Partes nuevas, formas de boca y cómo prepararlas en Blender: [LUNITO-ARTE.md](LUNITO-ARTE.md).
@@ -97,18 +103,18 @@ El semáforo vive en su pancita:
 
 Los tokens viven en `src/index.css` (variables de shadcn/ui en OKLCH).
 
-| Uso              | Token                           |
-| ---------------- | ------------------------------- |
-| Fondo            | `--background` (lila muy claro) |
-| Tarjetas         | `--card` (blanco)               |
-| Texto            | `--foreground`                  |
-| Texto secundario | `--muted-foreground`            |
-| Primario         | `--primary` (lila de Lunito)    |
-| Estado verde     | `--status-ok`                   |
-| Estado ámbar     | `--status-warn`                 |
-| Estado rojo      | `--status-alert`                |
+| Uso               | Token                           |
+| ----------------- | ------------------------------- |
+| Fondo             | `--background` (lila muy claro) |
+| Tarjetas          | `--card` (blanco)               |
+| Texto             | `--foreground`                  |
+| Texto secundario  | `--muted-foreground`            |
+| Primario          | `--primary` (lila de Lunito)    |
+| Estado Bien       | `--status-ok` (cian)            |
+| Estado Precaución | `--status-warn` (amarillo)      |
+| Estado Atención   | `--status-alert` (rojo)         |
 
-Verde, ámbar y rojo se usan **solo** para estados, nunca como decoración, y siempre con una palabra.
+Cian, amarillo y rojo se usan **solo** para estados, nunca como decoración, y siempre con una palabra.
 
 ## Tipografía
 
@@ -119,6 +125,6 @@ Verde, ámbar y rojo se usan **solo** para estados, nunca como decoración, y si
 
 - Tarjetas de shadcn (`Card`) con borde suave y esquinas redondeadas.
 - Botón principal: `--primary` con texto claro, al menos 44 px de alto.
-- Botón **Emergencia** rojo en el header de todas las pantallas.
-- Gráficas de 7 días con la línea base punteada.
+- Botón **Emergencia** rojo arriba a la derecha en todas las pantallas.
+- Gráficas de área suaves de 7 días o del mes, sin línea base punteada.
 - En emergencia desaparece todo lo lúdico: banner rojo, alto contraste y nada de animaciones decorativas.
