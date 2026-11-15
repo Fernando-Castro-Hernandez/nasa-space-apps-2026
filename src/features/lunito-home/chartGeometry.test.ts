@@ -36,3 +36,22 @@ test("el eje incluye lecturas fuera del rango base y conserva su orden temporal"
   expect(chart.points[1]!.x).toBeLessThan(chart.points[2]!.x);
   expect(chart.points[1]!.y).toBeLessThan(chart.points[0]!.y);
 });
+
+test("con menos lecturas que lugares, la línea termina antes y no se estira", () => {
+  const full = chartGeometry([1, 2, 3, 4, 5, 6, 7], [0, 10]);
+  const short = chartGeometry([1, 2, 3, 4, 5, 6], [0, 10], undefined, 7);
+  // Los seis días medidos quedan en el mismo lugar que en la semana completa.
+  expect(short.points.map((point) => point.x)).toEqual(
+    full.points.slice(0, 6).map((point) => point.x),
+  );
+  expect(short.column).toBeCloseTo(full.column);
+});
+
+test("el relleno baja desde el último punto medido", () => {
+  const short = chartGeometry([1, 2, 3, 4, 5, 6], [0, 10], undefined, 7);
+  expect(short.area).toContain(`L${short.points.at(-1)!.x},235 L42,235 Z`);
+  // Con la semana completa, eso es el borde derecho de siempre.
+  expect(chartGeometry([1, 2, 3, 4, 5, 6, 7], [0, 10]).area).toContain(
+    "L460,235 L42,235 Z",
+  );
+});

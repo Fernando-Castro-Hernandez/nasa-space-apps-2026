@@ -105,8 +105,13 @@ export const PROTOCOL: ProtocolStep[] = [
   step("oxygen"),
 ];
 
-/** Lectura simulada del sensor de prototipo para la demo. */
+/** Lectura simulada para la demo: solo se usa si la estación no está
+ *  conectada, y el registro la marca como simulada. */
 export const SENSOR_SAMPLE = { bpm: 58, spo2: 97 };
+
+/** Los signos de este evento no salieron de la estación. */
+export const isSimulatedVitals = (e: CaseEvent) =>
+  e.params?.simulated !== undefined;
 
 /** Pulso y SpO2 de un evento de signos. Un caso guardado antes de `params`
  *  solo tiene la frase: sus dos primeros números son el pulso y la SpO2. */
@@ -138,10 +143,15 @@ export function eventText(e: CaseEvent): string {
     case "vitals": {
       const v = vitalsOf(e);
       return v
-        ? t("emergency.log.vitals", {
-            bpm: formatNumber(v.bpm),
-            spo2: formatNumber(v.spo2),
-          })
+        ? t(
+            isSimulatedVitals(e)
+              ? "emergency.log.vitalsSimulated"
+              : "emergency.log.vitals",
+            {
+              bpm: formatNumber(v.bpm),
+              spo2: formatNumber(v.spo2),
+            },
+          )
         : e.text;
     }
     case "note":
@@ -195,12 +205,26 @@ export function checkStep(
   c: EmergencyCase,
   stepId: string,
   now: number,
+  /**
+   * Lo que la estación mide en ese momento. `null`: está conectada pero aún
+   * no tiene una señal estable, y el paso no registra signos. Sin este dato
+   * (estación sin conectar) se registra la muestra simulada de la demo.
+   */
+  live?: { bpm: number; spo2: number } | null,
 ): EmergencyCase {
   const found = PROTOCOL.find((s) => s.id === stepId);
   if (!found || c.steps[stepId] !== undefined || isClosed(c)) return c;
   let next = withEvent(c, now, "step", { step: stepId });
   next = { ...next, steps: { ...next.steps, [stepId]: now } };
-  if (found.vitals) next = withEvent(next, now, "vitals", { ...SENSOR_SAMPLE });
+  if (found.vitals && live !== null)
+    next = withEvent(
+      next,
+      now,
+      "vitals",
+      live
+        ? { bpm: live.bpm, spo2: live.spo2 }
+        : { ...SENSOR_SAMPLE, simulated: 1 },
+    );
   return next;
 }
 

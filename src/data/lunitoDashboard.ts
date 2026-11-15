@@ -1,10 +1,13 @@
 // La lectura del día: una sola fuente para Inicio, Mi estado y lo que Lunito
-// sabe al conversar. La lectura la elige el panel /demo; el estado, el motivo y
-// la autonomía salen de las mismas reglas y cálculos que usa el resto de la app.
+// sabe al conversar. Si el perfil se midió hoy con la estación, es esa lectura;
+// si no, la de muestra que elige el panel /demo. El estado, el motivo y la
+// autonomía salen de las mismas reglas y cálculos que usa el resto de la app.
 import { CREW, crewMember, ME, MISSION } from "@/data/crew";
 import { DASHBOARD_BASELINE, DASHBOARD_READINGS } from "@/data/dashboard";
 import { HAZARD_NAME, worst, type Hazard } from "@/domain/finding";
 import { assessDay } from "@/domain/semaphore";
+import { pulseRule, spo2Rule } from "@/domain/vitalRules";
+import type { Reading } from "@/domain/vitals";
 import { autonomy, PHASE_GOAL } from "@/features/crew/autonomy";
 import { pickCompanion } from "@/features/crew/companion";
 import {
@@ -21,6 +24,10 @@ import {
 import { useReadingIndex } from "@/features/demo/readingStore";
 import { useCase } from "@/features/emergency/caseStore";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
+import {
+  type SavedReading,
+  useSensorReading,
+} from "@/features/sensor/sensorReadingStore";
 import { formatNumber, t } from "@/i18n";
 import {
   DEMO_BASELINES,
@@ -48,6 +55,8 @@ export const formatPercent = (ratio: number) =>
 type Options = {
   profileId?: string;
   readingIndex?: number;
+  /** La lectura real de hoy del perfil, si se midió con la estación. */
+  sensorReading?: SavedReading | null;
   shared?: Shared;
   co2?: Co2State;
   awaitingEarth?: boolean;
@@ -60,9 +69,51 @@ const RULE_PREFIX: Record<MetricKey, string> = {
 };
 const HAZARDS: Hazard[] = ["R", "I", "D", "G", "E"];
 
+/** Hora local en 24 h con dos cifras, como las demás horas de la misión. */
+const clock = (ms: number) => {
+  const date = new Date(ms);
+  return [date.getHours(), date.getMinutes()]
+    .map((part) => String(part).padStart(2, "0"))
+    .join(":");
+};
+
+const wasRed = (finding: { status: string }) => finding.status === "rojo";
+
+/** La lectura de la estación como la leen las reglas. Un rojo por pulso o
+ *  SpO2 exige dos lecturas seguidas (FUENTES.md): queda confirmado solo si la
+ *  medición anterior del día también lo daba, según las mismas reglas. */
+function liveReading(live: SavedReading) {
+  const before = live.previous;
+  return {
+    bpm: {
+      value: live.bpm,
+      confirmed:
+        !!before &&
+        wasRed(
+          pulseRule(DEMO_BASELINES.bpm, [], {
+            value: before.bpm,
+            confirmed: true,
+          }),
+        ),
+    },
+    spo2: {
+      value: live.spo2,
+      confirmed:
+        !!before &&
+        wasRed(
+          spo2Rule(DEMO_BASELINES.spo2, [], {
+            value: before.spo2,
+            confirmed: true,
+          }),
+        ),
+    },
+  };
+}
+
 export function buildLunitoDashboard({
   profileId = ME,
   readingIndex = 0,
+  sensorReading = null,
   shared = {},
   co2 = "normal",
   awaitingEarth = false,
@@ -74,11 +125,33 @@ export function buildLunitoDashboard({
     readingIndex < DASHBOARD_READINGS.length
       ? readingIndex
       : 0;
-  const reading = DASHBOARD_READINGS[scenario]!.reading;
+  // Un escenario elegido en /demo (Precaución, Atención) manda sobre el
+  // sensor: es el control explícito de quien presenta (HU-28).
+  const live = scenario === 0 ? sensorReading : null;
+  const sampleReading = DASHBOARD_READINGS[scenario]!.reading;
+  // Sin intervalos entre latidos la estación no mide la HRV: hoy queda "sin
+  // medir" y no se rellena con un valor de muestra.
+  const hrvMissing = !!live && live.hrv === null;
+  const reading: Reading = live
+    ? {
+        bpm: live.bpm,
+        spo2: live.spo2,
+        // Solo para el movimiento de Lunito cuando falta: su valor habitual.
+        hrv: live.hrv ?? DASHBOARD_BASELINE.hrv.mean,
+      }
+    : sampleReading;
+  const latest = live
+    ? liveReading(live)
+    : {
+        bpm: { value: reading.bpm, confirmed: reading.confirmed ?? false },
+        spo2: { value: reading.spo2, confirmed: reading.confirmed ?? false },
+      };
   const metrics = METRIC_KEYS.map((key) => {
     const sample = DEMO_SERIES[key];
-    const week = [...sample.week];
-    week[6] = reading[key];
+    const missing = key === "hrv" && hrvMissing;
+    // Sin lectura de hoy, la semana se queda en los seis días anteriores.
+    const week = missing ? sample.week.slice(0, 6) : [...sample.week];
+    if (!missing) week[6] = reading[key];
     // Los escenarios alternativos simulan tres días, no una alerta por una
     // lectura aislada; el motor conserva sus reglas clínicas de tendencia.
     if (scenario > 0)
@@ -87,7 +160,7 @@ export function buildLunitoDashboard({
     return {
       key,
       ...METRIC_COPY[key],
-      value: reading[key],
+      value: missing ? null : reading[key],
       week,
       month: [...sample.month],
       domain,
@@ -99,10 +172,7 @@ export function buildLunitoDashboard({
     bpmLast3: series.bpm.week.slice(-3),
     lnRmssdWeek: series.hrv.week.map(Math.log),
     spo2Recent: series.spo2.week.slice(-3),
-    latest: {
-      bpm: { value: reading.bpm, confirmed: reading.confirmed ?? false },
-      spo2: { value: reading.spo2, confirmed: reading.confirmed ?? false },
-    },
+    latest,
   });
   const missionAssessment = assessDay({
     baselines: DEMO_BASELINES,
@@ -139,9 +209,12 @@ export function buildLunitoDashboard({
   );
 
   return {
-    source: "demo",
+    source: live ? "sensor" : "demo",
     profile: { id: profile.id, name: profile.name, role: profile.role },
-    reading: { ...reading, time: DEMO_READING_TIME },
+    reading: {
+      ...reading,
+      time: live ? clock(live.takenAt) : DEMO_READING_TIME,
+    },
     baseline: DASHBOARD_BASELINE,
     status: assessment.overall,
     reason: assessment.top?.reason ?? null,
@@ -181,12 +254,14 @@ export function buildLunitoDashboard({
 export function useLunitoDashboard(): LunitoDashboard {
   const profileId = useActiveProfile();
   const readingIndex = useReadingIndex();
+  const sensorReading = useSensorReading(profileId);
   const shared = useShared();
   const co2 = useCo2State();
   const emergency = useCase();
   return buildLunitoDashboard({
     profileId,
     readingIndex,
+    sensorReading,
     shared,
     co2,
     awaitingEarth:

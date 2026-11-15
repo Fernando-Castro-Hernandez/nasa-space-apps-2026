@@ -5,6 +5,10 @@ import { setReadingIndex } from "@/features/demo/readingStore";
 import { setShared } from "@/features/crew/privacy";
 import { autonomy } from "@/features/crew/autonomy";
 import { casesWithCo2 } from "@/features/demo/demoStore";
+import {
+  type SavedReading,
+  saveSensorReading,
+} from "@/features/sensor/sensorReadingStore";
 import { setLocale } from "@/i18n";
 import {
   buildLunitoDashboard,
@@ -144,5 +148,96 @@ describe("dashboard de demostración", () => {
     act(() => setShared("ana", false));
     expect(result.current.mission.companion).toBeNull();
     expect(result.current.mission.ridge).toEqual([]);
+  });
+});
+
+const live = (reading: Partial<SavedReading> = {}): SavedReading => ({
+  bpm: 68,
+  spo2: 97,
+  hrv: null,
+  validSeconds: 58,
+  day: "2026-11-15",
+  takenAt: new Date(2026, 10, 15, 7, 5).getTime(),
+  ...reading,
+});
+const metric = (model: ReturnType<typeof buildLunitoDashboard>, key: string) =>
+  model.metrics.find((m) => m.key === key)!;
+
+describe("lectura real de la estación", () => {
+  test("sustituye a la lectura de muestra: valores, hora y origen", () => {
+    const model = buildLunitoDashboard({ sensorReading: live() });
+    expect(model.source).toBe("sensor");
+    expect(model.reading).toMatchObject({ bpm: 68, spo2: 97, time: "07:05" });
+    expect(metric(model, "bpm").value).toBe(68);
+    expect(metric(model, "spo2").value).toBe(97);
+    // La lectura de hoy es el último punto de la semana.
+    expect(metric(model, "bpm").week.at(-1)).toBe(68);
+    expect(model.status).toBe("verde");
+  });
+
+  test("sin intervalos entre latidos, la HRV de hoy queda sin medir y no se rellena", () => {
+    const sample = buildLunitoDashboard();
+    const model = buildLunitoDashboard({ sensorReading: live() });
+    expect(metric(model, "hrv").value).toBeNull();
+    // La semana se queda en los seis días anteriores, que la regla sigue
+    // leyendo: hoy no tiene punto.
+    expect(metric(model, "hrv").week).toEqual(
+      metric(sample, "hrv").week.slice(0, 6),
+    );
+    expect(metric(model, "hrv").status).toBe("verde");
+  });
+
+  test("con intervalos, la HRV medida entra a la lectura", () => {
+    const model = buildLunitoDashboard({ sensorReading: live({ hrv: 41 }) });
+    expect(metric(model, "hrv").value).toBe(41);
+    expect(metric(model, "hrv").week.at(-1)).toBe(41);
+    expect(model.reading.hrv).toBe(41);
+  });
+
+  test("las mismas reglas leen la lectura real: un pulso sobre lo habitual da Precaución", () => {
+    const model = buildLunitoDashboard({ sensorReading: live({ bpm: 96 }) });
+    expect(model.status).toBe("ambar");
+    expect(metric(model, "bpm").status).toBe("ambar");
+  });
+
+  test("una SpO2 muy baja no da Atención con una sola lectura; con dos seguidas, sí", () => {
+    const once = buildLunitoDashboard({ sensorReading: live({ spo2: 89 }) });
+    expect(once.status).toBe("ambar");
+
+    const twice = buildLunitoDashboard({
+      sensorReading: live({ spo2: 89, previous: { bpm: 70, spo2: 90 } }),
+    });
+    expect(twice.status).toBe("rojo");
+
+    // Si la lectura anterior era normal, la de ahora no queda confirmada.
+    const recovered = buildLunitoDashboard({
+      sensorReading: live({ spo2: 89, previous: { bpm: 70, spo2: 97 } }),
+    });
+    expect(recovered.status).toBe("ambar");
+  });
+
+  test("un escenario elegido en /demo manda sobre el sensor", () => {
+    const model = buildLunitoDashboard({
+      readingIndex: 2,
+      sensorReading: live(),
+    });
+    expect(model.source).toBe("demo");
+    expect(model.status).toBe("rojo");
+  });
+
+  test("el hook toma la lectura guardada hoy para el perfil activo, y solo para él", () => {
+    const { result } = renderHook(useLunitoDashboard);
+    act(() =>
+      saveSensorReading("ana", {
+        bpm: 66,
+        spo2: 99,
+        hrv: null,
+        validSeconds: 60,
+      }),
+    );
+    expect(result.current.source).toBe("sensor");
+    expect(result.current.reading).toMatchObject({ bpm: 66, spo2: 99 });
+    act(() => setActiveProfile("mei"));
+    expect(result.current.source).toBe("demo");
   });
 });

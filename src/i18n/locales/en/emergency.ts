@@ -50,6 +50,14 @@ export const emergency = {
       sensor: "Put the sensor on their finger",
       oxygen: "Check the oxygen in the med kit",
     },
+    // Lo que el paso del sensor va a registrar al marcarlo.
+    sensor: {
+      live: "Live: {bpm}\u00a0bpm · {spo2}%\u00a0SpO2",
+      waiting: "Sensor connected · waiting for a stable signal",
+      sample: "Sensor not connected · records a simulated sample",
+      connect: "Connect sensor",
+      connecting: "Connecting…",
+    },
   },
   // Dictar una nota: un toque empieza, otro guarda.
   dictate: {
@@ -67,6 +75,9 @@ export const emergency = {
     opened: "Case opened: {name} · {what}",
     // Entre el número y su unidad va un espacio duro (U+00A0): no se separan.
     vitals: "Sensor vitals: {bpm}\u00a0bpm, {spo2}%\u00a0SpO2",
+    // Los mismos signos cuando no salieron de la estación: se dice.
+    vitalsSimulated:
+      "Simulated sensor vitals: {bpm}\u00a0bpm, {spo2}%\u00a0SpO2",
     note: "“{text}”",
     groundOrder: "Ground instruction: {text}",
     orderDone: "Done: {text}",

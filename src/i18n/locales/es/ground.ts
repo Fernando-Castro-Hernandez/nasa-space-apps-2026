@@ -76,6 +76,8 @@ export const ground: Messages<typeof source> = {
     },
     meds: "Sin medicamentos registrados hoy. Alergias: ninguna registrada.",
     vitals: "{time} · {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2.",
+    vitalsSimulated:
+      "{time} · muestra simulada, sensor sin conectar: {bpm}\u00a0lpm, {spo2}\u00a0%\u00a0SpO2.",
     noVitals: "Aún sin signos registrados.",
     prototype:
       "Sensor de prototipo, no médico. El diagnóstico lo decide el cirujano.",

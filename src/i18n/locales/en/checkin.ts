@@ -5,8 +5,22 @@ export const checkin = {
   sensor: {
     title: "Place your finger on the sensor",
     caption: "Keep it still for 60 seconds.",
-    // El sensor de la demo no existe: se dice así.
+    // Sin la estación conectada la lectura es simulada: se dice así.
     simulated: "Simulated sensor for the demo",
+    unsupported:
+      "This browser can't connect to the sensor (it needs Chrome). Simulated sensor for the demo.",
+    live: "Live reading from the station sensor. Prototype, not a medical device.",
+    connect: "Connect sensor",
+    connecting: "Connecting…",
+    reconnect: "Reconnect sensor",
+    lost: "The sensor connection was lost.",
+    useSimulated: "Use a simulated reading",
+    waiting:
+      "Place your finger on the sensor. The first values take about 10 seconds.",
+    settling: "Reading your pulse… keep your finger still.",
+    moved: "Keep your finger still. Starting over.",
+    short: "The signal was too weak to save. Starting over.",
+    again: "Measure again",
     start: "Start reading",
     hold: "Keep your finger still",
     complete: "Reading complete",

@@ -12,6 +12,7 @@ export const common: Messages<typeof source> = {
   },
   emergency: "Emergencia",
   simulated: "simulado",
+  notMeasured: "sin medir",
   comingSoon: "Próximamente",
   notShared: "Sin compartir",
   notDiagnosis: "Prototipo, no es un diagnóstico.",
