@@ -23,7 +23,7 @@ Lee también, en este orden:
 
 ## Estado actual
 
-**El producto está construido** sobre lo que define [docs/SISTEMA.md](docs/SISTEMA.md): las pantallas de estilo Marea ([docs/DISENO.md](docs/DISENO.md)), el Worker con la API y la IA, la voz, y Lunito en 3D. Falta la base de datos compartida (D1) y el sensor real.
+**El producto está construido** sobre lo que define [docs/SISTEMA.md](docs/SISTEMA.md): las pantallas de estilo Marea ([docs/DISENO.md](docs/DISENO.md)), el Worker con la API y la IA, la voz, Lunito en 3D y la lectura del sensor real por Bluetooth (`src/features/sensor/`). Falta la base de datos compartida (D1); la línea base y el historial siguen simulados.
 
 - Construye lo que describen `docs/PRD.md` y `docs/HISTORIAS.md`, respetando la propiedad de `docs/REPARTO.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
 - Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.

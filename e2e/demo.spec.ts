@@ -104,7 +104,7 @@ test("paso 5: la emergencia se abre en la nave, llega a Tierra, Tierra responde 
     .getByRole("button", { name: /Put the sensor on their finger/ })
     .click();
   await expect(
-    page.getByText(/^Sensor vitals: 58\sbpm, 97%\sSpO2$/),
+    page.getByText(/^Simulated sensor vitals: 58\sbpm, 97%\sSpO2$/),
   ).toBeVisible();
 
   // Salir no cierra el caso: toda la app lo muestra.

@@ -7,6 +7,7 @@ import {
   type EmergencyCase,
   eventText,
   latestVitals,
+  isSimulatedVitals,
   vitalsOf,
   whatCode,
 } from "./caseLogic";
@@ -45,11 +46,16 @@ function assessment(c: EmergencyCase) {
   const event = latestVitals(c);
   const vitals = event && vitalsOf(event);
   return vitals
-    ? t("ground.sbar.vitals", {
-        time: formatTime(event.at),
-        bpm: formatNumber(vitals.bpm),
-        spo2: formatNumber(vitals.spo2),
-      })
+    ? t(
+        isSimulatedVitals(event)
+          ? "ground.sbar.vitalsSimulated"
+          : "ground.sbar.vitals",
+        {
+          time: formatTime(event.at),
+          bpm: formatNumber(vitals.bpm),
+          spo2: formatNumber(vitals.spo2),
+        },
+      )
     : t("ground.sbar.noVitals");
 }
 

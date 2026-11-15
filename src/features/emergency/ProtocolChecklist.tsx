@@ -1,8 +1,10 @@
 // Checklist del protocolo y de las indicaciones que llegan de Tierra. Cada
 // paso marcado queda en el registro con su hora. Cerrado el caso, la lista
 // queda como constancia y ya no se marca.
-import { Check } from "lucide-react";
-import { t } from "@/i18n";
+import { Bluetooth, Check } from "lucide-react";
+import { connectSensor } from "@/features/sensor/sensorStore";
+import { useLiveVitals } from "@/features/sensor/useLiveVitals";
+import { formatNumber, t } from "@/i18n";
 import {
   checkOrder,
   checkStep,
@@ -55,6 +57,21 @@ function Item({ text, doneAt, current, closed, onCheck, note }: ItemProps) {
 
 export function ProtocolChecklist({ c }: { c: EmergencyCase }) {
   const closed = c.closedAt !== undefined;
+  // El paso del sensor registra lo que la estación mide en ese momento; sin
+  // estación registra una muestra simulada, y se avisa antes de marcarlo.
+  const { link, vitals } = useLiveVitals();
+  const connected = link === "on";
+  const sensorPending = !closed && c.steps.sensor === undefined;
+  const sensorNote = !sensorPending
+    ? undefined
+    : vitals
+      ? t("emergency.protocol.sensor.live", {
+          bpm: formatNumber(vitals.bpm),
+          spo2: formatNumber(vitals.spo2),
+        })
+      : connected
+        ? t("emergency.protocol.sensor.waiting")
+        : t("emergency.protocol.sensor.sample");
   // Un solo paso "ahora": primero la indicación de Tierra pendiente, luego el
   // siguiente paso del protocolo.
   const nextOrder = c.orders.find((o) => o.doneAt === undefined)?.id;
@@ -91,10 +108,33 @@ export function ProtocolChecklist({ c }: { c: EmergencyCase }) {
             doneAt={c.steps[s.id]}
             closed={closed}
             current={!closed && s.id === nextStep}
-            onCheck={() => updateCase((x) => checkStep(x, s.id, Date.now()))}
+            note={s.vitals ? sensorNote : undefined}
+            onCheck={() =>
+              updateCase((x) =>
+                checkStep(
+                  x,
+                  s.id,
+                  Date.now(),
+                  s.vitals && connected ? vitals : undefined,
+                ),
+              )
+            }
           />
         ))}
       </ul>
+      {sensorPending && !connected && link !== "unsupported" && (
+        <button
+          type="button"
+          className="em-secondary em-tap"
+          disabled={link === "connecting"}
+          onClick={() => void connectSensor()}
+        >
+          <Bluetooth aria-hidden="true" />
+          {link === "connecting"
+            ? t("emergency.protocol.sensor.connecting")
+            : t("emergency.protocol.sensor.connect")}
+        </button>
+      )}
     </div>
   );
 }

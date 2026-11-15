@@ -9,6 +9,7 @@ import {
   eventText,
   latestVitals,
   openCase,
+  isSimulatedVitals,
   vitalsOf,
   whatCode,
   whatLabel,
@@ -42,10 +43,26 @@ describe("caso de emergencia", () => {
     expect(checkStep(c, "no-existe", min(1))).toBe(c);
   });
 
-  test("poner el sensor registra los signos", () => {
+  test("sin la estación, poner el sensor registra una muestra y la marca simulada", () => {
     const c = checkStep(opened(), "sensor", min(4));
-    expect(latestVitals(c)?.text).toMatch(/lpm/);
-    expect(vitalsOf(latestVitals(c)!)).toEqual({ bpm: 58, spo2: 97 });
+    const event = latestVitals(c)!;
+    expect(vitalsOf(event)).toEqual({ bpm: 58, spo2: 97 });
+    expect(isSimulatedVitals(event)).toBe(true);
+    expect(eventText(event)).toMatch(/^Signos simulados: 58/);
+  });
+
+  test("con la estación conectada pero sin señal estable, no inventa signos", () => {
+    const c = checkStep(opened(), "sensor", min(4), null);
+    expect(c.steps.sensor).toBe(min(4));
+    expect(latestVitals(c)).toBeUndefined();
+  });
+
+  test("con la estación conectada, registra lo que mide en ese momento", () => {
+    const c = checkStep(opened(), "sensor", min(4), { bpm: 64, spo2: 96 });
+    const event = latestVitals(c)!;
+    expect(vitalsOf(event)).toEqual({ bpm: 64, spo2: 96 });
+    expect(isSimulatedVitals(event)).toBe(false);
+    expect(eventText(event)).toMatch(/^Signos con sensor: 64/);
   });
 
   test("una nota vacía no se registra: el caso nunca inventa lo que alguien dijo", () => {
@@ -109,7 +126,7 @@ describe("el caso se lee en el idioma activo", () => {
     expect(c.events.map(eventText)).toEqual([
       "Case opened: Ana · Fainted",
       "Put the sensor on their finger",
-      "Sensor vitals: 58\u00a0bpm, 97%\u00a0SpO2",
+      "Simulated sensor vitals: 58\u00a0bpm, 97%\u00a0SpO2",
       // Lo que dijo una persona es una cita: no se traduce.
       "“le di oxígeno”",
       "Ground instruction: Mantener en reposo",

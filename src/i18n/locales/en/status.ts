@@ -1,6 +1,8 @@
 // Mi estado: indicadores, evolución y feed de la nave.
 export const status = {
   lastReading: "Last reading · {time}",
+  // Cuando la lectura de hoy salió de la estación, no del panel de demo.
+  sensorReading: "Measured with the sensor · {time}",
   indicators: "Your indicators",
   /** Peligro de NASA al que responde cada indicador: por qué importa. */
   hazard: "RIDGE · {hazard}",

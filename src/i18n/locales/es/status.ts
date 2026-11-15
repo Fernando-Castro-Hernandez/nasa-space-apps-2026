@@ -4,6 +4,7 @@ import type { status as source } from "../en/status";
 
 export const status: Messages<typeof source> = {
   lastReading: "Último registro · {time}",
+  sensorReading: "Medido con el sensor · {time}",
   indicators: "Tus indicadores",
   /** Peligro de NASA al que responde cada indicador: por qué importa. */
   hazard: "RIDGE · {hazard}",

@@ -34,6 +34,8 @@ export function MetricChart({
     values,
     metric.domain,
     baseline,
+    // La semana siempre tiene siete lugares, aunque hoy falte la lectura.
+    period === "week" ? WEEKDAYS.length : values.length,
   );
   const labels =
     period === "week"

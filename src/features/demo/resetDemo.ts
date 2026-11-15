@@ -7,6 +7,7 @@ import { resetShared } from "@/features/crew/privacy";
 import { saveCase } from "@/features/emergency/caseStore";
 import { resetDailyActions } from "@/features/medicine/actionStore";
 import { resetActiveProfile } from "@/features/profiles/activeProfile";
+import { resetSensorReadings } from "@/features/sensor/sensorReadingStore";
 import { resetVoiceLogs } from "@/features/voice/voiceLogStore";
 import { setCo2State } from "./demoStore";
 import { setReadingIndex } from "./readingStore";
@@ -14,6 +15,7 @@ import { setReadingIndex } from "./readingStore";
 export function resetDemo() {
   resetDayStart();
   resetVoiceLogs();
+  resetSensorReadings();
   resetDailyActions();
   resetEncouragement();
   resetActiveProfile();

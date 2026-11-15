@@ -39,6 +39,7 @@ export const home: Messages<typeof source> = {
     month: "Mes",
     metric: "Métrica",
     lastReading: "Último registro · {time}",
+    sensorReading: "Medido con el sensor · {time}",
     weekRange: "Rango semanal",
     monthRange: "Rango mensual",
     average: "Promedio",
