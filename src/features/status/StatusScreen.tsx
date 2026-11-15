@@ -15,6 +15,8 @@ import type { ScreenPoint } from "@/features/lunito/LunitoScene";
 import { anchorsFor, halfWidthFor, isNarrow } from "./sceneLayout";
 import { motionFor } from "@/features/lunito/motion";
 import { SAMPLE_BASELINE, SAMPLE_READINGS } from "@/data/sample";
+import { ME } from "@/data/crew";
+import { ShipFeedCard } from "./ShipFeedCard";
 import { SideCards } from "./SideCards";
 import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
 import { assessVitals } from "@/domain/vitals";
@@ -164,6 +166,8 @@ export function StatusScreen() {
           />
         </CardContent>
       </Card>
+
+      <ShipFeedCard personId={ME} />
 
       <p className="col-span-12 text-center text-xs text-muted-foreground">
         Prototipo, no es un diagnóstico. Sensor sin validación médica. Historial
