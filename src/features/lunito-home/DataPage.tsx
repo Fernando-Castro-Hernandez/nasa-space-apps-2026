@@ -92,7 +92,14 @@ export function DataPage({ data }: { data: LunitoDashboard }) {
               {value}
               <span>{unit}</span>
             </strong>
-            <p>{t("home.data.lastReading", { time: data.reading.time })}</p>
+            <p>
+              {t(
+                data.source === "sensor"
+                  ? "home.data.sensorReading"
+                  : "home.data.lastReading",
+                { time: data.reading.time },
+              )}
+            </p>
           </div>
           <MetricChart
             key={`${key}-${period}`}

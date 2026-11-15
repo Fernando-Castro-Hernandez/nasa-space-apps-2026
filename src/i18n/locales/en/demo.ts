@@ -16,6 +16,12 @@ export const demo = {
     viewGround: "See it in the Ground console",
   },
   reading: "Reading shown on Home",
+  // Cuando el perfil activo tiene hoy una lectura real de la estación.
+  sensor: {
+    using:
+      "{name} has a sensor reading from today ({bpm}\u00a0bpm, {spo2}%). With “{first}” selected, Home shows that reading instead of the sample.",
+    discard: "Discard the sensor reading",
+  },
   reset: {
     button: "Reset demo data",
     confirm:

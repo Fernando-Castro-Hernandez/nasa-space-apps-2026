@@ -381,7 +381,11 @@ export function DayCheckInScreen({ onDone, onSkip }: Props) {
               {t("checkin.saved")}
             </p>
             <p className="day-caption">{t("checkin.sensor.caption")}</p>
-            <SensorStep target={day.reading} onNext={() => send("next")} />
+            <SensorStep
+              target={day.reading}
+              profileId={day.profile.id}
+              onNext={() => send("next")}
+            />
           </>
         )}
         {phase === "reaccion" && (

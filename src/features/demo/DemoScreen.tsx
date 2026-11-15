@@ -8,7 +8,12 @@ import { crewMember } from "@/data/crew";
 import { DASHBOARD_READINGS } from "@/data/dashboard";
 import { openCase, WHAT_HAPPENED } from "@/features/emergency/caseLogic";
 import { saveCase } from "@/features/emergency/caseStore";
-import { t, type MessageKey } from "@/i18n";
+import { useActiveProfile } from "@/features/profiles/activeProfile";
+import {
+  clearSensorReading,
+  useSensorReading,
+} from "@/features/sensor/sensorReadingStore";
+import { formatNumber, t, type MessageKey } from "@/i18n";
 import { setCo2State, useCo2State, type Co2State } from "./demoStore";
 import { setReadingIndex, useReadingIndex } from "./readingStore";
 import { resetDemo } from "./resetDemo";
@@ -35,6 +40,8 @@ const commit = import.meta.env.VITE_COMMIT_SHA?.slice(0, 7) ?? "dev";
 export function DemoScreen() {
   const co2 = useCo2State();
   const reading = useReadingIndex();
+  const profile = useActiveProfile();
+  const sensorReading = useSensorReading(profile);
   const activeCase = useActiveCase();
   const [reset, setReset] = useState<"idle" | "confirm" | "done">("idle");
 
@@ -99,6 +106,25 @@ export function DemoScreen() {
             </Button>
           ))}
         </div>
+        {sensorReading && (
+          <div className="mt-2 flex flex-col items-start gap-2">
+            <p className="text-base text-muted-foreground">
+              {t("demo.sensor.using", {
+                name: crewMember(profile).name,
+                bpm: formatNumber(sensorReading.bpm),
+                spo2: formatNumber(sensorReading.spo2),
+                first: DASHBOARD_READINGS[0]!.name,
+              })}
+            </p>
+            <Button
+              variant="outline"
+              className="min-h-12 px-5 text-base"
+              onClick={() => clearSensorReading(profile)}
+            >
+              {t("demo.sensor.discard")}
+            </Button>
+          </div>
+        )}
       </fieldset>
 
       <div className="flex flex-col gap-2">

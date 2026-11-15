@@ -19,6 +19,11 @@ export const demo: Messages<typeof source> = {
     viewGround: "Ver en la consola de Tierra",
   },
   reading: "Lectura que muestra Inicio",
+  sensor: {
+    using:
+      "{name} tiene una lectura del sensor de hoy ({bpm}\u00a0lpm, {spo2}\u00a0%). Con “{first}” elegido, Inicio muestra esa lectura en vez de la de muestra.",
+    discard: "Quitar la lectura del sensor",
+  },
   reset: {
     button: "Reiniciar los datos de la demo",
     confirm:
