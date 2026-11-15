@@ -34,6 +34,10 @@ describe("pickCompanion", () => {
 
   it("la salida no expone datos de salud", () => {
     const c = pickCompanion([member("a", "ambar"), member("b", "verde")])!;
-    expect(Object.keys(c).toSorted()).toEqual(["action", "companionId", "needsId"]);
+    expect(Object.keys(c).toSorted()).toEqual([
+      "action",
+      "companionId",
+      "needsId",
+    ]);
   });
 });
