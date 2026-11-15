@@ -9,11 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { crewMember } from "@/data/crew";
+import { DASHBOARD_READINGS } from "@/data/dashboard";
 import { openCase } from "@/features/emergency/caseLogic";
 import { saveCase } from "@/features/emergency/caseStore";
 import { resetShared } from "@/features/crew/privacy";
 import { resetActiveProfile } from "@/features/profiles/activeProfile";
 import { CO2_MODULE, setCo2State, useCo2State } from "./demoStore";
+import { setReadingIndex, useReadingIndex } from "./readingStore";
 
 const CO2_LABEL = {
   normal: "Subir el CO2 de un módulo",
@@ -29,6 +31,7 @@ const Simulated = () => (
 
 export function DemoScreen() {
   const co2 = useCo2State();
+  const reading = useReadingIndex();
   const ana = crewMember("ana");
 
   return (
@@ -59,10 +62,29 @@ export function DemoScreen() {
           >
             Simular la emergencia de {ana.name}
           </Button>
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-1 text-sm font-medium">
+              Lectura que muestra Inicio
+            </legend>
+            <div className="grid grid-cols-3 gap-2">
+              {DASHBOARD_READINGS.map((r, i) => (
+                <Button
+                  key={r.name}
+                  variant={i === reading ? "default" : "outline"}
+                  aria-pressed={i === reading}
+                  className="h-12"
+                  onClick={() => setReadingIndex(i)}
+                >
+                  {r.name}
+                </Button>
+              ))}
+            </div>
+          </fieldset>
           <Button
             variant="outline"
             className="h-12 justify-start px-4"
             onClick={() => {
+              setReadingIndex(0);
               setCo2State("normal");
               saveCase(null);
               resetActiveProfile();
