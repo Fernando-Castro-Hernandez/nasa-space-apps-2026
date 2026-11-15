@@ -21,17 +21,13 @@ export function ReferenceHeader({
 }
 
 const links = [
-  { label: "Inicio", href: "/referencia", Icon: House },
+  { label: "Inicio", href: "/", Icon: House },
   { label: "Equipo", href: "/tripulacion", Icon: Users },
   { label: "Tareas", href: "/tareas", Icon: CalendarCheck },
   { label: "Ajustes", href: "/ajustes", Icon: Settings },
 ];
 
-export function ReferenceNav({
-  pathname = "/referencia",
-}: {
-  pathname?: string;
-}) {
+export function ReferenceNav({ pathname }: { pathname: string }) {
   return (
     <nav className="reference-nav" aria-label="Navegación principal">
       {links.map(({ label, href, Icon }) => (

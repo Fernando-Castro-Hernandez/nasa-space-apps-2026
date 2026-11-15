@@ -1,0 +1,183 @@
+/* Sizes in cqw against .team-content, which caps its own width on desktop so
+   the phone design never grows past 480px. */
+.team-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.team-content {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  container-type: inline-size;
+  padding: 1.1cqw 5.3cqw 0;
+}
+.team-content h1 {
+  margin: 0;
+  font-size: 8.6cqw;
+  line-height: 1.12;
+  font-weight: 850;
+  letter-spacing: -0.15cqw;
+  color: var(--reference-ink-strong);
+}
+.team-hint {
+  margin: 1.5cqw 0 0;
+  font-size: 4.6cqw;
+}
+.team-scene {
+  position: relative;
+  flex: 1;
+  min-height: 100cqw;
+  margin: 4cqw -5.3cqw 0;
+}
+.team-scene .marea {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.team-lunito {
+  position: absolute;
+  width: 30%;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5cqw;
+  color: var(--reference-ink);
+  font-size: 5.6cqw;
+  font-weight: 800;
+}
+.team-lunito img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.team-lunito img[data-unshared] {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.team-lunito[aria-pressed="true"] span {
+  position: relative;
+  color: var(--reference-ink-strong);
+}
+/* Ring under the selected Lunito, as in the reference. */
+.team-lunito[aria-pressed="true"] span::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3.4cqw;
+  width: 26cqw;
+  height: 7cqw;
+  translate: -50% 0;
+  border: 0.5cqw solid var(--reference-violet-soft);
+  border-radius: 50%;
+  background: var(--reference-lavender-50);
+  opacity: 0.7;
+  z-index: -1;
+}
+.team-companion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  margin: 5cqw 0 6cqw;
+  padding-top: 4.5cqw;
+  border-top: 1px solid var(--reference-line);
+  font-size: 4.6cqw;
+}
+.team-companion p {
+  margin: 0;
+}
+.team-companion strong {
+  font-weight: 800;
+  color: var(--reference-ink-strong);
+}
+.team-cheer {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2cqw;
+  padding: 0 4.5cqw;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  color: var(--reference-action);
+  font-size: 4.2cqw;
+  font-weight: 800;
+}
+.team-cheer svg {
+  width: 5.5cqw;
+  height: 5.5cqw;
+}
+.team-cheer-solid {
+  background: var(--reference-action);
+  color: var(--reference-surface);
+}
+.team-cheer:disabled {
+  opacity: 0.75;
+}
+.team-sheet {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  padding: 9cqw 5.3cqw 8cqw;
+  border-radius: 6cqw 6cqw 0 0;
+  border: 1px solid var(--reference-line);
+  border-bottom: 0;
+  background: var(--reference-surface);
+  box-shadow: 0 -2cqw 6cqw var(--reference-shadow-violet);
+}
+.team-sheet-close {
+  position: absolute;
+  top: 1cqw;
+  right: 2cqw;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--reference-ink);
+}
+.team-sheet-close svg {
+  width: 5.5cqw;
+  height: 5.5cqw;
+}
+.team-sheet h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 2cqw;
+  font-size: 6.4cqw;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.team-sheet-info p {
+  margin: 1cqw 0 0;
+  font-size: 4.4cqw;
+}
+.team-sheet-check {
+  width: 6.4cqw;
+  height: 6.4cqw;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--reference-ok);
+  color: var(--reference-surface);
+}
+.team-sheet h2[data-status="ambar"] .team-sheet-check {
+  background: var(--reference-warn-ink);
+}
+.team-sheet-check svg {
+  width: 4.4cqw;
+  height: 4.4cqw;
+  stroke-width: 4;
+}

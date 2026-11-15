@@ -48,6 +48,10 @@
   padding-top: env(safe-area-inset-top);
   font-size: clamp(15px, 3.9vw, 22px);
 }
+/* Órbita's global styles give headings Unbounded; these screens use Nunito. */
+.reference-app :is(h1, h2, h3) {
+  font-family: inherit;
+}
 .reference-app button,
 .reference-app a {
   -webkit-tap-highlight-color: transparent;

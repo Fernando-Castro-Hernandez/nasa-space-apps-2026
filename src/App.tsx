@@ -17,15 +17,12 @@ export function App() {
     document.title = `${route.title} · Nóstos`;
   }, [route.title]);
 
-  // The morning check-in only gates the reference Inicio, never Órbita.
-  if (
-    pathname === "/buenos-dias" ||
-    (route.path === "/referencia" && dayPending)
-  ) {
+  // The day starts with the morning check-in before Inicio.
+  if (pathname === "/buenos-dias" || (route.path === "/" && dayPending)) {
     const completeDay = () => {
       finishDayStart();
       setDayPending(false);
-      navigate("/referencia");
+      navigate("/");
     };
     return <DayCheckInScreen onDone={completeDay} />;
   }

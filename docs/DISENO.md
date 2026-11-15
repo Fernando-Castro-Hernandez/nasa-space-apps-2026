@@ -14,15 +14,17 @@ La referencia integral del rediseño está en [diseno/prototipos/orbita.html](di
 - Cada responsable porta su pantalla según [REPARTO.md](REPARTO.md). Ariff conserva en exclusiva la estructura global, navegación y tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
 - El selector de paleta, voz y estado de la esquina es una herramienta de comparación de la maqueta y no forma parte del producto final.
 
-## Inicio de referencia · `/referencia` (2026-11-15)
+## Pantallas Marea de la app (2026-11-15)
 
-Inicio tal como lo dibujan las PNG ([secuencia de inicio](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png) y [Así estás hoy](diseno/referencias/06-hoy-marea.png)) vive aparte en `/referencia` para compararlo con Órbita, que sigue mandando en `/`. Se abre desde Ajustes.
+Por decisión de Ariff, estas pantallas reemplazan a las de Órbita en la barra inferior. Mandan sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
 
-- Carrusel de dos páginas en celular: Así estás hoy y Tus datos, que continúa hasta Tu misión. Desde 768 px las dos páginas se ven lado a lado, separadas por una línea fina.
-- Una sola gráfica grande con pestañas por métrica y una sola etiqueta de valor: el último registro o el punto señalado.
-- Sin la fuente exacta ni originales limpios del personaje: se usa Nunito variable como aproximación y las tres poses se recrearon en PNG con autorización.
-- El inicio del día (`/buenos-dias`) solo antecede a `/referencia`, no a Órbita.
-- Sin backend todavía: datos de demostración centralizados.
+- **Inicio (`/`):** carrusel de dos páginas en celular (Así estás hoy y Tus datos, que sigue hasta Tu misión); desde 768 px las dos se ven lado a lado. Una sola gráfica con pestañas por métrica y una sola etiqueta de valor.
+- **Equipo (`/tripulacion`):** un Lunito por compañero; tocarlo abre una hoja con su estado público. Quien no comparte (o está en rojo) se ve como "Sin compartir".
+- **Tareas (`/tareas`):** check-in del día y acciones del día con progreso por perfil; acceso al Botiquín al final.
+- **Configuración (`/ajustes`):** perfil (abre el selector), privacidad real, información de la misión y accesos a Tierra, Demo y repetir el inicio del día.
+- Lo que el producto aún no tiene (estilos de Lunito, notificaciones, recordatorios) se dibuja desactivado con "Próximamente".
+- Sin la fuente exacta ni originales limpios del personaje: Nunito variable como aproximación y las tres poses recreadas con autorización.
+- El inicio del día (`/buenos-dias`) antecede a Inicio una vez por día.
 
 ## Referencias finales (modelo exacto del frontend)
 
