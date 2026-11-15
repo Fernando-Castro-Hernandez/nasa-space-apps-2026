@@ -6,11 +6,12 @@ Guía para preparar en Blender el modelo de Lunito para que pueda **hablar, expr
 
 ## 1. Qué hay hoy
 
-| Pieza               | Dónde                                    | Estado                                                                                                                                                                                                                |
-| ------------------- | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Modelo en la app    | `public/lunito.glb`                      | Hecho desde el modelo de Meshy: 10 partes con nombre, unos 34k triángulos, 1.2 MB, 3 texturas JPEG. Sin shape keys ni animaciones. Los materiales no declaran `metallic`, así que glTF los toma como metálicos (1.0). |
-| Código que lo anima | `src/features/lunito/useLunitoMotion.ts` | Busca cada parte **por nombre** y la mueve con datos reales: la pancita late con el pulso, las branquias brillan con el SpO2, el cuerpo respira con la HRV, los ojos parpadean.                                       |
-| Referencia visual   | `docs/diseno/lunito-hoja.jpg`            | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                               |
+| Pieza               | Dónde                                    | Estado                                                                                                                                                                                                                       |
+| ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modelo en la app    | `public/lunito.glb`                      | Hecho desde el modelo de Meshy: 12 partes con nombre (las 10 originales, `mouth` y `tail`), unos 37k triángulos, 1.3 MB, 2 texturas JPEG. Con las shape keys de §3 y §4, sin animaciones, `metallic = 0`. Faltan los brazos. |
+| Scripts de Blender  | `art/lunito/blender/`                    | Rehacen el modelo desde el GLB original, en orden (`01` a `08`), con `blender -b -P`. `90_preview_grid.py` saca las capturas de cada forma.                                                                                  |
+| Código que lo anima | `src/features/lunito/useLunitoMotion.ts` | Busca cada parte **por nombre** y la mueve con datos reales: la pancita late con el pulso, las branquias brillan con el SpO2, el cuerpo respira con la HRV, los ojos parpadean.                                              |
+| Referencia visual   | `docs/diseno/lunito-hoja.jpg`            | Frente, perfil, espalda y tres cuartos.                                                                                                                                                                                      |
 
 **No se rehace el modelo.** Se parte de `public/lunito.glb` y se le agregan piezas. El código anima todo; el GLB no lleva animaciones.
 
@@ -37,12 +38,13 @@ Reglas:
 
 ## 3. La boca (`mouth`)
 
-Una malla aparte, pegada a la cara (unos 0.002 de separación para que no parpadee contra el cuerpo):
+Una malla aparte, pegada a la cara (0.004 de separación: la pancita crece unos 0.002 al latir y con menos margen atravesaría la boca):
 
 - Interior morado oscuro `#2a0f3d`, roughness 0.8. Opcional: lengua rosa `#ff7fb6` como segundo material de la misma malla.
 - Topología con **al menos 4 anillos concéntricos** alrededor de la abertura; sin eso las formas se deforman mal.
 - La forma base (`Basis`) es la **sonrisa cerrada** de la hoja de personaje.
-- Lo ideal es borrar la sonrisa pintada de la textura del cuerpo (Texture Paint con clonado) para que no se vean dos bocas. Si no da el tiempo, la `Basis` se coloca exactamente encima de la sonrisa pintada.
+- La sonrisa original ya no está: se borró de la textura y se alisó el surco que tenía esculpido en `body` y `belly` (scripts `02` y `03`). Así no se ven dos bocas cuando la malla se cierra en "o", "u" o "m".
+- Las expresiones (`mouthSmile`, `mouthPucker`) se pueden sumar a cualquier visema. La lengua solo la sacan los visemas.
 
 ### Formas para hablar (shape keys de `mouth`)
 
@@ -79,6 +81,12 @@ Los mismos nombres en los dos ojos:
 | `eyeHappy` | Ojos felices (^ ^)                             |
 | `eyeWide`  | Ojos abiertos de sorpresa o atención           |
 
+Cómo están hechas: cada ojo tapa un hueco de `body`, así que no se aplasta. La malla del ojo lleva además un párpado color piel y una línea oscura, plegados bajo el borde de arriba; `eyeBlink` y `eyeHappy` los despliegan de arriba hacia abajo.
+
+- `eyeBlink` y `eyeHappy` **no se suman entre sí**: el código usa una u otra (si está feliz, el parpadeo no hace falta).
+- `eyeWide` se puede combinar con cualquier forma de boca.
+- El parpadeo por escala (`scale.y`) deja ver el hueco del cuerpo: conviene cambiarlo por `eyeBlink`.
+
 **No hay expresiones tristes ni enojadas.** Regla 1 de Lunito: refleja, nunca sufre. Cuando la persona está mal, Lunito la cuida (sonrisa suave, ojos atentos), no se pone triste.
 
 ## 5. Brazos y cola
@@ -106,27 +114,28 @@ Todo lo que se haga por MCP se guarda también como script en `art/lunito/blende
 
 ### 6.1 Orden de trabajo
 
-| #   | Paso                                                                | Listo cuando…                                                   |
-| --- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | Importar `public/lunito.glb` y guardar el `.blend` (fuera del repo) | Se ve igual que en la app, con las 10 partes por nombre         |
-| 2   | Crear `mouth` y sus shape keys (§3)                                 | Las 8 formas y las 2 expresiones se ven bien solas y combinadas |
-| 3   | Shape keys de los ojos (§4)                                         | `eyeBlink` cierra el ojo completo                               |
-| 4   | Materiales: `metallic = 0`                                          | Ya no se ve metálico                                            |
-| 5   | Separar `arm_L`, `arm_R` y `tail` (§5)                              | Rotar cada parte 30° no deja huecos                             |
-| 6   | Exportar, optimizar y validar (§7)                                  | El script de revisión pasa y la app carga el modelo             |
+| #   | Paso                                                                           | Listo cuando…                                                   |
+| --- | ------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| 1   | Importar el GLB original (`01_import.py` lo saca de git) y guardar el `.blend` | Se ve igual que en la app, con las 10 partes por nombre         |
+| 2   | Crear `mouth` y sus shape keys (§3)                                            | Las 8 formas y las 2 expresiones se ven bien solas y combinadas |
+| 3   | Shape keys de los ojos (§4)                                                    | `eyeBlink` cierra el ojo completo                               |
+| 4   | Materiales: `metallic = 0`                                                     | Ya no se ve metálico                                            |
+| 5   | Separar `arm_L`, `arm_R` y `tail` (§5)                                         | Rotar cada parte 30° no deja huecos                             |
+| 6   | Exportar, optimizar y validar (§7)                                             | El script de revisión pasa y la app carga el modelo             |
 
 ## 7. Exportar, optimizar y validar
 
 **Exportar** (`bpy.ops.export_scene.gltf`): `export_format='GLB'`, `export_yup=True`, `export_apply=False` (para no destruir las shape keys), `export_morph=True`, `export_morph_normal=False`, `export_animations=False`.
 
-**Optimizar** paso por paso, sin `optimize` (une mallas y borraría las partes con nombre) y sin `simplify` (rompe las shape keys):
+**Optimizar** paso por paso, sin `optimize` (une mallas y borraría las partes con nombre), sin `simplify` (rompe las shape keys) y sin `meshopt`:
 
 ```bash
 pnpm dlx @gltf-transform/cli dedup   art/lunito/out/lunito_raw.glb art/lunito/out/a.glb
 pnpm dlx @gltf-transform/cli prune   art/lunito/out/a.glb art/lunito/out/b.glb
-pnpm dlx @gltf-transform/cli resize  art/lunito/out/b.glb art/lunito/out/c.glb --width 1024 --height 1024
-pnpm dlx @gltf-transform/cli meshopt art/lunito/out/c.glb public/lunito.glb
+pnpm dlx @gltf-transform/cli resize  art/lunito/out/b.glb public/lunito.glb --width 1024 --height 1024
 ```
+
+`meshopt` cuantiza las posiciones y, para compensar, le pone escala y traslación a cada parte: el origen se mueve (hasta 0.11 en las branquias) y el código pivotaría en otro punto. Sin él, el modelo pesa 1.3 MB.
 
 Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es temporal y está en `.gitignore`.
 
@@ -134,7 +143,7 @@ Meta: **2 MB o menos**. No usar Draco ni KTX2. La carpeta `art/lunito/out/` es t
 
 - `pnpm dlx @gltf-transform/cli validate public/lunito.glb`: 0 errores.
 - `pnpm dlx @gltf-transform/cli inspect public/lunito.glb`: revisar partes y número de shape keys.
-- `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si hay animaciones o si pesa más de 2 MB.
+- `art/lunito/check-glb.mjs` (Node sin dependencias, lee el JSON del GLB): falla si falta alguna parte del §2, alguna shape key de §3 o §4 (en `mesh.extras.targetNames`), si algún material tiene `metallic` distinto de 0, si alguna parte trae escala propia (origen movido), si hay animaciones o si pesa más de 2 MB. Los brazos están como pendientes: avisa, pero no falla, hasta que se entreguen.
 - Vista previa con sliders de cada shape key: arrastrar el GLB a https://gltf-viewer.donmccurdy.com/ (se abre en el navegador, no se sube).
 - En la app: `pnpm dev` y abrir Mi Lunito. Debe verse y moverse igual que antes; las partes nuevas todavía no se animan.
 
