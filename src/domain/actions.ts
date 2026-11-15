@@ -28,6 +28,12 @@ const CATALOG: CatalogEntry[] = [
     source: SOURCES.nhsRepeat,
   },
   {
+    id: "onboard-protocol",
+    text: "Sigue el protocolo a bordo mientras responde Tierra",
+    rules: ["distance-waiting", "distance-nolink"],
+    source: SOURCES.ntrsNoComm,
+  },
+  {
     id: "ventilation",
     text: "Revisa la ventilación del módulo",
     rules: ["co2-high"],

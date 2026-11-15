@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { actionsFor, MAX_ACTIONS, ROUTINE, RULES_WITH_ACTION } from "./actions";
+import { distanceRule } from "./distanceRule";
 import { environmentalEvent, withEnvironmentalEvent } from "./environment";
 import type { Finding } from "./finding";
 import { assessDay, baselinesFrom, reasonLine, summarize } from "./semaphore";
@@ -167,5 +168,33 @@ describe("acciones del día (HU-14)", () => {
     const [a] = actionsFor([f("hrv-low", "ambar")]);
     expect(a!.id).toBe("breathing");
     expect(a!.source).toBeNull();
+  });
+});
+
+describe("luz D: ¿podemos contar con Tierra ahora?", () => {
+  const link = { delayMinutes: 14, linkUp: true, awaitingEarth: false };
+
+  test("enlace activo y sin casos esperando: Bien, con el tiempo de respuesta", () => {
+    const f = distanceRule(link);
+    expect(f.status).toBe("verde");
+    expect(f.reason).toBe("Tierra responde en ~28 min");
+  });
+
+  test("un caso esperando a Tierra o sin enlace: Precaución, nunca Atención", () => {
+    expect(distanceRule({ ...link, awaitingEarth: true }).status).toBe("ambar");
+    const off = distanceRule({ ...link, linkUp: false, awaitingEarth: true });
+    expect(off.id).toBe("distance-nolink");
+    expect(off.status).toBe("ambar");
+  });
+
+  test("enciende la D del panel RIDGE y propone seguir el protocolo a bordo", () => {
+    const a = assessDay({
+      baselines: {},
+      earth: { ...link, awaitingEarth: true },
+    });
+    expect(a.byHazard.D).toBe("ambar");
+    expect(actionsFor(a.findings).map((x) => x.id)).toEqual([
+      "onboard-protocol",
+    ]);
   });
 });

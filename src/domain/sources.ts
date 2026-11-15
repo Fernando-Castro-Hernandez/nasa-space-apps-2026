@@ -43,4 +43,12 @@ export const SOURCES = {
     name: "OCHMO-TB-031",
     url: "https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-031-exercise-overview.pdf",
   },
+  ntrsNoComm: {
+    name: "NTRS 20100016333",
+    url: "https://ntrs.nasa.gov/citations/20100016333",
+  },
+  nasaDelay: {
+    name: "NASA, comunicaciones espaciales",
+    url: "https://www.nasa.gov/centers-and-facilities/goddard/space-communications-7-things-you-need-to-know/",
+  },
 } satisfies Record<string, Source>;

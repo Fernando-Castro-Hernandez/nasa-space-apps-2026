@@ -9,6 +9,7 @@ import {
   HAZARD_NAME,
   worst,
 } from "@/domain/finding";
+import { distanceRule, type EarthLink } from "@/domain/distanceRule";
 import { co2Rule, exerciseRule, radiationRule } from "@/domain/shipRules";
 import {
   type Confirmable,
@@ -56,6 +57,8 @@ export type DayInput = {
   lapses?: number;
   /** Última lectura del sensor, para el rojo con confirmación. */
   latest?: { bpm?: Confirmable; spo2?: Confirmable };
+  /** Enlace con Tierra: mueve la luz D (Distancia). */
+  earth?: EarthLink;
   ship?: {
     co2OneHourMmhg?: number;
     doseMsv?: number;
@@ -89,6 +92,7 @@ export function assessDay(d: DayInput): DayAssessment {
   if (ship.doseMsv !== undefined) findings.push(radiationRule(ship.doseMsv));
   if (ship.exerciseLast7Days !== undefined)
     findings.push(exerciseRule(ship.exerciseLast7Days));
+  if (d.earth) findings.push(distanceRule(d.earth));
   return summarize(findings);
 }
 
