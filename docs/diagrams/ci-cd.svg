@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -20 1720 780" width="1720" height="780">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#1e1e1e" />
+    </marker>
+  </defs>
+  <rect x="0" y="-20" width="1720" height="780" fill="#ffffff" />
+  <rect x="360" y="110" width="970" height="480" rx="8" ry="8" fill="#f8f9fa" stroke="#495057" stroke-width="2" opacity="0.6" stroke-dasharray="8 4" />
+  <rect x="40" y="150" width="240" height="80" rx="8" ry="8" fill="#ffec99" stroke="#f08c00" stroke-width="2" opacity="1" />
+  <rect x="40" y="310" width="240" height="80" rx="8" ry="8" fill="#ffec99" stroke="#f08c00" stroke-width="2" opacity="1" />
+  <rect x="40" y="470" width="240" height="80" rx="8" ry="8" fill="#ffec99" stroke="#f08c00" stroke-width="2" opacity="1" />
+  <rect x="400" y="310" width="220" height="80" rx="8" ry="8" fill="#a5d8ff" stroke="#1971c2" stroke-width="2" opacity="1" />
+  <rect x="700" y="300" width="250" height="100" rx="8" ry="8" fill="#a5d8ff" stroke="#1971c2" stroke-width="2" opacity="1" />
+  <rect x="1060" y="310" width="230" height="80" rx="8" ry="8" fill="#b2f2bb" stroke="#2f9e44" stroke-width="2" opacity="1" />
+  <rect x="1420" y="150" width="260" height="80" rx="8" ry="8" fill="#dee2e6" stroke="#495057" stroke-width="2" opacity="1" />
+  <rect x="1420" y="310" width="260" height="80" rx="8" ry="8" fill="#d0bfff" stroke="#7048e8" stroke-width="2" opacity="1" />
+  <rect x="1420" y="470" width="260" height="80" rx="8" ry="8" fill="#d0bfff" stroke="#7048e8" stroke-width="2" opacity="1" />
+  <rect x="40" y="640" width="520" height="80" rx="8" ry="8" fill="#ffd8a8" stroke="#e8590c" stroke-width="2" opacity="1" />
+  <rect x="600" y="640" width="600" height="80" rx="8" ry="8" fill="#dee2e6" stroke="#495057" stroke-width="2" opacity="1" />
+  <rect x="1240" y="640" width="440" height="80" rx="8" ry="8" fill="#ffc9c9" stroke="#e03131" stroke-width="2" opacity="1" />
+  <polyline points="280,190 320,190 320,332 400,332" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="280,350 400,350" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="280,510 320,510 320,368 400,368" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="620,350 700,350" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="950,350 1060,350" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="825,300 825,190 1420,190" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="1290,350 1420,350" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <polyline points="1175,390 1175,510 1420,510" fill="none" stroke="#1e1e1e" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="40" y="48" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="28" fill="#1e1e1e" text-anchor="start">
+    <tspan x="40" dy="0">Nóstos · CI/CD</tspan>
+  </text>
+  <text x="160" y="114" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="middle">
+    <tspan x="160" dy="0">Qué lo dispara</tspan>
+  </text>
+  <text x="1550" y="114" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="middle">
+    <tspan x="1550" dy="0">Qué produce</tspan>
+  </text>
+  <text x="160" y="186" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="160" dy="0">PR hacia</tspan>
+    <tspan x="160" dy="20">staging o main</tspan>
+  </text>
+  <text x="160" y="346" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="160" dy="0">Merge a staging</tspan>
+    <tspan x="160" dy="20">(es un push)</tspan>
+  </text>
+  <text x="160" y="506" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="160" dy="0">Merge a main</tspan>
+    <tspan x="160" dy="20">(es un push)</tspan>
+  </text>
+  <text x="372" y="134" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#495057" text-anchor="start">
+    <tspan x="372" dy="0">Workflow CI · un solo job</tspan>
+  </text>
+  <text x="510" y="346" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="510" dy="0">pnpm install</tspan>
+    <tspan x="510" dy="20">--frozen-lockfile</tspan>
+  </text>
+  <text x="825" y="336" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="825" dy="0">pnpm check</tspan>
+    <tspan x="825" dy="20">formato · lint · tipos</tspan>
+    <tspan x="825" dy="20">pruebas · build</tspan>
+  </text>
+  <text x="1175" y="346" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1175" dy="0">wrangler deploy</tspan>
+    <tspan x="1175" dy="20">solo en push</tspan>
+  </text>
+  <text x="1550" y="186" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1550" dy="0">Resultado en el PR</tspan>
+    <tspan x="1550" dy="20">verde = se puede hacer merge</tspan>
+  </text>
+  <text x="1550" y="346" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1550" dy="0">Sitio de staging</tspan>
+    <tspan x="1550" dy="20">Cloudflare Workers</tspan>
+  </text>
+  <text x="1550" y="506" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1550" dy="0">Sitio de producción</tspan>
+    <tspan x="1550" dy="20">Cloudflare Workers</tspan>
+  </text>
+  <text x="1005" y="338" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1005" dy="0">si es push</tspan>
+  </text>
+  <text x="839" y="178" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="start">
+    <tspan x="839" dy="0">si es PR</tspan>
+  </text>
+  <text x="1355" y="338" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1355" dy="0">desde staging</tspan>
+  </text>
+  <text x="1189" y="498" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="14" fill="#1e1e1e" text-anchor="start">
+    <tspan x="1189" dy="0">desde main</tspan>
+  </text>
+  <text x="300" y="676" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="300" dy="0">Antes de promover a main: pnpm e2e en local</tspan>
+    <tspan x="300" dy="20">Playwright no corre en el CI</tspan>
+  </text>
+  <text x="900" y="676" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="900" dy="0">Recortes: un solo job · sin E2E en el CI</tspan>
+    <tspan x="900" dy="20">sin previews por PR · sin hooks de git</tspan>
+  </text>
+  <text x="1460" y="676" font-family="Virgil, Segoe UI Emoji, Helvetica, Arial, sans-serif" font-size="16" fill="#1e1e1e" text-anchor="middle">
+    <tspan x="1460" dy="0">El despliegue está apagado hasta</tspan>
+    <tspan x="1460" dy="20">configurar Cloudflare (DEPLOY_ENABLED)</tspan>
+  </text>
+</svg>

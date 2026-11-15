@@ -1,0 +1,26 @@
+@keyframes orbit-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@media (max-width: 900px) {
+  .orbita-home {
+    grid-template-columns: 1fr;
+  }
+  .orbita-today {
+    border-right: 0;
+    border-bottom: 1px solid var(--orbit-line);
+    padding: 24px 16px 32px;
+  }
+  .orbita-side {
+    padding: 24px 16px;
+  }
+}
+@media (max-width: 600px) {
+  .orbita-tasks-page {
+    padding: 16px;
+  }
+  .orbita-checkin strong {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,91 @@
+:root {
+  --orbit-line: #2a1f5724;
+  --orbit-shadow: 0 16px 40px -20px #2a1f5730;
+}
+body {
+  font-family: "Nunito Variable", "Nunito", system-ui, sans-serif;
+  line-height: 1.5;
+}
+h1,
+h2,
+h3,
+[data-slot="card-title"] {
+  text-wrap: balance;
+  font-weight: 800;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 4px;
+}
+[data-slot="card"],
+.orbita-panel {
+  border-radius: 24px;
+  box-shadow: var(--orbit-shadow);
+  background: var(--card);
+}
+[data-slot="card"] {
+  --card-spacing: 24px;
+}
+/* Todo botón del catálogo mide al menos 48 px de alto (uso en microgravedad). */
+[data-slot="button"] {
+  border-radius: 999px;
+  min-height: 48px;
+}
+.orbita-kicker {
+  font:
+    600 12px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 100;
+  padding: 12px 16px;
+  border-radius: 99px;
+  background: var(--card);
+  color: var(--primary);
+  font-weight: 800;
+  box-shadow: var(--orbit-shadow);
+}
+.skip-link:focus {
+  top: 12px;
+}
+.orbita-panel {
+  padding: 24px;
+}
+.orbita-setting-link {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.orbita-tasks-page {
+  max-width: 1100px;
+  margin: auto;
+  padding: 24px;
+  display: grid;
+  gap: 40px;
+}
+.orbita-task {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.orbita-task:has(:checked) span {
+  text-decoration: line-through;
+  color: var(--muted-foreground);
+}
+.orbita-section-title {
+  font-size: 30px;
+}

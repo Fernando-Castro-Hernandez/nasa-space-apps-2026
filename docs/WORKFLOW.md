@@ -1,14 +1,36 @@
 # Flujo de trabajo
 
+![Flujo de ramas](diagrams/flujo-git.png)
+
 ## Ramas
 
-| Rama       | Para qué sirve                                                          | Cómo recibe cambios                 |
-| ---------- | ----------------------------------------------------------------------- | ----------------------------------- |
-| `main`     | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
-| `staging`  | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
-| `feat/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
+| Rama            | Para qué sirve                                                          | Cómo recibe cambios                 |
+| --------------- | ----------------------------------------------------------------------- | ----------------------------------- |
+| `main`          | Lo que se entrega y se muestra en el demo. Siempre debe funcionar.      | Solo por PR desde `staging`.        |
+| `staging`       | Integración: aquí se juntan y se prueban los cambios de todo el equipo. | Solo por PR desde ramas de trabajo. |
+| `<prefijo>/...` | El trabajo de una persona sobre un cambio concreto.                     | Commits directos de quien la creó.  |
 
 `staging` es la rama por defecto del repo: al clonar quedas en ella y los PRs nuevos apuntan a ella.
+
+### Nombres de rama
+
+Cada rama de trabajo empieza con el prefijo de quien la crea, en mayúscula, seguido de una descripción corta en minúsculas, sin acentos y con guiones:
+
+```
+<prefijo>/<descripcion-corta>
+F/pantalla-inicio
+```
+
+| Integrante | Prefijo |
+| ---------- | ------- |
+| Mateo      | `M/`    |
+| Fernando   | `F/`    |
+| Ariff      | `AR/`   |
+| Angie      | `AN/`   |
+| Viridiana  | `V/`    |
+| Jenni      | `J/`    |
+
+Ariff y Angie usan dos letras porque comparten la `A`.
 
 ## Paso a paso
 
@@ -17,19 +39,19 @@
    ```bash
    git switch staging
    git pull
-   git switch -c feat/nombre-corto
+   git switch -c F/nombre-corto
    ```
 
-2. Trabaja y haz commits pequeños. Antes de subir, corre `pnpm check`.
-
-3. Sube la rama y abre el PR hacia `staging`:
+2. Sube la rama y abre el PR **en borrador** hacia `staging`, con dos líneas de qué vas a hacer. Así todo el equipo ve en qué trabaja cada quien sin necesitar issues:
 
    ```bash
-   git push -u origin feat/nombre-corto
-   gh pr create --base staging
+   git push -u origin F/nombre-corto
+   gh pr create --base staging --draft
    ```
 
-4. Cuando el CI esté en verde y alguien más lo haya revisado, se hace merge con **squash**. Eso despliega el sitio de staging.
+3. Trabaja y haz commits pequeños. Antes de pedir revisión, corre `pnpm check`, revisa [LESSONS.md](LESSONS.md) y marca el PR como listo (`gh pr ready`).
+
+4. Cuando el CI esté en verde y Fernando lo haya aprobado, se hace merge con **squash**. Eso despliega el sitio de staging. Fernando es el dueño del código en [CODEOWNERS](../.github/CODEOWNERS): GitHub le pide revisión en cada PR y no deja hacer merge sin su aprobación. Si subes cambios después de la aprobación, hay que volver a aprobar.
 
 5. Para publicar, se abre un PR de `staging` a `main`. Antes de aprobarlo:
    - Se prueba a mano el sitio de staging.
@@ -42,6 +64,8 @@
 Son el mismo evento. Al hacer merge de un PR, GitHub hace un push a la rama destino, y el workflow se dispara con ese push. Nadie hace push directo a `main` ni a `staging`: todo entra por PR.
 
 ## CI/CD
+
+![CI/CD](diagrams/ci-cd.png)
 
 Hay un solo workflow, [.github/workflows/ci.yml](../.github/workflows/ci.yml), con un solo job:
 

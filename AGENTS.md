@@ -4,21 +4,28 @@ Este archivo es la fuente de verdad para cualquier agente de código (Claude Cod
 
 ## Qué es este repo
 
-Proyecto de un equipo de seis personas para el **NASA Space Apps Challenge 2026** (14 y 15 de noviembre de 2026). El reto elegido es **Create Health Monitoring Software for Astronauts on Space Missions**: una herramienta visual para que un astronauta evalúe su propia salud durante una misión y reciba guía sobre qué hacer.
+Proyecto del equipo **Nóstos**, de seis personas, para el **NASA Space Apps Challenge 2026** (14 y 15 de noviembre de 2026). El reto elegido es **Create Health Monitoring Software for Astronauts on Space Missions**: una herramienta visual para que un astronauta evalúe su propia salud durante una misión y reciba guía sobre qué hacer.
 
 Lee también, en este orden:
 
 1. [docs/BRIEF.md](docs/BRIEF.md): el hackatón y el reto, resumidos.
 2. [docs/DECISIONS.md](docs/DECISIONS.md): qué está decidido y qué sigue abierto.
-3. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
-4. [docs/TEAM.md](docs/TEAM.md): quiénes somos.
-5. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+3. [docs/SISTEMA.md](docs/SISTEMA.md): el sistema que vamos a construir. Su propuesta visual está en [docs/DISENO.md](docs/DISENO.md).
+4. [docs/PRD.md](docs/PRD.md): requisitos y alcance del MVP.
+5. [docs/HISTORIAS.md](docs/HISTORIAS.md): historias de usuario y criterios de aceptación.
+6. [docs/REPARTO.md](docs/REPARTO.md): responsables, módulos, pantallas y límites de integración.
+7. [docs/FUENTES.md](docs/FUENTES.md): reglas de salud y sus fuentes.
+8. [docs/WORKFLOW.md](docs/WORKFLOW.md): ramas, PRs, CI y despliegue.
+9. [docs/LESSONS.md](docs/LESSONS.md): errores que ya nos pasaron y no queremos repetir.
+10. [docs/TEAM.md](docs/TEAM.md): quiénes somos y el prefijo de rama de cada quien.
+11. [docs/CHALLENGE.md](docs/CHALLENGE.md): enunciado oficial completo, en inglés.
+12. [docs/resources/](docs/resources/README.md): extractos de las fuentes oficiales del reto. Consúltalos antes de buscar en internet.
 
 ## Estado actual
 
-El repo es una **plantilla**: app mínima, checks y despliegue. **El producto todavía no está definido.** Mientras `docs/DECISIONS.md` no diga qué se construye:
+**El producto está construido** sobre lo que define [docs/SISTEMA.md](docs/SISTEMA.md): las pantallas de estilo Marea ([docs/DISENO.md](docs/DISENO.md)), el Worker con la API y la IA, la voz, y Lunito en 3D. Falta la base de datos compartida (D1) y el sensor real.
 
-- No inventes funcionalidades, pantallas ni modelos de datos del producto por tu cuenta.
+- Construye lo que describen `docs/PRD.md` y `docs/HISTORIAS.md`, respetando la propiedad de `docs/REPARTO.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
 - Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.
 
 ## Stack
@@ -26,21 +33,24 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto to
 - Node 24 y pnpm (versión fijada en `package.json`). No uses npm, yarn ni bun.
 - Vite, React y TypeScript estricto. Se entrega como web instalable (PWA), no como app nativa.
 - Prettier (formato), Oxlint (lint), Vitest (unitarias e integración), Playwright (E2E).
-- Despliegue en Cloudflare Workers como sitio estático (`wrangler.jsonc`).
+- Despliegue en Cloudflare Workers (`wrangler.jsonc`): el mismo Worker sirve la app y responde la API (`worker/`, rutas `/api/*`, Workers AI). La app habla con él solo por `src/api/client.ts`; el contrato está en `src/api/contract.ts`.
 
 ## Comandos
 
-| Comando       | Qué hace                                                      |
-| ------------- | ------------------------------------------------------------- |
-| `pnpm dev`    | Servidor de desarrollo.                                       |
-| `pnpm check`  | Formato, lint, tipos, pruebas y build. Es lo mismo que el CI. |
-| `pnpm format` | Aplica Prettier.                                              |
-| `pnpm test`   | Pruebas con Vitest.                                           |
-| `pnpm e2e`    | Prueba de humo con Playwright sobre el build.                 |
+| Comando        | Qué hace                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `pnpm dev`     | Servidor de desarrollo.                                                                      |
+| `pnpm dev:api` | Worker local con la API (antes: `pnpm build` y `wrangler login`). `pnpm dev` le pasa `/api`. |
+| `pnpm check`   | Formato, lint, tipos, pruebas y build. Es lo mismo que el CI.                                |
+| `pnpm format`  | Aplica Prettier.                                                                             |
+| `pnpm test`    | Pruebas con Vitest.                                                                          |
+| `pnpm e2e`     | Prueba de humo con Playwright sobre el build.                                                |
 
 ## Cómo se trabaja
 
 - Cada cambio va en una rama propia creada **desde `staging`** y entra por PR **a `staging`**.
+- El nombre de la rama empieza con el prefijo de quien la crea, en mayúscula: `F/descripcion-corta`. Los prefijos están en [docs/TEAM.md](docs/TEAM.md).
+- Antes de empezar un cambio, lee [docs/LESSONS.md](docs/LESSONS.md). Si alguien del equipo te corrige algo que podría repetirse, agrega una línea ahí en el mismo PR.
 - `main` solo recibe PRs desde `staging`. Nunca hagas push directo a `main` ni a `staging`.
 - Un cambio está terminado cuando `pnpm check` pasa en local y el PR tiene el CI en verde.
 - No hagas commit, push ni abras PRs sin que la persona con la que trabajas te lo pida.
@@ -48,7 +58,8 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto to
 
 ## Convenciones
 
-- Documentación, commits, PRs y textos de la interfaz en español. Código (nombres de variables, funciones, archivos) en inglés.
+- Documentación, commits y PRs en español. Código (nombres de variables, funciones, archivos) en inglés.
+- **Ningún texto visible se escribe en un componente.** Va en `src/i18n/locales/` (un archivo por área y por idioma) y se pide con `t("area.clave")` al momento de usarlo. El inglés es el idioma oficial de la app y de la voz; el español debe tener las mismas claves. Detalle en `src/i18n/index.ts` y en [docs/DECISIONS.md](docs/DECISIONS.md).
 - Cambios pequeños y enfocados: un PR resuelve una sola cosa.
 - La lógica que no sea de interfaz va en funciones puras con su prueba en Vitest (`*.test.ts` junto al archivo).
 - Antes de agregar una dependencia, comprueba que haga falta y anótala en `docs/DECISIONS.md`.
@@ -57,7 +68,7 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto to
 ## Reglas del dominio
 
 - Es un prototipo de hackatón, no un dispositivo médico. La interfaz no debe presentarse como diagnóstico.
-- Cualquier umbral, rango o recomendación de salud que aparezca en el producto debe tener una fuente citada (NASA Human Research Program u otra agencia espacial o fuente médica reconocida). Si no hay fuente, no lo inventes: márcalo como pendiente de validar.
+- Cualquier umbral, rango o recomendación de salud que aparezca en el producto debe tener una fuente citada (NASA Human Research Program u otra agencia espacial o fuente médica reconocida). Primero busca en [docs/FUENTES.md](docs/FUENTES.md), donde están las reglas ya citadas, y después en [docs/resources/](docs/resources/README.md). Si no hay fuente, no lo inventes: márcalo como pendiente de validar.
 
 ## Mantén este contexto al día
 

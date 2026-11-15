@@ -1,0 +1,152 @@
+# Propuesta visual
+
+Dirección visual de la app. El concepto de Lunito y sus reglas están en [SISTEMA.md](SISTEMA.md) (sección 1); las pantallas, en la sección 9.
+
+## Pantallas Marea de la app (2026-11-15)
+
+**Esta es la referencia visual vigente.** Por decisión de Fernando, estas pantallas reemplazan a las de Órbita en la barra inferior. Donde otra sección de este documento diga que manda Órbita, mandan estas pantallas y sus referencias: [inicio del día](diseno/referencias/04-checkin-marea.png), [Tus datos y Tu misión](diseno/referencias/05-datos-mision-marea.png), [Así estás hoy](diseno/referencias/06-hoy-marea.png), [Equipo](diseno/referencias/07-equipo-marea.png), [Tareas](diseno/referencias/08-tareas-marea.png) y [Configuración](diseno/referencias/09-configuracion-marea.png).
+
+- **Inicio (`/`):** carrusel de dos páginas en celular (Así estás hoy y Tus datos, que sigue hasta Tu misión); desde 768 px las dos se ven lado a lado. Una sola gráfica con pestañas por métrica y una sola etiqueta de valor.
+- **Equipo (`/tripulacion`):** un Lunito por compañero; tocarlo abre una hoja con su estado público. Quien no comparte (o está en rojo) se ve como "Sin compartir". Debajo, la autonomía de la tripulación y, solo para el comandante, el balanceador.
+- **Tareas (`/tareas`):** check-in del día y acciones del día con progreso por perfil; acceso al Botiquín al final.
+- **Configuración (`/ajustes`):** perfil (abre el selector), privacidad real, información de la misión y accesos a Tierra, Demo y repetir el inicio del día.
+- Lo que el producto aún no tiene (estilos de Lunito, notificaciones, recordatorios) se dibuja desactivado con "Próximamente".
+- Sin la fuente exacta ni originales limpios del personaje: Nunito variable como aproximación y las tres poses recreadas con autorización.
+- El inicio del día (`/buenos-dias`) antecede a Inicio una vez por día. Es el único check-in: saludo, pregunta, escucha, "Esto entendí", sensor y prueba de reacción opcionales, y resultado. Se puede posponer con "Ahora no".
+- **Pantallas secundarias** (Mi estado, Botiquín, Emergencia, panel de demo): usan la misma estructura Marea, con la cabecera y la barra fijas, un botón para volver a su pestaña ("‹ Tareas") y Emergencia siempre arriba a la derecha. Sus componentes de catálogo (tarjetas, pestañas, botones, hojas) toman la paleta `--reference-*` y Nunito.
+- **Idioma:** la app está en inglés (idioma oficial) y en español; se cambia en Configuración. Ningún título lleva saltos de línea forzados, porque cada idioma se parte distinto.
+- **Al tocar:** todo lo tocable mide 48 px o más y responde al toque; las pantallas entran con un fundido breve. Con `prefers-reduced-motion` no hay animaciones.
+
+## Maqueta Órbita (anterior)
+
+Órbita fue la referencia visual entre los PR #27 y #32; hoy ya no manda. Se conserva como archivo en [diseno/prototipos/orbita.html](diseno/prototipos/orbita.html), y su código React (de Mateo) sigue en el repo, fuera de las rutas. Ariff conserva la estructura global, la navegación y los tokens de `src/App.tsx`, `src/index.css` y `src/app/`.
+
+## Referencias finales (modelo exacto del frontend)
+
+Estas imágenes fijan **el contenido y el flujo exactos de Inicio**, junto con las pantallas Marea de arriba. Los puntos donde las imágenes chocaban con reglas funcionales anteriores ya están decididos abajo.
+
+### Flujo del día
+
+1. **Al abrir la app al inicio del día**, lo primero es el check-in conversacional con Lunito (referencia 1). No se entra directo al dashboard.
+2. **Al terminar ese ejercicio**, la app pasa a "Así estás hoy" (referencia 2).
+3. "Tu evolución" (referencia 3) muestra las tendencias; en tablet va junto a "Así estás hoy" y en celular, debajo o en su propia vista.
+
+### 1 · Check-in del día
+
+![Check-in del día: saludo, pregunta y escucha](diseno/referencias/01-checkin-del-dia.png)
+
+Tres estados, una sola idea por pantalla:
+
+- **Saludo:** Lunito saluda con la mano. Título "¡Hola! Qué gusto verte". Micrófono y "Hola, soy Lunito".
+- **Pregunta:** "¿Cómo amaneciste hoy?". Micrófono y "Cuéntame cómo te sientes".
+- **Escuchando:** misma pregunta; el micrófono se convierte en una onda de voz animada y aparece "● Escuchando…".
+- En los tres estados está la opción **"Escribir respuesta"** con ícono de teclado, para responder sin voz.
+- Lunito grande y centrado, título grande, mucho aire, sin tarjetas ni barra de navegación.
+
+### 2 · Así estás hoy
+
+![Así estás hoy en celular y tablet](diseno/referencias/02-asi-estas-hoy.png)
+
+- Título "Así estás hoy" y subtítulo "Tu bienestar, reflejado en Lunito".
+- Lunito al centro. Tres **burbujas redondas** salen de él con una línea curva fina. Cada burbuja lleva ícono, nombre, unidad técnica en pequeño y el valor grande en cian:
+  - **Pulso** (corazón): 72 lpm.
+  - **Variabilidad cardíaca · HRV** (corazón con pulso): 45 ms.
+  - **Oxígeno en sangre · SpO₂** (gota): 98 %.
+- Debajo, el estado en una palabra con ícono: "✓ Bien". Leyenda de tres estados: **Bien** (cian), **Precaución** (amarillo) y **Atención** (rojo). Enlace "Qué significa" para explicar el semáforo.
+- En tablet: Lunito a la izquierda y "Tu evolución" a la derecha, separados por una línea vertical fina.
+
+### 3 · Tu evolución
+
+![Tu evolución en celular](diseno/referencias/03-tu-evolucion.png)
+
+- Título "Tu evolución" y subtítulo "Tu bienestar a lo largo del tiempo". Lunito pequeño arriba a la derecha.
+- Selector **Semana / Mes** y el rango de fechas ("9–15 de noviembre").
+- Una gráfica de área suave por indicador (pulso, HRV, SpO₂) con días L–D, eje con tres valores y el último valor grande en cian, con un punto cian al final de la línea.
+- Cierre: "Cada día cuenta. Observa tus cambios."
+
+### Estilo común
+
+- Fondo lila muy claro, sin bordes duros; tarjetas y burbujas blancas con sombra suave.
+- Títulos grandes y redondeados en gris violeta; valores en **cian**; líneas de gráficas en lila y cian.
+- Barra inferior con cuatro pestañas: **Inicio, Equipo, Tareas y Ajustes**, con la activa en lila.
+- Ícono de sol arriba a la derecha.
+
+### Decidido sobre las referencias
+
+Donde las referencias chocaban con reglas anteriores, **mandan las referencias** (decisión del 2026-11-15). La única excepción es el botón Emergencia, que es una regla de seguridad:
+
+- **Botón Emergencia:** sigue siempre visible en todas las pantallas, incluido el check-in del día (`SISTEMA.md` §7.5). Va arriba a la derecha, junto al ícono de sol, rojo y con la palabra "Emergencia".
+- **Navegación:** barra inferior con **Inicio, Equipo, Tareas y Ajustes**; desaparece la barra lateral.
+  - **Inicio:** al empezar el día, el check-in conversacional; después, "Así estás hoy" y "Tu evolución". Reemplaza a Mi Lunito, Mi estado y Check-in.
+  - **Equipo:** la Constelación de la tripulación.
+  - **Tareas:** las acciones del día y el Botiquín (síntomas, asistente de dolor de cabeza e inventario).
+  - **Ajustes:** selección de perfil y "Compartir mi estado".
+  - La consola de Tierra (`/tierra`) y el panel de la demo (`/demo`) quedan fuera de la barra: se abren por su dirección.
+- **Color de "Bien":** cian, el color natural de la pancita. El verde deja de usarse para estados.
+- **Nombres de estado:** **Bien**, **Precaución** y **Atención**. Donde otros documentos dicen verde, ámbar o amarillo, y rojo, se refieren a estos tres estados.
+- **Valores en las burbujas y gráficas:** van en el color del estado de su indicador (cian cuando está Bien), para que el color siga siendo solo de estado.
+- **Línea base:** las gráficas de "Tu evolución" no llevan la línea punteada. La línea base sigue decidiendo el semáforo y se muestra al cirujano en la consola de Tierra.
+- **De qué parte del cuerpo sale cada dato:** el pulso sale del brazo izquierdo, la HRV de la mano derecha y el oxígeno de la pancita, como en la referencia 2.
+- **Lunito saludando:** se anima con los brazos que prepara Viridiana según [LUNITO-ARTE.md](LUNITO-ARTE.md). Mientras tanto, Lunito saluda sin mover los brazos.
+- **Ícono de sol:** cambia entre tema claro y oscuro. El claro es el principal; el oscuro es secundario y puede llegar después.
+
+## Idea
+
+Profesional pero limpio, en **tema claro** y pensado para tablet. **Lunito es la única ilustración**: todo lo demás es tipografía, tarjetas y color de estado. La app tiene barra inferior (Inicio, Equipo, Tareas y Ajustes) y el botón Emergencia siempre arriba.
+
+## Lunito
+
+![Hoja de personaje de Lunito](diseno/lunito-hoja.jpg)
+
+El semáforo vive en su pancita:
+
+| Bien (cian)                | Precaución (amarillo)                    | Atención (rojo)                        |
+| -------------------------- | ---------------------------------------- | -------------------------------------- |
+| Pancita en su cian natural | ![Lunito ámbar](diseno/lunito-ambar.png) | ![Lunito rojo](diseno/lunito-rojo.png) |
+| "Bien"                     | "Precaución · motivo"                    | "Atención · motivo"                    |
+
+- `lunito-hoja.jpg`: hoja original (frente, perfil, espalda y tres cuartos).
+- `lunito-ambar.png`, `lunito-rojo.png`: frente sin fondo, listas para usar en la app. `lunito-verde.png` queda de la versión anterior; para Bien se usa la pancita cian.
+- El color nunca va solo: siempre lo acompaña una palabra (regla 3 de Lunito).
+- Pendiente: cómo distinguir al Lunito de cada tripulante (color de aletas o un accesorio).
+
+## Lunito en 3D
+
+- Modelo: `public/lunito.glb`, generado con Meshy y separado en partes con nombre (cuerpo, pancita, branquias, ojos, boca, brazos y cola) para animar cada una por código. Se coloca con el componente `LunitoAvatar`.
+- Nada se pinta encima del modelo: la pancita queda en su cian natural cuando está Bien y **toma el matiz** del amarillo o del rojo conservando la luz de su textura.
+- Movimiento con sentido: la pancita late al ritmo del pulso y el cuerpo respira según la HRV. Tiene ocho poses (reposo, saludo, pregunta, escucha, pensar, hablar, celebrar y cuidar) y gestos cortos (saludar, asentir, festejar, reír). Con `prefers-reduced-motion` queda en pose quieta.
+- Lunito habla con voz, en el idioma de la app: la boca sigue lo que dice. Sus expresiones nunca son tristes ni enojadas; cuando la persona está mal, la cuida.
+- **Dónde va el 3D:** en el inicio del día (una pose por fase) y en el héroe de Inicio (refleja el estado y se puede tocar para hablar con él); en Tareas celebra en pequeño al completar el día. Un solo Lunito 3D por pantalla.
+- **Dónde no:** en Equipo, Configuración y dentro de las hojas se usan las imágenes 2D; en Emergencia y en la consola de Tierra no hay nada animado (solo la imagen fija de la baliza).
+- Mientras carga, o si no hay WebGL, se ve la imagen de esa pose.
+- Cómo está hecho el modelo y sus límites: [LUNITO-ARTE.md](LUNITO-ARTE.md).
+
+## Colores
+
+Los tokens viven en `src/index.css` (variables de shadcn/ui en OKLCH).
+
+| Uso               | Token                           |
+| ----------------- | ------------------------------- |
+| Fondo             | `--background` (lila muy claro) |
+| Tarjetas          | `--card` (blanco)               |
+| Texto             | `--foreground`                  |
+| Texto secundario  | `--muted-foreground`            |
+| Primario          | `--primary` (lila de Lunito)    |
+| Estado Bien       | `--status-ok` (cian)            |
+| Estado Precaución | `--status-warn` (amarillo)      |
+| Estado Atención   | `--status-alert` (rojo)         |
+
+Cian, amarillo y rojo se usan **solo** para estados, nunca como decoración, y siempre con una palabra.
+
+## Tipografía
+
+- **Inter** para todo; jerarquía por tamaño y peso.
+- Mínimo 15 px para texto de lectura y botones de al menos 44 px de alto: se usa flotando y con prisa.
+
+## Patrones
+
+- Tarjetas de shadcn (`Card`) con borde suave y esquinas redondeadas.
+- Botón principal: `--primary` con texto claro, al menos 44 px de alto.
+- Botón **Emergencia** rojo arriba a la derecha en todas las pantallas.
+- Gráficas de área suaves de 7 días o del mes, sin línea base punteada.
+- En emergencia desaparece todo lo lúdico: banner rojo, alto contraste y nada de animaciones decorativas.

@@ -4,7 +4,7 @@ Enunciado oficial, copiado sin cambios del sitio de NASA Space Apps el 5 de novi
 
 - **Dificultad:** Intermediate
 - **Temas:** Human Exploration, Software, Space Exploration
-- **Recursos:** "Resources will be available on Friday, November 13."
+- **Recursos:** publicados el 13 de noviembre; extractos en [resources/](resources/README.md).
 
 ## Summary
 

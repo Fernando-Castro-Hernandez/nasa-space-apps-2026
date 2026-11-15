@@ -1,0 +1,351 @@
+/* Sizes in cqw against .team-content, which caps its own width on desktop so
+   the phone design never grows past 480px. Anything tappable is 48px or more
+   and reading text 15px or more, whatever the width. */
+.team-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.team-content {
+  position: relative;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  container-type: inline-size;
+  /* px: cqw in its own padding would measure the whole app, not this column
+     (20px is what 5.3cqw gives on a 390px phone). */
+  padding: 4px 20px 0;
+}
+.team-content h1 {
+  margin: 0;
+  font-size: 8.6cqw;
+  line-height: 1.12;
+  font-weight: 850;
+  letter-spacing: -0.15cqw;
+  color: var(--reference-ink-strong);
+}
+.team-hint {
+  margin: 1.5cqw 0 0;
+  font-size: max(15px, 4.6cqw);
+}
+/* Who sent me encouragement today (EncourageButton on someone else's screen). */
+.team-cheers {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 2cqw;
+  margin: 3cqw 0 0;
+  padding: 2cqw 4cqw;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  color: var(--reference-ink-strong);
+  font-size: max(15px, 4.2cqw);
+  font-weight: 750;
+}
+.team-cheers svg {
+  width: max(18px, 5cqw);
+  height: max(18px, 5cqw);
+  flex: none;
+  color: var(--reference-action);
+  fill: var(--reference-action);
+}
+.team-scene {
+  position: relative;
+  flex: 1;
+  min-height: 100cqw;
+  margin: 4cqw -20px 0;
+}
+.team-scene .marea {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.team-lunito {
+  position: absolute;
+  width: 30%;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5cqw;
+  isolation: isolate;
+  border-radius: 6cqw;
+  color: var(--reference-ink);
+  font-size: 5.6cqw;
+  font-weight: 800;
+  transition: transform 120ms ease-out;
+}
+.team-lunito:active {
+  transform: scale(0.96);
+}
+.team-lunito img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.team-lunito img[data-unshared] {
+  opacity: 0.5;
+  filter: grayscale(0.4);
+}
+.team-lunito-name {
+  position: relative;
+  z-index: 1;
+}
+.team-lunito[aria-pressed="true"] .team-lunito-name {
+  color: var(--reference-ink-strong);
+}
+/* Ring under the selected Lunito's feet, as in the reference. The button
+   isolates its own stacking, so the ring sits above the blob and below the
+   image; it ends above the name. The image is as tall as the button is wide
+   (30cqw) and the feet sit near its bottom. */
+.team-lunito::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 23cqw;
+  width: 26cqw;
+  height: 7cqw;
+  translate: -50% 0;
+  border: 0.6cqw solid var(--reference-violet-soft);
+  border-radius: 50%;
+  background: var(--reference-lavender-100);
+  opacity: 0;
+  scale: 0.9;
+  transition:
+    opacity 150ms ease-out,
+    scale 150ms ease-out;
+}
+.team-lunito[aria-pressed="true"]::before {
+  opacity: 1;
+  scale: 1;
+}
+/* Open emergency: a fixed red ring and the word, never animated. */
+.team-lunito[data-emergency]::before {
+  border-color: var(--reference-emergency);
+  background: var(--reference-alert-bg);
+  opacity: 1;
+  scale: 1;
+  transition: none;
+}
+.team-lunito-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 1cqw;
+  padding: 0.5cqw 2.5cqw;
+  border-radius: 99px;
+  background: var(--reference-alert-bg);
+  color: var(--reference-alert-ink);
+  font-size: max(15px, 3.8cqw);
+  font-weight: 850;
+  white-space: nowrap;
+}
+.team-lunito-badge svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Below the scene: buddy of the day or the sheet. */
+.team-companion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw;
+  margin: 5cqw 0 6cqw;
+  padding-top: 4.5cqw;
+  border-top: 1px solid var(--reference-line);
+  font-size: max(15px, 4.6cqw);
+}
+.team-companion p {
+  margin: 0;
+}
+.team-companion strong {
+  font-weight: 800;
+  color: var(--reference-ink-strong);
+}
+.team-cheer {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2cqw;
+  padding: 0 4.5cqw;
+  border-radius: 99px;
+  background: var(--reference-lavender-100);
+  color: var(--reference-action);
+  font-size: max(15px, 4.2cqw);
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 120ms ease-out;
+}
+.team-cheer svg {
+  width: max(18px, 5.5cqw);
+  height: max(18px, 5.5cqw);
+  flex: none;
+}
+.team-cheer:active {
+  transform: scale(0.97);
+}
+.team-cheer-solid {
+  background: var(--reference-action);
+  color: var(--reference-surface);
+  box-shadow: 0 1.5cqw 3cqw var(--reference-shadow-violet);
+}
+/* Sent: a quiet confirmation that stays readable (no dimming). */
+.team-cheer[data-sent] {
+  background: var(--reference-lavender-50);
+  color: var(--reference-action);
+  box-shadow: none;
+  outline: 1.5px solid var(--reference-line);
+  outline-offset: -1.5px;
+}
+.team-cheer-alert {
+  background: var(--reference-emergency);
+  color: var(--reference-surface);
+}
+/* The buddy's sheet: it stays in the flow under the scene and sticks to the
+   bottom while the page scrolls, so it never covers a Lunito. */
+.team-sheet {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqw 4cqw;
+  margin: 2cqw -20px 0;
+  /* The right gutter keeps the content clear of the close button. */
+  padding: 8cqw 60px 6cqw 20px;
+  border-radius: 6cqw 6cqw 0 0;
+  border: 1px solid var(--reference-line);
+  border-bottom: 0;
+  background: var(--reference-surface);
+  box-shadow: 0 -2cqw 6cqw var(--reference-shadow-violet);
+  animation: team-sheet-in 220ms ease-out;
+}
+@keyframes team-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+.team-sheet-close {
+  position: absolute;
+  top: 0.5cqw;
+  right: 1.5cqw;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--reference-ink);
+}
+.team-sheet-close svg {
+  width: 24px;
+  height: 24px;
+}
+.team-sheet-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.team-sheet h2 {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2cqw;
+  font-size: max(20px, 6.4cqw);
+  line-height: 1.2;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.team-sheet h2[data-status="rojo"] {
+  color: var(--reference-alert-ink);
+}
+.team-sheet-info p {
+  margin: 1cqw 0 0;
+  font-size: max(15px, 4.4cqw);
+}
+.team-sheet-check {
+  width: max(22px, 6.4cqw);
+  height: max(22px, 6.4cqw);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--reference-ok);
+  color: var(--reference-surface);
+}
+.team-sheet h2[data-status="ambar"] .team-sheet-check {
+  background: var(--reference-warn-ink);
+}
+.team-sheet-check svg {
+  width: 70%;
+  height: 70%;
+  stroke-width: 3.5;
+}
+.team-sheet .team-cheer {
+  flex: 0 1 auto;
+}
+
+/* Crew cards (crew.css) sit in the same capped column as the scene. */
+.team-mission {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  /* px, not cqw: this block is outside .team-content, so cqw would measure
+     the full-width app on desktop. */
+  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tablet and desktop: the crew and the mission side by side, like Home. */
+@media (min-width: 768px) {
+  .team-page {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 440px));
+    justify-content: center;
+    align-content: start;
+    column-gap: clamp(32px, 6vw, 96px);
+    padding-inline: 16px;
+  }
+  .team-content {
+    max-width: none;
+  }
+  /* Not at the screen's edge here: a whole card under the scene. */
+  .team-sheet {
+    margin: 4cqw 0 24px;
+    padding-left: 24px;
+    border-bottom: 1px solid var(--reference-line);
+    border-radius: 24px;
+    box-shadow: 0 2cqw 6cqw var(--reference-shadow-violet);
+  }
+  .team-mission {
+    max-width: none;
+    padding: 24px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .team-sheet,
+  .team-lunito::before {
+    animation: none;
+    transition: none;
+  }
+  .team-lunito:active,
+  .team-cheer:active {
+    transform: none;
+  }
+}

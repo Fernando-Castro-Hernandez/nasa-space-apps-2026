@@ -1,0 +1,203 @@
+/* Hoja "Esto entendí" (VoiceLogSheet): sube desde abajo con el estilo Marea.
+   Los colores son los tokens de reference.css; el botón Emergencia es el
+   mismo de la cabecera (EmergencyLink, .emergency-link). */
+.voice-sheet {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--reference-ink);
+  font-family: "Nunito Variable", "Nunito", sans-serif;
+  font-weight: 500;
+}
+.voice-sheet::backdrop {
+  background: transparent;
+}
+.voice-sheet-layer {
+  min-height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.voice-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: default;
+  background: color-mix(in srgb, var(--reference-ink-strong) 18%, transparent);
+  backdrop-filter: blur(2px);
+  animation: voice-fade 220ms ease-out;
+}
+.voice-sheet-panel {
+  position: relative;
+  /* El botón Emergencia mide en cqw, como en la cabecera del celular. */
+  container-type: inline-size;
+  width: min(100%, 480px);
+  max-height: 92dvh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 28px 28px 0 0;
+  background: var(--reference-surface);
+  box-shadow: 0 -12px 40px var(--reference-shadow-violet);
+  animation: voice-rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.voice-sheet-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 16px 6px 24px;
+}
+.voice-sheet-head h2 {
+  margin: 0;
+  color: var(--reference-ink-strong);
+  font-size: clamp(22px, 6cqw, 26px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.voice-sheet-head h2:focus {
+  outline: none;
+}
+.voice-sheet-head .emergency-link {
+  flex-shrink: 0;
+}
+.voice-sheet-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 24px 20px;
+}
+.voice-sheet-text {
+  width: 100%;
+  resize: none;
+  padding: 12px 16px;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 18px;
+  background: var(--reference-paper);
+  color: var(--reference-ink-strong);
+  font-size: 17px;
+  line-height: 1.45;
+  outline: none;
+}
+.voice-sheet-text::placeholder {
+  color: var(--reference-ink-muted);
+}
+.voice-sheet-text:focus {
+  border-color: var(--reference-action);
+}
+.voice-sheet-organize {
+  align-self: flex-start;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  border: 1.5px solid var(--reference-line-strong);
+  border-radius: 999px;
+  background: var(--reference-lavender-50);
+  color: var(--reference-action);
+  font-size: 15px;
+  font-weight: 800;
+}
+.voice-sheet-organize svg {
+  width: 18px;
+  height: 18px;
+}
+.voice-sheet-status {
+  margin: 0;
+  color: var(--reference-ink-muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+.voice-sheet-status:empty {
+  display: none;
+}
+.voice-sheet-foot {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 24px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--reference-lavender-100);
+}
+.voice-sheet-hint {
+  margin: 0;
+  color: var(--reference-ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+.voice-sheet-actions {
+  display: flex;
+  gap: 12px;
+}
+.voice-sheet-actions button {
+  flex: 1;
+  min-height: 52px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 800;
+}
+.voice-sheet-cancel {
+  background: var(--reference-lavender-50);
+  color: var(--reference-action);
+}
+.voice-sheet-confirm {
+  background: var(--reference-action);
+  color: #fff;
+}
+/* Sin opacidad: la palabra se lee (5:1) aunque todavía no se pueda tocar. */
+.voice-sheet-confirm:disabled {
+  background: var(--reference-lavender-100);
+  color: var(--reference-ink);
+  cursor: not-allowed;
+}
+.voice-sheet-panel button {
+  cursor: pointer;
+  transition: transform 80ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+}
+.voice-sheet-panel button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.voice-sheet :focus-visible {
+  outline: 2px solid var(--reference-action);
+  outline-offset: 3px;
+}
+/* La hoja se queda en la columna del contenido, separada del borde. */
+@media (min-width: 768px) {
+  .voice-sheet-layer {
+    padding-bottom: 24px;
+  }
+  .voice-sheet-panel {
+    width: 560px;
+    max-height: calc(100dvh - 48px);
+    border-radius: 28px;
+  }
+}
+@keyframes voice-rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+}
+@keyframes voice-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-sheet,
+  .voice-sheet * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

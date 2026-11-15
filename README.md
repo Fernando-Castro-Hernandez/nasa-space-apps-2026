@@ -1,8 +1,10 @@
 # Space Apps 2026 — Health Monitor
 
-Proyecto de equipo para el [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/), reto [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/).
+Proyecto del equipo **Nóstos** para el [NASA Space Apps Challenge 2026](https://www.spaceappschallenge.org/2026/), reto [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/).
 
-El nombre es provisional y el producto aún no está definido. Por ahora el repo es la plantilla sobre la que vamos a construir.
+**Nóstos** es una app web instalable donde cada astronauta tiene a **Lunito**, un ajolote que es la cara de su agente de salud: su pancita es el semáforo de cómo estás hoy, le cuentas por voz cómo amaneciste y te dice qué hacer. Junta lo que dices, lo que mide un sensor y lo que ya registra la nave, y lo ordena según los cinco peligros del espacio de NASA. Está en inglés y en español.
+
+Es un prototipo de hackatón, no un dispositivo médico.
 
 ## Empezar
 
@@ -13,6 +15,14 @@ git clone <url-del-repo>
 cd <carpeta-del-repo>
 pnpm install
 pnpm dev
+```
+
+`pnpm dev` levanta solo la app: sin la API, Lunito usa sus respaldos (voz y dictado del navegador, respuestas fijas). Para probar con la API y la IA de verdad, en otra terminal:
+
+```bash
+pnpm dlx wrangler@4 login   # una sola vez, con la cuenta de Cloudflare del equipo
+pnpm build
+pnpm dev:api
 ```
 
 Antes de abrir un PR:
@@ -28,10 +38,21 @@ pnpm check
 | [docs/BRIEF.md](docs/BRIEF.md)         | El hackatón y el reto, resumidos.                   |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Qué está decidido y qué sigue abierto.              |
 | [docs/WORKFLOW.md](docs/WORKFLOW.md)   | Ramas, PRs, CI y despliegue.                        |
-| [docs/TEAM.md](docs/TEAM.md)           | El equipo.                                          |
+| [docs/TEAM.md](docs/TEAM.md)           | El equipo y el prefijo de rama de cada quien.       |
+| [docs/LESSONS.md](docs/LESSONS.md)     | Errores que ya nos pasaron y no queremos repetir.   |
 | [docs/CHALLENGE.md](docs/CHALLENGE.md) | Enunciado oficial del reto, en inglés.              |
 | [AGENTS.md](AGENTS.md)                 | Contexto y reglas para los agentes de cada persona. |
 
+## Diagramas
+
+Están en [docs/diagrams/](docs/diagrams/), como imagen (`.png`, `.svg`) y como archivo editable (`.excalidraw`, se abre en https://excalidraw.com).
+
+- [Flujo de ramas](docs/diagrams/flujo-git.png)
+- [CI/CD](docs/diagrams/ci-cd.png)
+- [Contexto compartido para los agentes](docs/diagrams/contexto-agentes.png)
+
 ## Trabajar con un agente
+
+![Contexto compartido para los agentes](docs/diagrams/contexto-agentes.png)
 
 Abre el repo con tu agente (Claude Code, Cursor, Codex u otro). El agente lee `AGENTS.md` y con eso sabe de qué trata el hackatón, qué está decidido y cómo se trabaja aquí. Si tomas una decisión con tu agente, pídele que la deje anotada en `docs/DECISIONS.md` para que el resto del equipo la reciba.

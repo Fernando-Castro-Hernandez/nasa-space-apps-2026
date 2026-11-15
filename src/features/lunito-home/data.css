@@ -1,0 +1,211 @@
+.data-page {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-y: contain;
+  scroll-padding-top: 12cqw;
+}
+.data-context {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 4;
+}
+.data-context p {
+  height: 11cqw;
+  padding: 1cqw 5cqw;
+  background: var(--reference-paper);
+  font-size: 4.5cqw;
+}
+.data-context strong {
+  font-weight: 850;
+}
+.data-content {
+  padding: 0.2cqw 4.8cqw 0;
+}
+.data-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3cqw;
+}
+.data-heading-row p {
+  font-size: max(15px, 4.2cqw);
+  line-height: 1.4;
+}
+.period-selector {
+  display: flex;
+  border: 1px solid var(--reference-line);
+  border-radius: 99px;
+  min-width: 43cqw;
+  flex-shrink: 0;
+  min-height: 48px;
+  font-size: max(15px, 4cqw);
+  background: var(--reference-lavender-50);
+}
+.period-selector button {
+  flex: 1;
+  min-height: 48px;
+  /* "Mes" es corto: sin esto, en Mi estado queda en 47 px de ancho. */
+  min-width: 48px;
+  border-radius: inherit;
+  padding-inline: 3cqw;
+  transition: background-color 200ms ease-out;
+}
+/* Active option: action violet on the lighter lavenders keeps 5:1. */
+.period-selector [aria-pressed="true"] {
+  color: var(--reference-action);
+  font-weight: 850;
+  background: linear-gradient(
+    120deg,
+    var(--reference-lavender-100),
+    var(--reference-lavender-200)
+  );
+}
+.metric-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 2cqw;
+  border: 1px solid var(--reference-line);
+  border-radius: 4.5cqw;
+  min-height: 10.8cqw;
+  background: var(--reference-lavender-50);
+  overflow: hidden;
+}
+.metric-selector button {
+  font-size: max(15px, 3.9cqw);
+  line-height: 1.1;
+  min-height: 52px;
+  padding: 0.8cqw 1.5cqw;
+  text-wrap: balance;
+}
+.metric-selector button + button {
+  border-left: 1px solid var(--reference-line);
+}
+.metric-selector [aria-selected="true"] {
+  background: linear-gradient(
+    130deg,
+    var(--reference-lavender-100),
+    var(--reference-lavender-200)
+  );
+  color: var(--reference-action);
+  font-weight: 850;
+  border-radius: 4.1cqw;
+  font-size: 4.5cqw;
+}
+.metric-current {
+  position: relative;
+  z-index: 1;
+  padding-top: 2cqw;
+}
+.metric-current > p:first-child {
+  font-size: max(15px, 4.4cqw);
+  font-weight: 850;
+}
+.metric-current > strong {
+  display: block;
+  font-size: 8.3cqw;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.1cqw;
+}
+.metric-current > p:last-child {
+  margin-top: 1.4cqw;
+  font-size: max(15px, 4cqw);
+}
+.metric-chart {
+  position: relative;
+  margin: 0 -1cqw;
+  padding-left: 3cqw;
+  height: 57cqw;
+}
+.metric-chart > svg:not(.marea) {
+  transform: translateY(-2.3cqw);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* Spans exactly to the page edges (content padding 4.8cqw minus the chart's
+   -1cqw margin) so the whole wave fits inside the page. */
+.marea-chart {
+  left: -3.8cqw;
+  top: -12cqw;
+  width: calc(100% + 7.6cqw);
+  height: 100cqw;
+}
+.chart-axis {
+  fill: var(--reference-ink);
+  font-size: 22px;
+  font-weight: 500;
+}
+.metric-summary {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.4cqw 3cqw;
+  font-size: max(15px, 3.8cqw);
+  margin-top: 5cqw;
+}
+.metric-summary strong {
+  font-weight: 850;
+}
+.metric-summary > span {
+  height: 6cqw;
+  width: 1px;
+  background: var(--reference-ink-soft);
+}
+/* Each day answers to a tap anywhere in its column, not only on the dot. */
+.chart-hit {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  appearance: none;
+}
+.chart-label {
+  pointer-events: none;
+  transition: transform 200ms ease-out;
+}
+.chart-baseline {
+  fill: none;
+  stroke: var(--reference-ink-muted);
+  stroke-width: 2;
+}
+/* When the metric or the period changes, the chart is drawn again. */
+@media (prefers-reduced-motion: no-preference) {
+  .chart-line {
+    stroke-dasharray: 1;
+    animation: chart-draw 400ms ease-out both;
+  }
+  .chart-area,
+  .chart-point {
+    animation: chart-fade 400ms ease-out both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-label,
+  .period-selector button {
+    transition: none;
+  }
+}
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes chart-fade {
+  from {
+    opacity: 0;
+  }
+}
