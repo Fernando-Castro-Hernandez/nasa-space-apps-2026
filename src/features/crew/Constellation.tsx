@@ -29,7 +29,7 @@ type Props = {
   selected: string | null;
   onSelect: (id: string) => void;
   /** Par unido por el compañero del día: se dibuja con línea punteada. */
-  pair: [string, string];
+  pair: [string, string] | null;
 };
 
 export function Constellation({ selected, onSelect, pair }: Props) {
@@ -53,16 +53,18 @@ export function Constellation({ selected, onSelect, pair }: Props) {
             vectorEffect="non-scaling-stroke"
           />
         ))}
-        <line
-          x1={at(pair[0]).x}
-          y1={at(pair[0]).y}
-          x2={at(pair[1]).x}
-          y2={at(pair[1]).y}
-          stroke="var(--status-warn)"
-          strokeWidth={1.5}
-          strokeDasharray="4 4"
-          vectorEffect="non-scaling-stroke"
-        />
+        {pair && (
+          <line
+            x1={at(pair[0]).x}
+            y1={at(pair[0]).y}
+            x2={at(pair[1]).x}
+            y2={at(pair[1]).y}
+            stroke="var(--status-warn)"
+            strokeWidth={1.5}
+            strokeDasharray="4 4"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
       </svg>
       {CREW.map((c, i) => (
         <Star

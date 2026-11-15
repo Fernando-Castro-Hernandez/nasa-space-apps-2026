@@ -10,18 +10,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { crewMember, MISSION } from "@/data/crew";
+import { CREW, crewMember, MISSION } from "@/data/crew";
 import { STATUS_TOKEN } from "@/domain/status";
 import { autonomy, PHASE_GOAL, SAMPLE_CASES } from "./autonomy";
 import { CommanderPanel } from "./CommanderPanel";
+import { pickCompanion } from "./companion";
 import { Constellation } from "./Constellation";
-
-const PAIR: [string, string] = ["luis", "ana"];
 
 export function CrewScreen() {
   const [selected, setSelected] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const a = autonomy(SAMPLE_CASES);
+  const companion = pickCompanion(CREW);
   const picked = selected ? crewMember(selected) : null;
 
   return (
@@ -38,7 +38,7 @@ export function CrewScreen() {
           <Constellation
             selected={selected}
             onSelect={setSelected}
-            pair={PAIR}
+            pair={companion && [companion.companionId, companion.needsId]}
           />
           {picked && (
             <div
@@ -93,31 +93,37 @@ export function CrewScreen() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <HeartHandshake
-                className="size-5 text-primary"
-                aria-hidden="true"
-              />
-              Compañero del día
-            </CardTitle>
-            <CardDescription>Luis acompaña a Ana hoy.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <p className="text-sm">Propuesta: tomen el café juntos.</p>
-            <Button
-              className="h-11 self-start px-5"
-              disabled={sent}
-              onClick={() => setSent(true)}
-            >
-              {sent ? "Ánimo enviado" : "Enviar ánimo"}
-            </Button>
-            <p className="text-sm text-muted-foreground" aria-live="polite">
-              {sent && "Le llegó tu ánimo a Ana. ✓"}
-            </p>
-          </CardContent>
-        </Card>
+        {companion && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <HeartHandshake
+                  className="size-5 text-primary"
+                  aria-hidden="true"
+                />
+                Compañero del día
+              </CardTitle>
+              <CardDescription>
+                {crewMember(companion.companionId).name} acompaña a{" "}
+                {crewMember(companion.needsId).name} hoy.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <p className="text-sm">Propuesta: {companion.action}.</p>
+              <Button
+                className="h-11 self-start px-5"
+                disabled={sent}
+                onClick={() => setSent(true)}
+              >
+                {sent ? "Ánimo enviado" : "Enviar ánimo"}
+              </Button>
+              <p className="text-sm text-muted-foreground" aria-live="polite">
+                {sent &&
+                  `Le llegó tu ánimo a ${crewMember(companion.needsId).name}. ✓`}
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <div className="col-span-12">
