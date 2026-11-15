@@ -1,11 +1,14 @@
-// Prueba de reacción interactiva: espera aleatoria, señal, toque, tiempo.
+// Paso opcional del check-in: prueba de reacción tipo PVT. Espera aleatoria,
+// señal, toque y tiempo. Cuenta desde que el dedo baja (pointerdown), no desde
+// que se suelta: así el tiempo es el de la reacción.
 import { useEffect, useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { formatNumber, t } from "@/i18n";
 import { LAPSE_MS, summarize, TRIALS, waitMs } from "./reaction";
+import "./check-in.css";
 
 type Phase = "idle" | "waiting" | "signal" | "early" | "done";
 
-export function ReactionTest({ onDone }: { onDone: () => void }) {
+export function ReactionTest({ onNext }: { onNext: () => void }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [times, setTimes] = useState<number[]>([]);
   const shownAt = useRef(0);
@@ -30,54 +33,63 @@ export function ReactionTest({ onDone }: { onDone: () => void }) {
     if (phase !== "signal") return;
     const next = [...times, Math.round(performance.now() - shownAt.current)];
     setTimes(next);
-    if (next.length >= TRIALS) {
-      setPhase("done");
-      onDone();
-    } else arm();
+    if (next.length >= TRIALS) setPhase("done");
+    else arm();
   };
 
-  const s = summarize(times);
+  const summary = summarize(times);
   const label: Record<Phase, string> = {
-    idle: "Toca para empezar",
-    waiting: "Espera la señal…",
-    signal: "¡Toca ya!",
-    early: "Muy pronto. Toca para reintentar",
-    done: "Prueba terminada",
+    idle: t("checkin.reaction.idle"),
+    waiting: t("checkin.reaction.waiting"),
+    signal: t("checkin.reaction.signal"),
+    early: t("checkin.reaction.early"),
+    done: t("checkin.reaction.done"),
   };
 
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-4">
-        <button
-          type="button"
-          onClick={tap}
-          disabled={phase === "done"}
-          className={`flex h-56 w-full items-center justify-center rounded-2xl text-2xl font-semibold transition-colors ${
-            phase === "signal"
-              ? "bg-primary text-primary-foreground"
-              : phase === "early"
-                ? "bg-status-warn/15 text-status-warn"
-                : "bg-muted text-muted-foreground"
-          }`}
-        >
-          {label[phase]}
-        </button>
-        <div className="flex flex-wrap justify-between gap-2 text-sm">
+    <div className="checkin-step">
+      <button
+        type="button"
+        data-phase={phase}
+        disabled={phase === "done"}
+        onPointerDown={tap}
+        // Con teclado (Enter o Espacio) el clic llega sin puntero.
+        onClick={(event) => {
+          if (event.detail === 0) tap();
+        }}
+        className="reaction-pad"
+      >
+        {label[phase]}
+      </button>
+      <p className="reaction-progress" aria-live="polite">
+        <span>
+          {t("checkin.reaction.attempt", {
+            n: Math.min(times.length + 1, TRIALS),
+            total: TRIALS,
+          })}
+        </span>
+        {summary.count > 0 && (
           <span>
-            Intento {Math.min(times.length + 1, TRIALS)} de {TRIALS}
+            {t("checkin.reaction.summary", {
+              mean: formatNumber(summary.meanMs),
+              lapse: LAPSE_MS,
+              lapses: summary.lapses,
+            })}
           </span>
-          {s.count > 0 && (
-            <span>
-              Promedio <strong>{s.meanMs} ms</strong> · lapsos (más de{" "}
-              {LAPSE_MS} ms): <strong>{s.lapses}</strong>
-            </span>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Versión de demo de 5 intentos. La versión validada dura 3 minutos
-          (Basner 2011). Comparar con tu normal: pendiente de validar.
-        </p>
-      </CardContent>
-    </Card>
+        )}
+      </p>
+      {phase === "done" ? (
+        <button type="button" className="checkin-primary" onClick={onNext}>
+          {t("checkin.reaction.next")}
+        </button>
+      ) : (
+        <>
+          <p className="checkin-note">{t("checkin.reaction.note")}</p>
+          <button type="button" className="checkin-skip" onClick={onNext}>
+            {t("checkin.reaction.skip")}
+          </button>
+        </>
+      )}
+    </div>
   );
 }

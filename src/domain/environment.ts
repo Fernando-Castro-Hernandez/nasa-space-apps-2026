@@ -5,6 +5,7 @@ import type { Hazard, Source } from "@/domain/finding";
 import { CO2_ONE_HOUR_MMHG } from "@/domain/shipRules";
 import { SOURCES } from "@/domain/sources";
 import type { Status } from "@/domain/vitals";
+import { t } from "@/i18n";
 
 export type ModuleAir = { module: string; co2OneHourMmhg: number };
 export type HeadacheReport = { crewId: string; day: string };
@@ -39,7 +40,9 @@ export function environmentalEvent(
     module: worstAir.module,
     co2OneHourMmhg: worstAir.co2OneHourMmhg,
     affected,
-    instruction: `Revisar la ventilación del ${worstAir.module}`,
+    instruction: t("domain.environment.checkVentilation", {
+      module: worstAir.module,
+    }),
     source: SOURCES.ochmoCo2,
   };
 }

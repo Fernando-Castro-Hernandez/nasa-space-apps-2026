@@ -101,13 +101,13 @@ Las reglas completas, con cita, están en [FUENTES.md](FUENTES.md). En resumen:
 
 ## 9. Decisiones técnicas
 
-| Tema                     | Decisión                                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| Conexión con la estación | Bluetooth (Web Bluetooth).                                                                             |
-| Datos compartidos        | Cloudflare D1 dentro del mismo Worker que sirve la app. Las pantallas consultan cada pocos segundos.   |
-| Transcripción            | Workers AI con `whisper-large-v3-turbo`. Respaldo: Web Speech API de Chrome (envía el audio a Google). |
-| Extracción de campos     | Workers AI con `llama-3.1-8b-instruct` en modo JSON; se valida la respuesta y se reintenta una vez.    |
-| Llaves de API            | Ninguna: Workers AI y D1 se usan con _bindings_ del Worker.                                            |
+| Tema                     | Decisión                                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Conexión con la estación | Bluetooth (Web Bluetooth).                                                                                    |
+| Datos compartidos        | Cloudflare D1 dentro del mismo Worker que sirve la app. Las pantallas consultan cada pocos segundos.          |
+| Transcripción            | Workers AI con `whisper-large-v3-turbo`. Respaldo: Web Speech API de Chrome (envía el audio a Google).        |
+| Extracción de campos     | Workers AI con `llama-3.3-70b-instruct-fp8-fast` en modo JSON; se valida la respuesta y se reintenta una vez. |
+| Llaves de API            | Ninguna: Workers AI y D1 se usan con _bindings_ del Worker.                                                   |
 
 El plan gratuito de Workers AI da 10,000 neurons al día; cada check-in (transcripción + extracción) gasta unas 50, así que caben unos 200 check-ins al día ([precios](https://developers.cloudflare.com/workers-ai/platform/pricing/)).
 

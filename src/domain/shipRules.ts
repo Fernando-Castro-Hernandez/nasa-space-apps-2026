@@ -1,6 +1,7 @@
 // Reglas con datos de la nave (HU-12), textuales de FUENTES.md §2.
 import { finding, PENDING, type Finding } from "@/domain/finding";
 import { SOURCES } from "@/domain/sources";
+import { formatNumber, t } from "@/i18n";
 
 /** Límite de dosis de la carrera (OCHMO, radiación). */
 export const DOSE_LIMIT_MSV = 600;
@@ -30,11 +31,13 @@ export function co2Rule(oneHourMmhg: number) {
       id: "co2-high",
       hazard: "E",
       status: "ambar",
-      reason: `CO2 de cabina en ${oneHourMmhg} mmHg (promedio de 1 h)`,
+      reason: t("domain.reasons.co2High", {
+        value: formatNumber(oneHourMmhg),
+      }),
       source: SOURCES.ochmoCo2,
     });
   }
-  return ok("co2-ok", "E", "aire de cabina normal");
+  return ok("co2-ok", "E", t("domain.reasons.co2Ok"));
 }
 
 /** Radiación: rojo al llegar a 600 mSv; amarillo cerca (margen pendiente de
@@ -45,7 +48,10 @@ export function radiationRule(doseMsv: number) {
       id: "radiation-limit",
       hazard: "R",
       status: "rojo",
-      reason: `dosis acumulada de ${doseMsv} mSv, en el límite de ${DOSE_LIMIT_MSV}`,
+      reason: t("domain.reasons.radiationLimit", {
+        dose: formatNumber(doseMsv),
+        limit: formatNumber(DOSE_LIMIT_MSV),
+      }),
       source: SOURCES.ochmoRadiation,
     });
   }
@@ -54,11 +60,14 @@ export function radiationRule(doseMsv: number) {
       id: "radiation-near",
       hazard: "R",
       status: "ambar",
-      reason: `dosis acumulada cerca del límite de ${DOSE_LIMIT_MSV} mSv (margen ${PENDING})`,
+      reason: t("domain.reasons.radiationNear", {
+        limit: formatNumber(DOSE_LIMIT_MSV),
+        pending: PENDING(),
+      }),
       source: null,
     });
   }
-  return ok("radiation-ok", "R", "dosis dentro del límite");
+  return ok("radiation-ok", "R", t("domain.reasons.radiationOk"));
 }
 
 /** Ejercicio: amarillo por debajo de 600 min en los últimos 7 días. Sin rojo.
@@ -69,9 +78,12 @@ export function exerciseRule(minutesLast7Days: number) {
       id: "exercise-low",
       hazard: "G",
       status: "ambar",
-      reason: `${minutesLast7Days} de ${EXERCISE_MIN_WEEK} min de ejercicio esta semana`,
+      reason: t("domain.reasons.exerciseLow", {
+        minutes: formatNumber(minutesLast7Days),
+        goal: formatNumber(EXERCISE_MIN_WEEK),
+      }),
       source: SOURCES.ochmoExercise,
     });
   }
-  return ok("exercise-ok", "G", "ejercicio al día");
+  return ok("exercise-ok", "G", t("domain.reasons.exerciseOk"));
 }

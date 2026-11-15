@@ -1,0 +1,31 @@
+/* Confirmación de "Enviar ánimo": el ícono pasa a check creciendo y el texto
+   aparece en 300 ms. Solo el movimiento; la forma la da la clase de quien
+   coloca el botón. */
+.encourage-button[data-sent] svg {
+  animation: encourage-pop 300ms ease-out;
+}
+.encourage-button[data-sent] span {
+  animation: encourage-fade 300ms ease-out;
+}
+@keyframes encourage-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes encourage-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .encourage-button[data-sent] svg,
+  .encourage-button[data-sent] span {
+    animation: none;
+  }
+}

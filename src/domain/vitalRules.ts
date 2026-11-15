@@ -4,6 +4,7 @@
 import { type BaselineResult, isBaseline, mean } from "@/domain/baseline";
 import { finding, type Finding, PENDING } from "@/domain/finding";
 import { SOURCES } from "@/domain/sources";
+import { formatNumber, t } from "@/i18n";
 
 /** Desviación mínima que cuenta como cambio: 0.5 DE (Plews 2012). */
 const SD_FACTOR = 0.5;
@@ -25,7 +26,7 @@ const ok = (
 });
 
 const insufficient = (id: string, hazard: Finding["hazard"]): Finding => ({
-  ...ok(`${id}-insufficient`, hazard, "línea base insuficiente"),
+  ...ok(`${id}-insufficient`, hazard, t("domain.reasons.insufficientBaseline")),
   insufficient: true,
 });
 
@@ -37,7 +38,7 @@ export function hrvRule(base: BaselineResult | undefined, week: number[]) {
   if (valid.length < MIN_HRV_READINGS) {
     return {
       ...insufficient("hrv", "I"),
-      reason: "pocas lecturas esta semana",
+      reason: t("domain.reasons.fewReadings"),
     };
   }
   if (mean(valid)! < base.mean - SD_FACTOR * base.sd) {
@@ -45,11 +46,11 @@ export function hrvRule(base: BaselineResult | undefined, week: number[]) {
       id: "hrv-low",
       hazard: "I",
       status: "ambar",
-      reason: "recuperación (HRV) bajo tu normal en la media de 7 días",
+      reason: t("domain.reasons.hrvLow"),
       source: SOURCES.plews2012,
     });
   }
-  return ok("hrv-ok", "I", "recuperación en tu normal");
+  return ok("hrv-ok", "I", t("domain.reasons.hrvOk"));
 }
 
 /** Pulso en reposo. Rojo: ≥ 131, o ≤ 40 y bajo base − 0.5 DE, confirmado.
@@ -71,7 +72,9 @@ export function pulseRule(
               id: "pulse-red",
               hazard: "G",
               status: "rojo",
-              reason: `pulso de ${latest.value} lpm fuera de rango`,
+              reason: t("domain.reasons.pulseRed", {
+                bpm: formatNumber(latest.value),
+              }),
               source: SOURCES.news2,
             }
           : doubtful("pulse", "G"),
@@ -85,11 +88,11 @@ export function pulseRule(
       id: "pulse-high",
       hazard: "G",
       status: "ambar",
-      reason: "pulso en reposo sobre tu normal en la media de 3 días",
+      reason: t("domain.reasons.pulseHigh"),
       source: SOURCES.plews2012,
     });
   }
-  return ok("pulse-ok", "G", "pulso en tu normal");
+  return ok("pulse-ok", "G", t("domain.reasons.pulseOk"));
 }
 
 /** SpO2. Rojo: ≤ 91 % confirmado. Amarillo: lecturas < 94 % o caída
@@ -106,7 +109,9 @@ export function spo2Rule(
             id: "spo2-red",
             hazard: "E",
             status: "rojo",
-            reason: `oxígeno en ${latest.value} %`,
+            reason: t("domain.reasons.spo2Red", {
+              value: formatNumber(latest.value),
+            }),
             source: SOURCES.news2,
           }
         : doubtful("spo2", "E"),
@@ -122,11 +127,13 @@ export function spo2Rule(
       id: "spo2-low",
       hazard: "E",
       status: "ambar",
-      reason: below94 ? "oxígeno bajo 94 %" : "oxígeno 3 puntos bajo tu normal",
+      reason: below94
+        ? t("domain.reasons.spo2Below94")
+        : t("domain.reasons.spo2Drop"),
       source: SOURCES.bts2017,
     });
   }
-  return ok("spo2-ok", "E", "oxígeno en tu normal");
+  return ok("spo2-ok", "E", t("domain.reasons.spo2Ok"));
 }
 
 /** Sueño: media de 3 noches < 7 h y bajo base − 0.5 DE. Sin rojo. Peligro I. */
@@ -138,11 +145,16 @@ export function sleepRule(base: BaselineResult | undefined, last3: number[]) {
       id: "sleep-low",
       hazard: "I",
       status: "ambar",
-      reason: `dormiste ${m.toFixed(1)} h en promedio las últimas 3 noches`,
+      reason: t("domain.reasons.sleepLow", {
+        hours: formatNumber(m, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+      }),
       source: SOURCES.aasm2015,
     });
   }
-  return ok("sleep-ok", "I", "sueño en tu normal");
+  return ok("sleep-ok", "I", t("domain.reasons.sleepOk"));
 }
 
 /** Prueba de reacción: lapsos sobre base + 0.5 DE. El umbral está pendiente
@@ -154,11 +166,11 @@ export function reactionRule(base: BaselineResult | undefined, lapses: number) {
       id: "reaction-lapses",
       hazard: "I",
       status: "ambar",
-      reason: `más lapsos de atención que tu normal (umbral ${PENDING})`,
+      reason: t("domain.reasons.reactionLapses", { pending: PENDING() }),
       source: null,
     });
   }
-  return ok("reaction-ok", "I", "atención en tu normal");
+  return ok("reaction-ok", "I", t("domain.reasons.reactionOk"));
 }
 
 function doubtful(id: string, hazard: Finding["hazard"]): Finding {
@@ -166,7 +178,7 @@ function doubtful(id: string, hazard: Finding["hazard"]): Finding {
     id: `${id}-doubtful`,
     hazard,
     status: "ambar",
-    reason: "lectura dudosa, repite la medición",
+    reason: t("domain.reasons.doubtful"),
     source: SOURCES.nhsRepeat,
   };
 }

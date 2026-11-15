@@ -30,36 +30,37 @@
   align-items: center;
   gap: 3cqw;
 }
-.data-heading-row h1 {
-  white-space: nowrap;
-}
 .data-heading-row p {
-  font-size: 4.2cqw;
+  font-size: max(15px, 4.2cqw);
   line-height: 1.4;
 }
 .period-selector {
   display: flex;
   border: 1px solid var(--reference-line);
   border-radius: 99px;
-  width: 43cqw;
+  min-width: 43cqw;
   flex-shrink: 0;
-  height: 8.7cqw;
-  min-height: 36px;
-  font-size: 4cqw;
+  min-height: 48px;
+  font-size: max(15px, 4cqw);
   background: var(--reference-lavender-50);
 }
 .period-selector button {
   flex: 1;
+  min-height: 48px;
+  /* "Mes" es corto: sin esto, en Mi estado queda en 47 px de ancho. */
+  min-width: 48px;
   border-radius: inherit;
-  padding-inline: 1.5cqw;
+  padding-inline: 3cqw;
+  transition: background-color 200ms ease-out;
 }
+/* Active option: action violet on the lighter lavenders keeps 5:1. */
 .period-selector [aria-pressed="true"] {
   color: var(--reference-action);
   font-weight: 850;
   background: linear-gradient(
     120deg,
-    var(--reference-lavender-200),
-    var(--reference-lavender-300)
+    var(--reference-lavender-100),
+    var(--reference-lavender-200)
   );
 }
 .metric-selector {
@@ -73,10 +74,11 @@
   overflow: hidden;
 }
 .metric-selector button {
-  font-size: 3.9cqw;
-  line-height: 1.05;
-  min-height: 44px;
-  padding: 0.8cqw 1cqw;
+  font-size: max(15px, 3.9cqw);
+  line-height: 1.1;
+  min-height: 52px;
+  padding: 0.8cqw 1.5cqw;
+  text-wrap: balance;
 }
 .metric-selector button + button {
   border-left: 1px solid var(--reference-line);
@@ -84,8 +86,8 @@
 .metric-selector [aria-selected="true"] {
   background: linear-gradient(
     130deg,
-    var(--reference-lavender-200),
-    var(--reference-lavender-300)
+    var(--reference-lavender-100),
+    var(--reference-lavender-200)
   );
   color: var(--reference-action);
   font-weight: 850;
@@ -98,7 +100,7 @@
   padding-top: 2cqw;
 }
 .metric-current > p:first-child {
-  font-size: 4.4cqw;
+  font-size: max(15px, 4.4cqw);
   font-weight: 850;
 }
 .metric-current > strong {
@@ -110,7 +112,7 @@
 }
 .metric-current > p:last-child {
   margin-top: 1.4cqw;
-  font-size: 4cqw;
+  font-size: max(15px, 4cqw);
 }
 .metric-chart {
   position: relative;
@@ -142,12 +144,12 @@
   position: relative;
   z-index: 1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1.4cqw;
-  font-size: 3.8cqw;
+  gap: 1.4cqw 3cqw;
+  font-size: max(15px, 3.8cqw);
   margin-top: 5cqw;
-  white-space: nowrap;
 }
 .metric-summary strong {
   font-weight: 850;
@@ -156,4 +158,54 @@
   height: 6cqw;
   width: 1px;
   background: var(--reference-ink-soft);
+}
+/* Each day answers to a tap anywhere in its column, not only on the dot. */
+.chart-hit {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  appearance: none;
+}
+.chart-label {
+  pointer-events: none;
+  transition: transform 200ms ease-out;
+}
+.chart-baseline {
+  fill: none;
+  stroke: var(--reference-ink-muted);
+  stroke-width: 2;
+}
+/* When the metric or the period changes, the chart is drawn again. */
+@media (prefers-reduced-motion: no-preference) {
+  .chart-line {
+    stroke-dasharray: 1;
+    animation: chart-draw 400ms ease-out both;
+  }
+  .chart-area,
+  .chart-point {
+    animation: chart-fade 400ms ease-out both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-label,
+  .period-selector button {
+    transition: none;
+  }
+}
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes chart-fade {
+  from {
+    opacity: 0;
+  }
 }

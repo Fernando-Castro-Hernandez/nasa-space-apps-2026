@@ -2,14 +2,45 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   // Producción (rama main). Staging usa el entorno "staging" de abajo.
   "name": "space-apps-2026",
+  // El mismo Worker sirve la app y responde la API (HU-29).
+  "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
+    // Solo /api/ pasa por el código del Worker; lo demás son archivos.
+    "run_worker_first": ["/api/*"],
   },
+  // Workers AI: transcripción, campos de la bitácora y voz de Lunito. Sin
+  // llaves de API. Los bindings no se heredan: se repiten en cada entorno.
+  "ai": { "binding": "AI" },
+  // Límite de uso de las rutas de IA por IP (worker/index.ts, `guardAi`): 40
+  // peticiones por minuto. Un turno de voz con Lunito son 3 (transcribir,
+  // responder, decir) y dura 10 s o más, así que una persona no pasa de unas
+  // 18 por minuto; el check-in son unas 5. Caben dos dispositivos en la misma
+  // red (el Wi-Fi de la sede) y un script desbocado se corta. Cada entorno
+  // lleva su propio `namespace_id`, para que no compartan la cuenta.
+  "ratelimits": [
+    {
+      "name": "AI_RATE_LIMIT",
+      "namespace_id": "26001",
+      "simple": { "limit": 40, "period": 60 },
+    },
+  ],
+  // Para cambiar la voz de Lunito (docs/DECISIONS.md), aquí y en "staging":
+  // "vars": { "TTS_MODEL": "@cf/deepgram/aura-2-es", "TTS_SPEAKER": "celeste" },
   "env": {
     "staging": {
       "name": "space-apps-2026-staging",
+      "ai": { "binding": "AI" },
+      "ratelimits": [
+        {
+          "name": "AI_RATE_LIMIT",
+          "namespace_id": "26002",
+          "simple": { "limit": 40, "period": 60 },
+        },
+      ],
     },
   },
 }

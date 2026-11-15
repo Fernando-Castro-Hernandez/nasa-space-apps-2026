@@ -1,28 +1,27 @@
 // Resumen SBAR en cuatro bloques, legible en 30 s (SISTEMA.md §7.5).
+import { t } from "@/i18n";
 import type { Sbar } from "./sbar";
 
-const BLOCKS: { key: keyof Sbar; label: string }[] = [
-  { key: "situation", label: "S · Situación" },
-  { key: "background", label: "B · Antecedentes" },
-  { key: "assessment", label: "A · Evaluación a bordo" },
-  { key: "request", label: "R · Qué se pide" },
+const KEYS: (keyof Sbar)[] = [
+  "situation",
+  "background",
+  "assessment",
+  "request",
 ];
 
 export function SbarCard({ sbar }: { sbar: Sbar }) {
   return (
     <section
-      aria-label="Resumen SBAR"
+      aria-label={t("ground.sbar.label")}
       className="grid grid-cols-1 gap-3 md:grid-cols-2"
     >
-      {BLOCKS.map((b) => (
+      {KEYS.map((key) => (
         <div
-          key={b.key}
-          className="flex flex-col gap-1.5 rounded-xl border bg-card p-4"
+          key={key}
+          className="flex flex-col gap-1.5 rounded-2xl border bg-card p-4"
         >
-          <span className="text-xs font-bold tracking-wide text-primary uppercase">
-            {b.label}
-          </span>
-          <p className="text-[0.95rem] leading-relaxed">{sbar[b.key]}</p>
+          <h3 className="ground-label">{t(`ground.sbar.blocks.${key}`)}</h3>
+          <p className="text-base leading-relaxed">{sbar[key]}</p>
         </div>
       ))}
     </section>

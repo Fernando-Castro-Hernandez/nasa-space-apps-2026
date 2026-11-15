@@ -9,6 +9,9 @@ const store = persistedStore<string>(
   (value) => value,
 );
 
+/** Reinicio del panel /demo (HU-28): borra las tareas marcadas de todos. */
+export const resetDailyActions = store.clear;
+
 /** Las selecciones pertenecen al perfil y al día local, nunca a toda la tripulación. */
 export function useDailyActions() {
   const profile = useActiveProfile();

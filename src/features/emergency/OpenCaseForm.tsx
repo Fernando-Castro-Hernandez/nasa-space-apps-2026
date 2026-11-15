@@ -1,88 +1,143 @@
 // Primer paso de la emergencia: a quién le pasa y qué pasó. Un toque por
 // respuesta; el sensor no detecta un desmayo, siempre lo dispara una persona.
+// Con /emergencia?quien=<id> esa persona llega elegida. Cancelar no abre nada.
+// Si el último caso ya se cerró, queda a un toque al final, como constancia.
+import { Check, Siren } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { casePersonName } from "@/app/activeCase";
+import { navigate } from "@/app/router";
 import { CREW } from "@/data/crew";
-import { openCase, WHAT_HAPPENED } from "./caseLogic";
+import { t } from "@/i18n";
+import {
+  type EmergencyCase,
+  openCase,
+  WHAT_HAPPENED,
+  type WhatCode,
+} from "./caseLogic";
 import { saveCase } from "./caseStore";
+import { formatTime } from "./link";
+import { presetPerson } from "./preset";
 
-const choice = (selected: boolean) =>
-  `min-h-14 rounded-xl border-2 px-4 text-left text-base font-semibold transition-colors ${
-    selected
-      ? "border-status-alert bg-status-alert text-white"
-      : "border-border bg-card hover:border-status-alert"
-  }`;
+const CREW_IDS = CREW.map((c) => c.id);
 
-export function OpenCaseForm() {
-  const [personId, setPersonId] = useState<string | null>(null);
-  const [what, setWhat] = useState<string | null>(null);
+/** Lo que dice el botón principal: la acción o lo que falta elegir. */
+function openLabel(name: string | undefined, what: WhatCode | null) {
+  if (name && what) return t("emergency.form.open", { name });
+  if (name) return t("emergency.form.chooseWhat");
+  if (what) return t("emergency.form.choosePerson");
+  return t("emergency.form.chooseBoth");
+}
+
+/** Abre el caso ahora: queda guardado y avisa a Tierra. */
+const openNow = (personId: string, name: string, what: WhatCode) =>
+  saveCase(openCase(personId, name, what, Date.now()));
+
+/** Vuelve a la pantalla anterior de la app (la Navigation API solo cuenta las
+ *  de este sitio); si se llegó directo o el navegador no la tiene, a Inicio. */
+function cancel() {
+  const nav = (window as { navigation?: { canGoBack?: boolean } }).navigation;
+  if (nav?.canGoBack) window.history.back();
+  else navigate("/");
+}
+
+type Props = {
+  /** El caso guardado: si ya se cerró, se ofrece verlo. */
+  last?: EmergencyCase | null;
+  onShowLast?: () => void;
+};
+
+export function OpenCaseForm({ last, onShowLast }: Props) {
+  const [personId, setPersonId] = useState(() =>
+    presetPerson(window.location.search, CREW_IDS),
+  );
+  const [what, setWhat] = useState<WhatCode | null>(null);
   const person = CREW.find((c) => c.id === personId);
 
   const open = () => {
-    if (!person || !what) return;
-    saveCase(openCase(person.id, person.name, what, Date.now()));
-    // El botón está al final del formulario: sin esto, el banner rojo del
-    // caso queda fuera de la vista en celular.
-    window.scrollTo(0, 0);
+    if (person && what) openNow(person.id, person.name, what);
   };
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 p-4 md:gap-6 md:p-6">
-      <p className="rounded-xl border-2 border-status-alert px-4 py-3 text-base font-semibold text-status-alert">
-        Al abrir el caso se avisa a Tierra de inmediato.
+    <div className="em-page">
+      <p className="em-banner em-banner--form">
+        <Siren aria-hidden="true" />
+        {t("emergency.form.alert")}
       </p>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">¿A quién le pasa?</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {CREW.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={c.id === personId}
-              onClick={() => setPersonId(c.id)}
-              className={choice(c.id === personId)}
-            >
-              {c.name}
-              <span className="block text-sm font-normal opacity-80">
-                {c.role}
-              </span>
-            </button>
-          ))}
-        </CardContent>
-      </Card>
+      <div className="em-form">
+        <section aria-labelledby="em-who">
+          <h2 id="em-who" className="em-section-title">
+            {t("emergency.form.who")}
+          </h2>
+          <div className="em-choices">
+            {CREW.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                data-person={c.id}
+                aria-pressed={c.id === personId}
+                onClick={() => setPersonId(c.id)}
+                className="em-choice em-tap"
+              >
+                <span>
+                  {c.name}
+                  <small>{c.role}</small>
+                </span>
+                {c.id === personId && <Check aria-hidden="true" />}
+              </button>
+            ))}
+          </div>
+        </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">¿Qué pasó?</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {WHAT_HAPPENED.map((w) => (
-            <button
-              key={w}
-              type="button"
-              aria-pressed={w === what}
-              onClick={() => setWhat(w)}
-              className={choice(w === what)}
-            >
-              {w}
-            </button>
-          ))}
-        </CardContent>
-      </Card>
+        <section aria-labelledby="em-what">
+          <h2 id="em-what" className="em-section-title">
+            {t("emergency.form.what")}
+          </h2>
+          <div className="em-choices em-choices--what">
+            {WHAT_HAPPENED.map((w) => (
+              <button
+                key={w}
+                type="button"
+                data-what={w}
+                aria-pressed={w === what}
+                onClick={() => setWhat(w)}
+                className="em-choice em-tap"
+              >
+                <span>{t(`emergency.what.${w}`)}</span>
+                {w === what && <Check aria-hidden="true" />}
+              </button>
+            ))}
+          </div>
+        </section>
 
-      <Button
-        onClick={open}
-        disabled={!person || !what}
-        className="h-16 rounded-2xl bg-status-alert text-lg font-bold text-white hover:bg-status-alert/90"
-      >
-        {person && what
-          ? `Abrir emergencia · ${person.name}`
-          : "Elige a la persona y qué pasó"}
-      </Button>
+        {last?.closedAt !== undefined && onShowLast && (
+          <button
+            type="button"
+            onClick={onShowLast}
+            className="em-last-case em-tap"
+          >
+            {t("emergency.form.lastCase", {
+              name: casePersonName(last),
+              time: formatTime(last.closedAt),
+            })}
+          </button>
+        )}
+      </div>
+
+      <div className="em-actions">
+        <button
+          type="button"
+          data-open-case
+          onClick={open}
+          disabled={!person || !what}
+          className="em-open em-tap"
+        >
+          {openLabel(person?.name, what)}
+        </button>
+        <button type="button" onClick={cancel} className="em-secondary em-tap">
+          {t("common.actions.cancel")}
+        </button>
+      </div>
     </div>
   );
 }

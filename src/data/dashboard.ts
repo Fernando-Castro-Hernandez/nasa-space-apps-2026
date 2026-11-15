@@ -3,6 +3,7 @@
 // base propia para que 72 lpm, 45 ms y 98 % salgan "Bien", como en la
 // referencia. Las lecturas se eligen desde el panel /demo.
 import type { Baseline, Reading } from "@/domain/vitals";
+import { t } from "@/i18n";
 
 export const DASHBOARD_BASELINE: Baseline = {
   bpm: { mean: 72, sd: 5 },
@@ -12,12 +13,25 @@ export const DASHBOARD_BASELINE: Baseline = {
 
 export type DashboardReading = { name: string; reading: Reading };
 
-/** Una por estado: Bien, Precaución y Atención. */
+/** Una por estado: Bien, Precaución y Atención. El nombre es la palabra del
+ *  estado en el idioma activo. */
 export const DASHBOARD_READINGS: DashboardReading[] = [
-  { name: "Bien", reading: { bpm: 72, spo2: 98, hrv: 45 } },
-  { name: "Precaución", reading: { bpm: 79, spo2: 97, hrv: 36 } },
   {
-    name: "Atención",
+    get name() {
+      return t("common.status.verde");
+    },
+    reading: { bpm: 72, spo2: 98, hrv: 45 },
+  },
+  {
+    get name() {
+      return t("common.status.ambar");
+    },
+    reading: { bpm: 79, spo2: 97, hrv: 36 },
+  },
+  {
+    get name() {
+      return t("common.status.rojo");
+    },
     reading: { bpm: 74, spo2: 90, hrv: 40, confirmed: true },
   },
 ];

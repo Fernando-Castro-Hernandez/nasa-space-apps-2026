@@ -3,7 +3,14 @@ import { cleanup, renderHook, act } from "@testing-library/react";
 import { setActiveProfile } from "@/features/profiles/activeProfile";
 import { setReadingIndex } from "@/features/demo/readingStore";
 import { setShared } from "@/features/crew/privacy";
-import { buildLunitoDashboard, useLunitoDashboard } from "./lunitoDashboard";
+import { autonomy } from "@/features/crew/autonomy";
+import { casesWithCo2 } from "@/features/demo/demoStore";
+import { setLocale } from "@/i18n";
+import {
+  buildLunitoDashboard,
+  formatPercent,
+  useLunitoDashboard,
+} from "./lunitoDashboard";
 
 afterEach(() => {
   cleanup();
@@ -11,19 +18,31 @@ afterEach(() => {
 });
 
 describe("dashboard de demostración", () => {
-  test("centraliza valores de referencia y no anuncia servicios reales", () => {
+  test("centraliza la lectura del día y su línea base", () => {
     const model = buildLunitoDashboard();
     expect(model.source).toBe("demo");
-    expect(model.capabilities).toEqual({
-      backend: false,
-      remoteEncouragement: false,
-      liveSensor: false,
-    });
     expect(model.reading).toMatchObject({ bpm: 72, hrv: 45, spo2: 98 });
+    expect(model.baseline.bpm.mean).toBe(72);
     expect(model.status).toBe("verde");
     expect(model.reason).toBeNull();
-    expect(model.mission).toMatchObject({ autonomy: 68, target: 100 });
     expect(model).toEqual(buildLunitoDashboard());
+  });
+
+  test("la autonomía es la misma que la de Equipo: casos bien atendidos de la demo", () => {
+    for (const co2 of ["normal", "alto", "resuelto"] as const) {
+      const expected = autonomy(casesWithCo2(co2).map((c) => c.outcome));
+      expect(buildLunitoDashboard({ co2 }).mission.autonomy).toEqual(expected);
+    }
+    const { mission } = buildLunitoDashboard();
+    expect(mission.autonomy).toMatchObject({ wellHandled: 11, closed: 12 });
+    expect(mission.target).toBe(1);
+  });
+
+  test("un solo redondeo para el porcentaje, en el formato del idioma", () => {
+    expect(formatPercent(11 / 12)).toBe("92%");
+    expect(formatPercent(1)).toBe("100%");
+    setLocale("en");
+    expect(formatPercent(11 / 12)).toBe("92%");
   });
 
   test.each([
@@ -109,8 +128,10 @@ describe("dashboard de demostración", () => {
 
   test("un caso ambiental resuelto actualiza la autonomía de muestra", () => {
     expect(
-      buildLunitoDashboard({ co2: "resuelto" }).mission.autonomy,
-    ).toBeGreaterThan(buildLunitoDashboard({ co2: "alto" }).mission.autonomy);
+      buildLunitoDashboard({ co2: "resuelto" }).mission.autonomy.ratio,
+    ).toBeGreaterThan(
+      buildLunitoDashboard({ co2: "alto" }).mission.autonomy.ratio,
+    );
   });
 
   test("el hook responde a perfil, lectura y privacidad de los stores existentes", () => {

@@ -13,7 +13,7 @@ describe("barHeights", () => {
 
   test("es simétrica, como en la referencia", () => {
     const h = barHeights(0.7, 2.4);
-    expect(h).toEqual([...h].reverse());
+    expect(h).toEqual(h.toReversed());
   });
 
   test("el centro es más alto que los bordes", () => {

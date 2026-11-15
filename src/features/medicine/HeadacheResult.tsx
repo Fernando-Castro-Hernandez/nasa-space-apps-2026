@@ -1,46 +1,42 @@
-import { TriangleAlert } from "lucide-react";
-import { STATUS_LABEL, STATUS_TOKEN } from "@/domain/status";
+import { Check, OctagonAlert, TriangleAlert } from "lucide-react";
+import { STATUS_LABEL } from "@/domain/status";
+import type { Status } from "@/domain/vitals";
+import { t, tn } from "@/i18n";
 import type { HeadacheResult as Result } from "./headache";
 import { Pending, Source } from "./parts";
+import { UrgentLink } from "./UrgentLink";
 
-const TITLE = {
-  autocuidado: "Puedes cuidarte tú",
-  "oficial médico": "Avisa al oficial médico",
-  "cirujano de vuelo": "Contacta al cirujano de vuelo",
-} as const;
+// El color nunca va solo: cada nivel lleva su palabra y su ícono.
+const LEVEL_ICON: Record<Status, typeof Check> = {
+  verde: Check,
+  ambar: TriangleAlert,
+  rojo: OctagonAlert,
+};
+
+const title = (who: Result["who"]) =>
+  who === "autocuidado"
+    ? t("medicine.result.selfCare")
+    : who === "oficial médico"
+      ? t("medicine.result.cmo")
+      : t("medicine.result.surgeon");
 
 export function HeadacheResult({ r }: { r: Result }) {
+  const Icon = LEVEL_ICON[r.level];
   return (
-    <div className="flex flex-col gap-4">
-      <div
-        className="flex flex-col gap-1 rounded-xl border-2 p-4"
-        style={{ borderColor: STATUS_TOKEN[r.level] }}
-      >
-        <span
-          className="text-xs font-semibold uppercase tracking-wide"
-          style={{ color: STATUS_TOKEN[r.level] }}
-        >
+    <div className="medicine-result">
+      <div className="medicine-verdict" data-level={r.level}>
+        <span className="medicine-level">
+          <Icon aria-hidden="true" />
           {STATUS_LABEL[r.level]}
         </span>
-        <p className="text-xl font-semibold">{TITLE[r.who]}</p>
+        <p className="medicine-verdict-title">{title(r.who)}</p>
         {r.reasons.map((reason) => (
-          <p key={reason} className="text-sm text-muted-foreground">
-            {reason}
-          </p>
+          <p key={reason}>{reason}</p>
         ))}
         {r.level === "rojo" && (
           <>
-            <a
-              href="/emergencia"
-              className="mt-2 flex h-11 items-center justify-center gap-2 rounded-lg bg-status-alert px-4 text-sm font-semibold text-white"
-            >
-              <TriangleAlert className="size-4" aria-hidden="true" />
-              Contacta al cirujano de vuelo
-            </a>
-            <Source>
-              SNNOOP10, Do et al., Neurology 2019. Sin comunicación, el oficial
-              médico actúa sin el cirujano (NTRS 20100016333).
-            </Source>
+            <UrgentLink label={t("medicine.result.toEmergency")} />
+            <Source>{t("medicine.result.noLinkSource")}</Source>
           </>
         )}
         {r.level === "ambar" && (
@@ -49,17 +45,15 @@ export function HeadacheResult({ r }: { r: Result }) {
       </div>
 
       {(r.checkVentilation || r.spaceAdaptation) && (
-        <div className="flex flex-col gap-2 rounded-xl bg-muted p-4 text-sm">
+        <div className="medicine-context">
           {r.checkVentilation && (
             <p>
-              El CO2 de la cabina está alto: revisa primero la ventilación.{" "}
-              <Source>OCHMO-TB-004</Source>
+              {t("medicine.result.co2")} <Source>OCHMO-TB-004</Source>
             </p>
           )}
           {r.spaceAdaptation && (
             <p>
-              Primera semana de vuelo con náusea o congestión: es probable que
-              sea adaptación al espacio. <Source>OCHMO-TB-033</Source>
+              {t("medicine.result.adaptation")} <Source>OCHMO-TB-033</Source>
             </p>
           )}
         </div>
@@ -72,56 +66,47 @@ export function HeadacheResult({ r }: { r: Result }) {
 
 function SelfCare({ r }: { r: Result }) {
   return (
-    <div className="flex flex-col gap-3 text-sm">
-      <p className="font-semibold">Qué puedes hacer</p>
+    <div className="medicine-selfcare">
+      <h3>{t("medicine.result.whatToDo")}</h3>
       <p>
-        Descansa, duerme e hidrátate.{" "}
+        {t("medicine.result.rest")}{" "}
         <Source>van Oosterhout, Neurology 2024</Source>
       </p>
-      <div className="rounded-xl border bg-card p-3">
-        <p className="font-medium">Paracetamol</p>
+      <div className="medicine-drug">
+        <h4>{t("medicine.result.paracetamol")}</h4>
         <p>
-          Referencia de venta libre: 500 mg, 2 tabletas cada 6 h, máximo 6 en 24
-          h. Te quedan {r.paracetamolRemaining} tabletas hoy.
+          {t("medicine.result.paracetamolOtc")}{" "}
+          <strong>
+            {tn("medicine.result.paracetamolLeft", r.paracetamolRemaining)}
+          </strong>
         </p>
-        <p className="text-muted-foreground">
-          Botiquín de la ISS: 325 mg, no más de 12 tabletas en 24 h.
-        </p>
+        <p className="medicine-muted">{t("medicine.result.paracetamolIss")}</p>
       </div>
-      <div className="rounded-xl border bg-card p-3">
-        <p className="font-medium">Ibuprofeno</p>
+      <div className="medicine-drug">
+        <h4>{t("medicine.result.ibuprofen")}</h4>
         {r.ibuprofen === "no" ? (
-          <p>No tomes ibuprofeno; usa paracetamol.</p>
+          <p>{t("medicine.result.ibuprofenNo")}</p>
         ) : (
           <>
             {r.ibuprofenNeedsFood && (
-              <p className="font-medium">
-                Come algo antes: se toma con comida.
+              <p>
+                <strong>{t("medicine.result.ibuprofenFood")}</strong>
               </p>
             )}
-            <p>
-              Referencia de venta libre: 200 mg, 1 o 2 tabletas cada 4 a 6 h,
-              máximo 6 en 24 h.
-            </p>
-            <p className="text-muted-foreground">
-              Botiquín de la ISS: 400 mg, con comida, no más de 8 en 24 h.
+            <p>{t("medicine.result.ibuprofenOtc")}</p>
+            <p className="medicine-muted">
+              {t("medicine.result.ibuprofenIss")}
             </p>
           </>
         )}
       </div>
       <p>
-        Con dolor de costado, cálculos renales o deshidratación, preferir
-        paracetamol.
-        <Pending />
+        {t("medicine.result.preferParacetamol")} <Pending />
       </p>
       <p>
-        Ir a una zona mejor ventilada.
-        <Pending />
+        {t("medicine.result.ventilate")} <Pending />
       </p>
-      <Source>
-        DailyMed; NASA, Medical Kit 3.001 (2015), que el equipo toma como
-        vigente.
-      </Source>
+      <Source>{t("medicine.result.kitSource")}</Source>
     </div>
   );
 }

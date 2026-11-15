@@ -1,10 +1,11 @@
 // Respuesta del cirujano: llega a la nave como un paso nuevo de la checklist.
+// Solo con el caso abierto: un caso cerrado ya no recibe indicaciones.
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { t } from "@/i18n";
 import { addOrder } from "./caseLogic";
 import { updateCase } from "./caseStore";
 
-export function ReplyBox({ disabled }: { disabled: boolean }) {
+export function ReplyBox() {
   const [text, setText] = useState("");
   const send = () => {
     if (!text.trim()) return;
@@ -20,29 +21,28 @@ export function ReplyBox({ disabled }: { disabled: boolean }) {
         send();
       }}
     >
-      <label htmlFor="ground-reply" className="text-sm font-semibold">
-        Indicación para el oficial médico
+      <label htmlFor="ground-reply" className="text-base font-bold">
+        {t("ground.reply.label")}
       </label>
       <textarea
         id="ground-reply"
         rows={3}
         value={text}
-        disabled={disabled}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Ej.: mantener en reposo y repetir la medición en 10 min"
-        className="resize-y rounded-xl border bg-card p-3 text-[0.95rem] outline-none focus:border-primary disabled:opacity-50"
+        placeholder={t("ground.reply.placeholder")}
+        className="resize-y rounded-xl border-2 border-input bg-card p-3 text-base outline-none focus-visible:border-foreground"
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs text-muted-foreground">
-          Llega a la nave como un paso de la checklist.
+        <span className="text-[15px] text-muted-foreground">
+          {t("ground.reply.hint")}
         </span>
-        <Button
+        <button
           type="submit"
-          disabled={disabled || !text.trim()}
-          className="h-11 px-5 text-base"
+          disabled={!text.trim()}
+          className="em-tap min-h-12 rounded-xl bg-primary px-5 text-base font-bold text-primary-foreground disabled:bg-muted disabled:text-muted-foreground"
         >
-          Enviar a la nave
-        </Button>
+          {t("ground.reply.send")}
+        </button>
       </div>
     </form>
   );

@@ -1,4 +1,5 @@
-/* cqw here measures the 440px column, not the full desktop width. */
+/* cqw here measures the 440px column, not the full desktop width. Anything
+   tappable is 48px or more and reading text 15px or more. */
 .tasks-page {
   flex: 1;
   min-height: 0;
@@ -12,6 +13,9 @@
 .tasks-inner {
   padding: 1.1cqw 5.3cqw 6cqw;
 }
+.tasks-head {
+  position: relative;
+}
 .tasks-page h1 {
   margin: 0;
   font-size: 11cqw;
@@ -19,6 +23,22 @@
   font-weight: 850;
   letter-spacing: -0.2cqw;
   color: var(--reference-ink-strong);
+}
+/* Small Lunito next to "Today" once everything is done. Out of the flow so
+   the list does not jump when he shows up. */
+.tasks-lunito {
+  position: absolute;
+  /* Low enough that his 10% canvas bleed stays inside the scroll area. */
+  top: 1cqw;
+  right: 2cqw;
+  width: 18cqw;
+  animation: tasks-lunito-in 300ms ease-out;
+}
+@keyframes tasks-lunito-in {
+  from {
+    opacity: 0;
+    transform: translateY(2cqw) scale(0.9);
+  }
 }
 .tasks-count {
   margin: 1cqw 0 3.5cqw;
@@ -46,6 +66,7 @@
     var(--reference-action),
     var(--reference-violet)
   );
+  transition: width 300ms ease-out;
 }
 .tasks-bar::-moz-progress-bar {
   border-radius: 99px;
@@ -80,7 +101,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 3cqw;
-  padding-block: 3.6cqw;
+  padding-block: 2.4cqw;
 }
 .tasks-row + .tasks-row {
   border-top: 1px solid var(--reference-line);
@@ -89,9 +110,10 @@
   display: flex;
   align-items: center;
   gap: 4.5cqw;
-  min-height: 44px;
+  min-height: 56px;
   flex: 1;
   cursor: pointer;
+  border-radius: 4cqw;
 }
 .tasks-row input {
   appearance: none;
@@ -99,17 +121,25 @@
   position: relative;
   width: 8cqw;
   height: 8cqw;
-  min-width: 24px;
-  min-height: 24px;
+  min-width: 28px;
+  min-height: 28px;
   margin: 0;
-  border: 0.5cqw solid var(--reference-ink-strong);
+  border: max(2px, 0.5cqw) solid var(--reference-ink-strong);
   border-radius: 2.2cqw;
   background: transparent;
+  transition:
+    background-color 150ms ease-out,
+    border-color 150ms ease-out,
+    scale 120ms ease-out;
+}
+.tasks-row label:active input:not(:disabled) {
+  scale: 0.9;
 }
 .tasks-row input:checked {
   background: var(--reference-action);
   border-color: var(--reference-action);
 }
+/* The check draws in 150 ms when ticked. */
 .tasks-row input:checked::after {
   content: "";
   position: absolute;
@@ -118,10 +148,21 @@
   width: 24%;
   height: 48%;
   border: solid var(--reference-surface);
-  border-width: 0 0.9cqw 0.9cqw 0;
+  border-width: 0 max(3px, 0.9cqw) max(3px, 0.9cqw) 0;
   transform: rotate(45deg);
+  transform-origin: 50% 70%;
+  animation: tasks-check 150ms ease-out;
+}
+@keyframes tasks-check {
+  from {
+    scale: 0.3;
+    opacity: 0;
+  }
 }
 .tasks-row input:disabled {
+  cursor: default;
+}
+.tasks-row label:has(input:disabled) {
   cursor: default;
 }
 .tasks-row span {
@@ -134,43 +175,102 @@
   color: var(--reference-ink-strong);
 }
 .tasks-row small {
-  font-size: 4.4cqw;
+  font-size: max(15px, 4.4cqw);
 }
 .tasks-start {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 1.5cqw;
-  min-height: 44px;
+  min-height: 48px;
   padding-inline: 5cqw;
   border-radius: 99px;
   background: var(--reference-action);
   color: var(--reference-surface);
-  font-size: 4.6cqw;
+  font-size: max(15px, 4.6cqw);
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 1.5cqw 3cqw var(--reference-shadow-violet);
+  transition: transform 120ms ease-out;
 }
-.tasks-start svg,
-.tasks-kit svg {
+.tasks-start:active,
+.tasks-kit:active {
+  transform: scale(0.97);
+}
+.tasks-start svg {
   width: 1.1em;
   height: 1.1em;
 }
+
+/* Med kit, right under the list: one card, one tap. */
+.tasks-kit {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 3.5cqw;
+  min-height: 56px;
+  margin-top: 1cqw;
+  padding: 3cqw 4.5cqw 3cqw 3cqw;
+  border: 1.5px solid var(--reference-line);
+  border-radius: 6cqw;
+  background: var(--reference-surface);
+  color: var(--reference-action);
+  text-decoration: none;
+  box-shadow: 0 1.5cqw 4cqw var(--reference-shadow);
+  transition: transform 120ms ease-out;
+}
+.tasks-kit-icon {
+  flex: none;
+  width: max(44px, 11cqw);
+  height: max(44px, 11cqw);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--reference-lavender-100);
+}
+.tasks-kit-icon svg {
+  width: 55%;
+  height: 55%;
+}
+.tasks-kit-text {
+  flex: 1;
+  display: grid;
+}
+.tasks-kit-text small {
+  font-size: max(15px, 4.2cqw);
+  font-weight: 650;
+  color: var(--reference-ink-muted);
+}
+.tasks-kit-text strong {
+  font-size: 5.2cqw;
+  line-height: 1.2;
+  font-weight: 850;
+  color: var(--reference-ink-strong);
+}
+.tasks-kit > svg {
+  flex: none;
+  width: 6cqw;
+  height: 6cqw;
+  min-width: 22px;
+  min-height: 22px;
+}
+
+/* "Coming soon" blocks: readable, but nothing in them promises a tap. */
 .tasks-soon {
   font-style: normal;
-  font-size: 3.6cqw;
+  font-size: max(15px, 3.8cqw);
   font-weight: 800;
-  color: var(--reference-ink-soft);
+  color: var(--reference-ink);
 }
 .tasks-aurora {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 3cqw;
-  margin-top: 2cqw;
+  margin-top: 5cqw;
   padding: 3cqw 6cqw 3cqw 2cqw;
   border-radius: 12cqw;
   background: var(--reference-lavender-50);
-  opacity: 0.9;
 }
 .tasks-aurora img {
   width: 24cqw;
@@ -186,18 +286,13 @@
   color: var(--reference-ink-strong);
 }
 .tasks-aurora span {
-  font-size: 4.2cqw;
+  font-size: max(15px, 4.2cqw);
 }
 .tasks-aurora > svg {
   width: 8cqw;
   height: 8cqw;
   flex: none;
   color: var(--reference-ink-strong);
-}
-.tasks-aurora .tasks-soon {
-  position: absolute;
-  right: 6cqw;
-  bottom: 2cqw;
 }
 .tasks-reminder {
   display: flex;
@@ -220,26 +315,21 @@
   font-size: 5cqw;
   color: var(--reference-ink-strong);
 }
-.tasks-reminder button {
-  min-height: 44px;
-  padding-inline: 3cqw;
-  font-size: 4.8cqw;
-  font-weight: 700;
-  color: var(--reference-action);
-}
-.tasks-reminder button:disabled {
-  color: var(--reference-ink-soft);
-}
-.tasks-kit {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 44px;
-  margin-top: 2cqw;
-  padding: 4cqw 2cqw;
-  border-top: 1px solid var(--reference-line);
-  font-size: 5cqw;
-  font-weight: 800;
-  color: var(--reference-action);
-  text-decoration: none;
+@media (prefers-reduced-motion: reduce) {
+  .tasks-lunito,
+  .tasks-row input:checked::after {
+    animation: none;
+  }
+  .tasks-bar::-webkit-progress-value,
+  .tasks-row input,
+  .tasks-start,
+  .tasks-kit {
+    transition: none;
+  }
+  .tasks-row label:active input,
+  .tasks-start:active,
+  .tasks-kit:active {
+    scale: none;
+    transform: none;
+  }
 }

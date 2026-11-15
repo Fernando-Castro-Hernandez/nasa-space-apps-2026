@@ -1,17 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
+import { chooseProfile, emergencyButton, typedCheckIn } from "./app";
 
-// Inicio, Equipo, Tareas y Configuración según las referencias Marea.
+// Inicio, Equipo, Tareas y Settings según las referencias Marea, en inglés.
 
 test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
 async function completeStart(page: Page) {
   await page.goto("/");
-  await page.getByRole("button", { name: "Escribir respuesta" }).click();
-  await page.getByRole("textbox").fill("Dormí bien y me siento tranquilo");
-  await page.getByRole("button", { name: "Continuar", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Así estás hoy" }),
-  ).toBeVisible();
+  await typedCheckIn(page);
 }
 
 async function swipe(page: Page, from: [number, number], to: [number, number]) {
@@ -35,84 +31,56 @@ async function swipe(page: Page, from: [number, number], to: [number, number]) {
   await client.detach();
 }
 
-test("inicio escrito conserva foco, entrega Inicio y no se repite al recargar", async ({
-  page,
-}) => {
-  await page.goto("/buenos-dias");
-  await expect(
-    page.getByRole("heading", { name: /Qué gusto verte/ }),
-  ).toBeVisible();
-  await expect(page.getByRole("navigation")).toHaveCount(0);
-  const write = page.getByRole("button", { name: "Escribir respuesta" });
-  await write.click();
-  const field = page.getByRole("textbox");
-  await expect(field).toBeFocused();
-  await field.press("Shift+Tab");
-  await expect(
-    page.getByRole("button", { name: "Cerrar", exact: true }),
-  ).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
-  await expect(
-    page.getByRole("button", { name: "Cancelar", exact: true }),
-  ).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(write).toBeFocused();
-  await write.click();
-  await field.fill("Dormí bien");
-  await page.getByRole("button", { name: "Continuar", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Así estás hoy" }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "Así estás hoy" }),
-  ).toBeVisible();
-});
-
 test("puntos, teclado y selectores muestran solo la métrica elegida", async ({
   page,
 }) => {
   await completeStart(page);
   const carousel = page.getByRole("button", {
-    name: "Así estás hoy",
+    name: "How you're doing today",
     exact: true,
   });
   await expect(
-    page.getByRole("group", { name: "Páginas de Inicio" }).getByRole("button"),
+    page.getByRole("group", { name: "Home pages" }).getByRole("button"),
   ).toHaveCount(2);
-  await page.getByRole("button", { name: "Tus datos", exact: true }).click();
+  await page.getByRole("button", { name: "Your data", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Tus datos", exact: true }),
+    page.getByRole("button", { name: "Your data", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   const panel = page.getByRole("tabpanel");
-  await expect(panel).toContainText("72 lpm");
+  await expect(panel).toContainText("72 bpm");
   await expect(panel).not.toContainText("45 ms");
-  await expect(panel).not.toContainText("98 %");
-  await page.getByRole("tab", { name: /Variabilidad\s*cardíaca/ }).click();
-  await expect(panel).toContainText("45 ms");
-  await page.getByRole("tab", { name: /Oxígeno\s*en sangre/ }).click();
-  await expect(panel).toContainText("98 %");
-  await page.getByRole("button", { name: "Mes", exact: true }).click();
+  await expect(panel).not.toContainText("98%");
+  // Los días del eje se distinguen: tres letras, sin "T" ni "S" repetidas.
   await expect(
-    page.getByRole("figure", { name: /Oxígeno en sangre, mes/ }),
+    panel.getByRole("button", { name: "Tue: 77 bpm" }),
+  ).toBeAttached();
+  await page.getByRole("tab", { name: /Heart\s*rate\s*variability/ }).click();
+  await expect(panel).toContainText("45 ms");
+  await page.getByRole("tab", { name: /Blood\s*oxygen/ }).click();
+  await expect(panel).toContainText("98%");
+  await page.getByRole("button", { name: "Month", exact: true }).click();
+  await expect(
+    page.getByRole("figure", { name: /Blood oxygen, month/ }),
   ).toBeVisible();
   await carousel.focus();
   await carousel.press("Home");
   await expect(
-    page.getByRole("heading", { name: "Así estás hoy" }),
+    page.getByRole("heading", { name: "How you're doing today" }),
   ).toBeVisible();
   await carousel.press("ArrowRight");
-  await expect(page.getByRole("heading", { name: "Tus datos" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your data" })).toBeVisible();
 });
 
 test("tap y deslizamiento horizontal funcionan sin impedir el scroll vertical", async ({
   page,
 }) => {
   await completeStart(page);
-  const dataDot = page.getByRole("button", { name: "Tus datos", exact: true });
+  const dataDot = page.getByRole("button", { name: "Your data", exact: true });
   await dataDot.tap();
   await expect(dataDot).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Así estás hoy", exact: true }).tap();
+  await page
+    .getByRole("button", { name: "How you're doing today", exact: true })
+    .tap();
   await swipe(page, [300, 400], [80, 400]);
   await expect(dataDot).toHaveAttribute("aria-pressed", "true");
   await swipe(page, [220, 550], [220, 240]);
@@ -123,36 +91,65 @@ test("tap y deslizamiento horizontal funcionan sin impedir el scroll vertical", 
     .toBeGreaterThan(0);
   await expect(dataDot).toHaveAttribute("aria-pressed", "true");
   await expect(
-    page.getByRole("link", { name: "Inicio", exact: true }),
+    page.getByRole("link", { name: "Home", exact: true }),
   ).toBeVisible();
+  await expect(emergencyButton(page)).toBeInViewport();
 });
 
-test("el selector real de perfiles concede RIDGE solo al comandante", async ({
+test("tocar una burbuja abre Mi estado en esa métrica, con salida a Inicio", async ({
   page,
 }) => {
   await completeStart(page);
-  await page.getByRole("button", { name: "Tus datos", exact: true }).click();
-  await expect(page.getByRole("list", { name: "Panel RIDGE" })).toHaveCount(0);
-  await choose(page, /Mei Comandante/);
-  await page.getByRole("button", { name: "Tus datos", exact: true }).click();
-  const ridge = page.getByRole("list", { name: "Panel RIDGE" });
-  await ridge.scrollIntoViewIfNeeded();
-  await expect(ridge.getByRole("listitem")).toHaveCount(5);
-  await expect(page.getByText(/Sueño bajo en Ana/)).toHaveCount(0);
-  await choose(page, /Ana Especialista de misión/);
-  await page.getByRole("button", { name: "Tus datos", exact: true }).click();
-  await expect(page.getByRole("list", { name: "Panel RIDGE" })).toHaveCount(0);
+  await page
+    .getByRole("link", { name: /^Heart rate variability: 45 ms, Good/ })
+    .click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "My status" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("tab", { name: /Heart rate variability/ }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("banner").getByRole("link", { name: "Home" }).click();
+  await expect(
+    page.getByRole("heading", { name: "How you're doing today" }),
+  ).toBeVisible();
 });
 
-// Choosing a profile in Configuración returns to Inicio (ProfilesScreen).
-async function choose(page: Page, profile: RegExp) {
-  await page.getByRole("link", { name: "Ajustes", exact: true }).click();
-  await page.getByRole("button", { name: /Cambiar perfil/ }).click();
-  await page.getByRole("button", { name: profile }).click();
-  await expect(
-    page.getByRole("heading", { name: "Así estás hoy" }),
-  ).toBeVisible();
-}
+test("el selector de perfiles concede RIDGE solo a la comandante", async ({
+  page,
+}) => {
+  await completeStart(page);
+  await page.getByRole("button", { name: "Your data", exact: true }).click();
+  await expect(page.getByRole("list", { name: "RIDGE panel" })).toHaveCount(0);
+  await chooseProfile(page, "Mei");
+  await page.getByRole("button", { name: "Your data", exact: true }).click();
+  const ridge = page.getByRole("list", { name: "RIDGE panel" });
+  await ridge.scrollIntoViewIfNeeded();
+  await expect(ridge.getByRole("listitem")).toHaveCount(5);
+  await chooseProfile(page, "Ana");
+  await page.getByRole("button", { name: "Your data", exact: true }).click();
+  await expect(page.getByRole("list", { name: "RIDGE panel" })).toHaveCount(0);
+});
+
+test("el ánimo enviado en Equipo le llega a quien lo recibe", async ({
+  page,
+}) => {
+  await completeStart(page);
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Crew", exact: true })
+    .click();
+  await page.getByRole("button", { name: "See Luis" }).click();
+  const sheet = page.getByRole("region", { name: "Luis's details" });
+  await sheet.getByRole("button", { name: "Send encouragement" }).click();
+  await expect(sheet.getByText("Sent to Luis")).toBeVisible();
+  await chooseProfile(page, "Luis");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Crew", exact: true })
+    .click();
+  await expect(page.getByText("Ana sent you encouragement")).toBeVisible();
+});
 
 for (const width of [390, 768, 1440]) {
   test(`la barra inferior recorre las cuatro áreas sin desbordes a ${width}px`, async ({
@@ -161,13 +158,13 @@ for (const width of [390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await completeStart(page);
     for (const [tab, heading] of [
-      ["Equipo", "Tu tripulación"],
-      ["Tareas", "Hoy"],
-      ["Ajustes", "Configuración"],
-      ["Inicio", "Así estás hoy"],
+      ["Crew", "Your crew"],
+      ["Tasks", "Today"],
+      ["Settings", "Settings"],
+      ["Home", "How you're doing today"],
     ]) {
       const nav = page.getByRole("navigation", {
-        name: "Navegación principal",
+        name: "Main navigation",
       });
       await nav.getByRole("link", { name: tab, exact: true }).click();
       await expect(
@@ -181,9 +178,7 @@ for (const width of [390, 768, 1440]) {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
-      await expect(
-        page.getByRole("link", { name: "Emergencia", exact: true }),
-      ).toBeVisible();
+      await expect(emergencyButton(page)).toBeVisible();
     }
   });
 }

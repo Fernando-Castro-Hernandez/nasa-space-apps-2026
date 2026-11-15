@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   assessHeadache,
+  cabinContext,
   type HeadacheAnswers,
   RED_FLAGS,
   type SpaceContext,
@@ -25,6 +26,9 @@ const ctx = (over: Partial<SpaceContext> = {}): SpaceContext => ({
   nauseaOrCongestion: false,
   ...over,
 });
+
+const ventilation = (co2: "normal" | "alto" | "resuelto") =>
+  assessHeadache(answers(), cabinContext(co2, 142)).checkVentilation;
 
 const flag = (i: number) => RED_FLAGS.map((_, j) => j === i);
 
@@ -114,6 +118,12 @@ describe("assessHeadache", () => {
     expect(
       assessHeadache(answers(), ctx({ co2Avg1hMmHg: 3.1 })).checkVentilation,
     ).toBe(true);
+  });
+
+  test("el aviso de ventilación sigue al CO2 de la demo: solo sale si está alto", () => {
+    expect(ventilation("normal")).toBe(false);
+    expect(ventilation("alto")).toBe(true);
+    expect(ventilation("resuelto")).toBe(false);
   });
 
   test("primera semana con náusea o congestión sugiere adaptación al espacio", () => {

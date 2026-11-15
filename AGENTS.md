@@ -23,7 +23,7 @@ Lee también, en este orden:
 
 ## Estado actual
 
-El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya está definido** en [docs/SISTEMA.md](docs/SISTEMA.md), pero todavía no está construido.
+**El producto está construido** sobre lo que define [docs/SISTEMA.md](docs/SISTEMA.md): las pantallas de estilo Marea ([docs/DISENO.md](docs/DISENO.md)), el Worker con la API y la IA, la voz, y Lunito en 3D. Falta la base de datos compartida (D1) y el sensor real.
 
 - Construye lo que describen `docs/PRD.md` y `docs/HISTORIAS.md`, respetando la propiedad de `docs/REPARTO.md`. No inventes funcionalidades, pantallas ni modelos de datos del producto que no estén ahí.
 - Si te piden algo que depende de una decisión abierta, dilo y pregunta antes de construir.
@@ -33,17 +33,18 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya
 - Node 24 y pnpm (versión fijada en `package.json`). No uses npm, yarn ni bun.
 - Vite, React y TypeScript estricto. Se entrega como web instalable (PWA), no como app nativa.
 - Prettier (formato), Oxlint (lint), Vitest (unitarias e integración), Playwright (E2E).
-- Despliegue en Cloudflare Workers como sitio estático (`wrangler.jsonc`).
+- Despliegue en Cloudflare Workers (`wrangler.jsonc`): el mismo Worker sirve la app y responde la API (`worker/`, rutas `/api/*`, Workers AI). La app habla con él solo por `src/api/client.ts`; el contrato está en `src/api/contract.ts`.
 
 ## Comandos
 
-| Comando       | Qué hace                                                      |
-| ------------- | ------------------------------------------------------------- |
-| `pnpm dev`    | Servidor de desarrollo.                                       |
-| `pnpm check`  | Formato, lint, tipos, pruebas y build. Es lo mismo que el CI. |
-| `pnpm format` | Aplica Prettier.                                              |
-| `pnpm test`   | Pruebas con Vitest.                                           |
-| `pnpm e2e`    | Prueba de humo con Playwright sobre el build.                 |
+| Comando        | Qué hace                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| `pnpm dev`     | Servidor de desarrollo.                                                                      |
+| `pnpm dev:api` | Worker local con la API (antes: `pnpm build` y `wrangler login`). `pnpm dev` le pasa `/api`. |
+| `pnpm check`   | Formato, lint, tipos, pruebas y build. Es lo mismo que el CI.                                |
+| `pnpm format`  | Aplica Prettier.                                                                             |
+| `pnpm test`    | Pruebas con Vitest.                                                                          |
+| `pnpm e2e`     | Prueba de humo con Playwright sobre el build.                                                |
 
 ## Cómo se trabaja
 
@@ -57,7 +58,8 @@ El repo es una **plantilla**: app mínima, checks y despliegue. **El producto ya
 
 ## Convenciones
 
-- Documentación, commits, PRs y textos de la interfaz en español. Código (nombres de variables, funciones, archivos) en inglés.
+- Documentación, commits y PRs en español. Código (nombres de variables, funciones, archivos) en inglés.
+- **Ningún texto visible se escribe en un componente.** Va en `src/i18n/locales/` (un archivo por área y por idioma) y se pide con `t("area.clave")` al momento de usarlo. El inglés es el idioma oficial de la app y de la voz; el español debe tener las mismas claves. Detalle en `src/i18n/index.ts` y en [docs/DECISIONS.md](docs/DECISIONS.md).
 - Cambios pequeños y enfocados: un PR resuelve una sola cosa.
 - La lógica que no sea de interfaz va en funciones puras con su prueba en Vitest (`*.test.ts` junto al archivo).
 - Antes de agregar una dependencia, comprueba que haga falta y anótala en `docs/DECISIONS.md`.

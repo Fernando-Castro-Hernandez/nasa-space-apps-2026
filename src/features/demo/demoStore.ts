@@ -2,8 +2,10 @@
 // en un dispositivo mueve la app abierta en otra pestaña del mismo navegador.
 import { persistedStore } from "@/data/persisted";
 import { SAMPLE_HAZARD_CASES, type Case } from "@/features/crew/autonomy";
+import { t } from "@/i18n";
 
-export const CO2_MODULE = "Módulo de laboratorio";
+/** Módulo donde la demo sube el CO₂, en el idioma activo. */
+export const co2Module = () => t("demo.co2.module");
 
 /** normal → alto (evento) → resuelto (la tripulación lo resolvió a bordo). */
 export type Co2State = "normal" | "alto" | "resuelto";

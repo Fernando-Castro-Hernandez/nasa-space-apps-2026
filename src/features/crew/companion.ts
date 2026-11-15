@@ -2,6 +2,7 @@
 // verde con una acción simple. La salida solo lleva nombres y la acción,
 // nunca el motivo del semáforo ni datos de salud.
 import type { CrewMember } from "@/data/crew";
+import { t } from "@/i18n";
 
 export type Companion = {
   needsId: string;
@@ -18,6 +19,6 @@ export function pickCompanion(crew: CrewMember[]): Companion | null {
   return {
     needsId: needs.id,
     companionId: buddy.id,
-    action: `toma el café con ${needs.name}`,
+    action: t("crew.companion.action", { name: needs.name }),
   };
 }

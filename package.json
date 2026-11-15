@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:api": "pnpm dlx wrangler@4 dev",
     "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write .",

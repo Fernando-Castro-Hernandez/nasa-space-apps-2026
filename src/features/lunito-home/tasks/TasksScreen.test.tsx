@@ -8,8 +8,8 @@ import {
 import { afterEach, beforeEach, expect, test } from "vitest";
 import { CREW } from "@/data/crew";
 import { DAY_ACTIONS } from "@/data/actions";
-import { finishDayStart } from "@/app/dayStart";
 import { setActiveProfile } from "@/features/profiles/activeProfile";
+import { saveVoiceLog } from "@/features/voice/voiceLogStore";
 import { ReferenceTasksScreen } from "./TasksScreen";
 
 beforeEach(() => localStorage.clear());
@@ -21,8 +21,28 @@ const isChecked = () =>
   (screen.getByRole("checkbox", { name: actionName }) as HTMLInputElement)
     .checked;
 
+const checkIn = () =>
+  screen.getByRole("checkbox", {
+    name: /Check-in del día/,
+  }) as HTMLInputElement;
+const lunito = () =>
+  screen.queryByRole("img", { name: "Todo listo por hoy. Lunito lo celebra." });
+
+/** El check-in del día se da por hecho cuando su bitácora está guardada. */
+const saveCheckIn = (profile = "ana") =>
+  saveVoiceLog(profile, {
+    transcript: "Dormí bien",
+    fields: {
+      sleepHours: 7,
+      sleepQuality: null,
+      mood: null,
+      stress: null,
+      symptoms: [],
+    },
+  });
+
 test("el contador cambia al marcar y desmarcar una tarea", () => {
-  finishDayStart();
+  saveCheckIn();
   render(<ReferenceTasksScreen />);
   expect(screen.getByText(`1 de ${total} completadas`)).toBeDefined();
   const box = screen.getByRole("checkbox", { name: actionName });
@@ -46,35 +66,53 @@ test("marcar persiste por perfil", () => {
   expect(isChecked()).toBe(true);
 });
 
-test("el check-in pendiente enlaza a /buenos-dias y el completado no", () => {
+test("el check-in se marca con la bitácora de hoy del perfil, no con el inicio del día", () => {
   const { unmount } = render(<ReferenceTasksScreen />);
+  expect(checkIn().checked).toBe(false);
   expect(
     screen.getByRole("link", { name: /Comenzar/ }).getAttribute("href"),
   ).toBe("/buenos-dias");
   unmount();
-  finishDayStart();
+
+  saveCheckIn("luis");
   render(<ReferenceTasksScreen />);
+  expect(checkIn().checked).toBe(false);
+  act(() => setActiveProfile("luis"));
+  expect(checkIn().checked).toBe(true);
   expect(screen.queryByRole("link", { name: /Comenzar/ })).toBeNull();
-  expect(screen.getByText("Completado")).toBeDefined();
+  // La bitácora guarda su hora: "Completado · 09:24".
+  expect(screen.getByText(/^Completado · \d{2}:\d{2}$/)).toBeDefined();
 });
 
-test("los bloques Próximamente no tienen controles habilitados", () => {
+test("al completar todo lo del día aparece Lunito celebrando", () => {
+  saveCheckIn();
+  render(<ReferenceTasksScreen />);
+  for (const action of DAY_ACTIONS.slice(0, -1))
+    fireEvent.click(screen.getByRole("checkbox", { name: action.text }));
+  expect(lunito()).toBeNull();
+  fireEvent.click(
+    screen.getByRole("checkbox", { name: DAY_ACTIONS.at(-1)!.text }),
+  );
+  expect(screen.getByText(`${total} de ${total} completadas`)).toBeDefined();
+  expect(lunito()).not.toBeNull();
+});
+
+test("los bloques Próximamente se ven pero no tienen nada que tocar", () => {
   render(<ReferenceTasksScreen />);
   for (const name of ["Aurora, próximamente", "Recordatorio, próximamente"]) {
     const block = screen.getByRole("region", { name });
     expect(block.textContent).toContain("Próximamente");
-    for (const control of block.querySelectorAll("button, a, input"))
-      expect((control as HTMLButtonElement).disabled).toBe(true);
+    expect(block.querySelectorAll("button, a, input")).toHaveLength(0);
   }
-  expect(
-    (screen.getByRole("button", { name: "Editar" }) as HTMLButtonElement)
-      .disabled,
-  ).toBe(true);
+  expect(screen.queryByRole("button", { name: "Editar" })).toBeNull();
 });
 
-test("conserva el acceso al botiquín", () => {
+test("el acceso al botiquín está justo bajo la lista de hoy", () => {
   render(<ReferenceTasksScreen />);
+  const kit = screen.getByRole("link", { name: /Botiquín/ });
+  expect(kit.getAttribute("href")).toBe("/botiquin");
+  const aurora = screen.getByRole("region", { name: "Aurora, próximamente" });
   expect(
-    screen.getByRole("link", { name: /Botiquín/ }).getAttribute("href"),
-  ).toBe("/botiquin");
+    kit.compareDocumentPosition(aurora) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
 });

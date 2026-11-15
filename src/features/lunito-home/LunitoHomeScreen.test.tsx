@@ -84,7 +84,7 @@ test("Pulso solo muestra su indicador y cada selector cambia valor y gráfica", 
   );
   expect(screen.getByRole("tabpanel").textContent).not.toContain("45 ms");
   expect(screen.getByRole("tabpanel").textContent).not.toContain("98 %");
-  fireEvent.click(screen.getByRole("button", { name: "L: 71 lpm" }));
+  fireEvent.click(screen.getByRole("button", { name: "lun: 71 lpm" }));
   expect(screen.getByText("71 lpm")).toBeDefined();
   fireEvent.click(screen.getByRole("tab", { name: /Variabilidad\s*cardíaca/ }));
   expect(
@@ -94,10 +94,11 @@ test("Pulso solo muestra su indicador y cada selector cambia valor y gráfica", 
   expect(
     screen.getByRole("figure", { name: /Variabilidad cardíaca, semana/ }),
   ).toBeDefined();
-  fireEvent.click(screen.getByRole("tab", { name: /Oxígeno\s*en sangre/ }));
+  fireEvent.click(screen.getByRole("tab", { name: "Oxígeno en sangre" }));
+  // El oxígeno es un porcentaje con el formato del idioma.
   expect(
-    screen.getByRole("tabpanel", { name: /Oxígeno\s*en sangre/ }).textContent,
-  ).toContain("98 %");
+    screen.getByRole("tabpanel", { name: "Oxígeno en sangre" }).textContent,
+  ).toContain("98%");
   expect(screen.getByRole("tabpanel").textContent).not.toContain("45 ms");
 });
 
@@ -110,26 +111,36 @@ test("Mes cambia la serie y conserva Tu misión dentro de Inicio", () => {
   expect(screen.getByText("Últimas 4 semanas")).toBeDefined();
   expect(screen.getByRole("figure", { name: /Pulso, mes/ })).toBeDefined();
   expect(screen.getByRole("heading", { name: "Tu misión" })).toBeDefined();
+});
+
+test("Tu misión: la autonomía de Equipo, casos bien atendidos y un ánimo que se envía", () => {
+  openData();
+  // La misma cuenta que Equipo: 11 de 12 casos cerrados, con un solo redondeo.
+  // Con los mismos nombres que la tarjeta de Equipo.
+  expect(screen.getByText("Autonomía de la tripulación")).toBeDefined();
   expect(
-    screen.getByRole("figure", { name: "Autonomía 68 %, objetivo 100 %" }),
+    screen.getByRole("figure", { name: "Autonomía 92%, meta 100%" }),
   ).toBeDefined();
+  expect(screen.getByText("11 de 12 casos bien atendidos")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Enviar ánimo" }));
   expect(
     screen
-      .getByRole("button", { name: "Enviar ánimo" })
+      .getByRole("button", { name: "Ánimo enviado a Luis" })
       .hasAttribute("disabled"),
   ).toBe(true);
-  expect(screen.getByText(/Datos de demostración/)).toBeDefined();
+  // Sin el aviso falso de "sin conexión a un backend".
+  expect(screen.queryByText(/backend/)).toBeNull();
 });
 
 test("RIDGE solo aparece para el perfil comandante y no expone motivos privados", () => {
   openData();
   expect(screen.queryByRole("list", { name: "Panel RIDGE" })).toBeNull();
   act(() => setActiveProfile("mei"));
-  expect(
-    within(screen.getByRole("list", { name: "Panel RIDGE" })).getAllByRole(
-      "listitem",
-    ),
-  ).toHaveLength(5);
+  const ridge = within(screen.getByRole("list", { name: "Panel RIDGE" }));
+  expect(ridge.getAllByRole("listitem")).toHaveLength(5);
+  // Los cinco peligros con sus nombres de siempre (common.hazards).
+  expect(ridge.getByText("Distancia")).toBeDefined();
+  expect(ridge.getByText("Ambiente")).toBeDefined();
   expect(screen.queryByText(/Sueño bajo en Ana/)).toBeNull();
   act(() => setActiveProfile("ana"));
   expect(screen.queryByRole("list", { name: "Panel RIDGE" })).toBeNull();

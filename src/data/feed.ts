@@ -12,8 +12,10 @@
 // - Temperatura (22 °C) y humedad (30-60 %): tabla de confort de NASA-STD-3001
 //   Vol. 2; no son el límite de salud (Fig. 6.2-2): pendiente de validar.
 import { MISSION } from "@/data/crew";
+import { t } from "@/i18n";
 
-export const FEED_LABEL = "simulado";
+/** "simulado" en el idioma activo. Es función para que siga el cambio de idioma. */
+export const FEED_LABEL = () => t("common.simulated");
 export const FEED_DAYS = 14;
 
 export type FeedDay = {

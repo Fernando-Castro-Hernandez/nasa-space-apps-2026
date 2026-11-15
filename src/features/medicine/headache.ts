@@ -2,16 +2,23 @@
 // No diagnostica: ordena las preguntas del protocolo y devuelve a quién acudir
 // y qué autocuidado es posible. Cada regla cita su fuente en FUENTES.md.
 import type { Status } from "@/domain/vitals";
+import type { Co2State } from "@/features/demo/demoStore";
+import { t } from "@/i18n";
 
-/** Banderas rojas de SNNOOP10 (Do et al., Neurology 2019). */
+/** Banderas rojas de SNNOOP10 (Do et al., Neurology 2019). Su pregunta, en
+ *  el idioma activo, está en medicine.headache.redFlags (redFlagQuestion). */
 export const RED_FLAGS = [
-  "¿Empezó de golpe o es el peor dolor de tu vida?",
-  "¿Tienes debilidad, problemas para hablar, confusión o visión alterada?",
-  "¿Tienes fiebre con rigidez de cuello?",
-  "¿Te golpeaste la cabeza hace poco?",
-  "¿Empeora al toser, hacer esfuerzo o cambiar de postura?",
-  "¿Notaste un cambio nuevo en la visión?",
+  "sudden",
+  "neuro",
+  "neck",
+  "trauma",
+  "strain",
+  "vision",
 ] as const;
+export type RedFlag = (typeof RED_FLAGS)[number];
+
+export const redFlagQuestion = (flag: RedFlag) =>
+  t(`medicine.headache.redFlags.${flag}`);
 
 export type HeadacheAnswers = {
   /** Una respuesta por bandera roja, en el orden de RED_FLAGS. */
@@ -57,6 +64,22 @@ const OVERUSE_DAYS = 15;
 // OCHMO-TB-033: adaptación al espacio en la primera semana.
 const FIRST_WEEK = 7;
 
+/**
+ * Feed de la nave simulado para la demo (SISTEMA.md §11). El CO2 de una hora
+ * sigue el evento del panel /demo con los mismos valores que la lectura del
+ * día (lunitoDashboard.ts): 3.8 mmHg con el CO2 alto y 2 mmHg si no, así que
+ * el aviso de ventilación solo sale cuando la demo lo tiene alto.
+ */
+export const cabinContext = (
+  co2: Co2State,
+  flightDay: number,
+): SpaceContext => ({
+  co2Avg7dMmHg: 2.1,
+  co2Avg1hMmHg: co2 === "alto" ? 3.8 : 2,
+  flightDay,
+  nauseaOrCongestion: false,
+});
+
 export function assessHeadache(
   a: HeadacheAnswers,
   ctx: SpaceContext,
@@ -81,17 +104,16 @@ export function assessHeadache(
       ...base,
       level: "rojo",
       who: "cirujano de vuelo",
-      reasons: ["Respondiste sí a una pregunta de descarte."],
+      reasons: [t("medicine.headache.reasons.redFlag")],
     };
   }
 
   const reasons = [
     a.analgesicDaysThisMonth >= OVERUSE_DAYS &&
-      "Tomaste analgésicos 15 días o más este mes.",
-    a.fever && "Tienes fiebre.",
-    a.worseningOrOver10Days && "El dolor empeora o dura más de 10 días.",
-    a.chronicCondition &&
-      "Tienes una condición que impide el ibuprofeno; el oficial médico debe saberlo.",
+      t("medicine.headache.reasons.overuse"),
+    a.fever && t("medicine.headache.reasons.fever"),
+    a.worseningOrOver10Days && t("medicine.headache.reasons.worsening"),
+    a.chronicCondition && t("medicine.headache.reasons.chronic"),
   ].filter((r): r is string => typeof r === "string");
 
   if (reasons.length > 0) {

@@ -1,22 +1,20 @@
 // Fixtures de la referencia visual: no representan mediciones ni servicios.
+// Los textos son getters: se leen en el idioma activo al usarlos.
 import { DASHBOARD_BASELINE, EVOLUTION } from "@/data/dashboard";
 import type { Baselines } from "@/domain/semaphore";
-import type { CaseOutcome } from "@/features/crew/autonomy";
+import { t } from "@/i18n";
 import type { DashboardMetric, MetricKey } from "./types";
 
-export const DEMO_READING_TIME = "9:24";
+// Hora fija de la referencia visual: se lee igual en los dos idiomas, en 24 h
+// con dos cifras como las demás horas de la misión ("06:45").
+export const DEMO_READING_TIME = "09:24";
 export const DEMO_COMPANION_PAIR = {
   needsId: "mei",
   companionId: "omar",
-  action: "Pregúntale cómo durmió",
+  get action() {
+    return t("data.companion.askSleep");
+  },
 };
-
-// El 68 % de la referencia sale de 17 casos bien atendidos de 25 cerrados.
-// Es una muestra visual; no modifica la meta operativa del motor existente.
-export const DEMO_OUTCOMES: CaseOutcome[] = Array.from(
-  { length: 25 },
-  (_, i) => (i < 17 ? "resuelto a bordo" : "mal atendido"),
-);
 
 export const DEMO_BASELINES: Baselines = {
   bpm: { ...DASHBOARD_BASELINE.bpm, n: 14 },
@@ -31,9 +29,32 @@ export const METRIC_COPY: Record<
   MetricKey,
   Pick<DashboardMetric, "label" | "tech" | "unit">
 > = {
-  bpm: { label: "Pulso", unit: "lpm" },
-  hrv: { label: "Variabilidad cardíaca", tech: "HRV", unit: "ms" },
-  spo2: { label: "Oxígeno en sangre", tech: "SpO₂", unit: "%" },
+  bpm: {
+    get label() {
+      return t("common.metrics.bpm");
+    },
+    get unit() {
+      return t("common.units.bpm");
+    },
+  },
+  hrv: {
+    get label() {
+      return t("common.metrics.hrv");
+    },
+    tech: "HRV",
+    get unit() {
+      return t("common.units.ms");
+    },
+  },
+  spo2: {
+    get label() {
+      return t("common.metrics.spo2");
+    },
+    tech: "SpO₂",
+    get unit() {
+      return t("common.units.percent");
+    },
+  },
 };
 
 export const DEMO_SERIES = {

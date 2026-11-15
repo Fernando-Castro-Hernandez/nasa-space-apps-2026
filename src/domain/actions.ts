@@ -3,6 +3,7 @@
 // se marcan "pendiente de validar".
 import { bySeverity, type Finding, type Source } from "@/domain/finding";
 import { SOURCES } from "@/domain/sources";
+import { t, type MessageKey } from "@/i18n";
 
 export type DayAction = {
   id: string;
@@ -11,67 +12,71 @@ export type DayAction = {
   source: Source | null;
 };
 
-type CatalogEntry = DayAction & { rules: string[] };
+/** El catálogo guarda la clave del texto: se traduce al armar la acción. */
+type CatalogEntry = Omit<DayAction, "text"> & {
+  key: MessageKey;
+  rules: string[];
+};
 
 /** Orden = prioridad cuando dos acciones salen del mismo nivel de alerta. */
 const CATALOG: CatalogEntry[] = [
   {
     id: "contact-surgeon",
-    text: "Contacta al cirujano de vuelo",
+    key: "domain.actions.contactSurgeon",
     rules: ["pulse-red", "spo2-red"],
     source: SOURCES.news2Response,
   },
   {
     id: "dose-limit",
-    text: "Contacta al cirujano de vuelo: tu dosis llegó al límite",
+    key: "domain.actions.doseLimit",
     rules: ["radiation-limit"],
     source: SOURCES.ochmoRadiation,
   },
   {
     id: "repeat-reading",
-    text: "Repite la medición: 60 s en reposo, con la mano quieta",
+    key: "domain.actions.repeatReading",
     rules: ["pulse-doubtful", "spo2-doubtful"],
     source: SOURCES.nhsRepeat,
   },
   {
     id: "onboard-protocol",
-    text: "Sigue el protocolo a bordo mientras responde Tierra",
+    key: "domain.actions.onboardProtocol",
     rules: ["distance-waiting", "distance-nolink"],
     source: SOURCES.ntrsNoComm,
   },
   {
     id: "ventilation",
-    text: "Revisa la ventilación del módulo",
+    key: "domain.actions.ventilation",
     rules: ["co2-high"],
     source: SOURCES.ochmoCo2,
   },
   {
     id: "sleep",
-    text: "Prioriza dormir al menos 7 h esta noche",
+    key: "domain.actions.sleep",
     rules: ["sleep-low"],
     source: SOURCES.aasm2015,
   },
   {
     id: "exercise",
-    text: "Completa tu ejercicio de hoy (meta: 600 min por semana)",
+    key: "domain.actions.exercise",
     rules: ["exercise-low"],
     source: SOURCES.ochmoExercise,
   },
   {
     id: "breathing",
-    text: "Respiración guiada · 5 min",
+    key: "domain.actions.breathing",
     rules: ["hrv-low", "reaction-lapses"],
     source: null,
   },
   {
     id: "rest-recheck",
-    text: "Descansa y vuelve a medirte mañana en reposo",
+    key: "domain.actions.restRecheck",
     rules: ["pulse-high", "spo2-low"],
     source: null,
   },
   {
     id: "dose-cmo",
-    text: "Revisa tu dosis acumulada con el oficial médico",
+    key: "domain.actions.doseCmo",
     rules: ["radiation-near"],
     source: null,
   },
@@ -80,11 +85,14 @@ const CATALOG: CatalogEntry[] = [
 /** En verde: sin acciones de salud (HU-14). */
 export const ROUTINE: DayAction = {
   id: "routine",
-  text: "Sin cambios, sigue tu rutina",
+  get text() {
+    return t("domain.actions.routine");
+  },
   source: null,
 };
 
-export const DISCLAIMER = "Prototipo, no diagnóstico";
+/** Aviso en el idioma activo. Es función para que siga el cambio de idioma. */
+export const DISCLAIMER = () => t("domain.actions.disclaimer");
 
 export const MAX_ACTIONS = 3;
 
@@ -95,8 +103,7 @@ export function actionsFor(findings: Finding[]): DayAction[] {
     for (const entry of CATALOG) {
       if (!entry.rules.includes(f.id) || out.some((a) => a.id === entry.id))
         continue;
-      const { rules: _rules, ...action } = entry;
-      out.push(action);
+      out.push({ id: entry.id, text: t(entry.key), source: entry.source });
     }
   }
   return out.length ? out.slice(0, MAX_ACTIONS) : [ROUTINE];

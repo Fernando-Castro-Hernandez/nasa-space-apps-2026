@@ -1,7 +1,8 @@
-// Adaptador explícito de la demo local. No hay endpoints configurados en este
-// repo: no se hacen peticiones ni se ocultan fallos de red con datos de muestra.
+// La lectura del día: una sola fuente para Inicio, Mi estado y lo que Lunito
+// sabe al conversar. La lectura la elige el panel /demo; el estado, el motivo y
+// la autonomía salen de las mismas reglas y cálculos que usa el resto de la app.
 import { CREW, crewMember, ME, MISSION } from "@/data/crew";
-import { DASHBOARD_READINGS } from "@/data/dashboard";
+import { DASHBOARD_BASELINE, DASHBOARD_READINGS } from "@/data/dashboard";
 import { HAZARD_NAME, worst, type Hazard } from "@/domain/finding";
 import { assessDay } from "@/domain/semaphore";
 import { autonomy, PHASE_GOAL } from "@/features/crew/autonomy";
@@ -12,14 +13,18 @@ import {
   type Shared,
   useShared,
 } from "@/features/crew/privacy";
-import { type Co2State, useCo2State } from "@/features/demo/demoStore";
+import {
+  casesWithCo2,
+  type Co2State,
+  useCo2State,
+} from "@/features/demo/demoStore";
 import { useReadingIndex } from "@/features/demo/readingStore";
 import { useCase } from "@/features/emergency/caseStore";
 import { useActiveProfile } from "@/features/profiles/activeProfile";
+import { formatNumber, t } from "@/i18n";
 import {
   DEMO_BASELINES,
   DEMO_COMPANION_PAIR,
-  DEMO_OUTCOMES,
   DEMO_READING_TIME,
   DEMO_SERIES,
   METRIC_COPY,
@@ -28,11 +33,17 @@ import {
 import type { LunitoDashboard, MetricKey } from "./lunito-dashboard/types";
 
 export type {
+  DashboardAutonomy,
   DashboardMetric,
   DashboardHazard,
   LunitoDashboard,
   MetricKey,
 } from "./lunito-dashboard/types";
+
+/** Un porcentaje de 0 a 1 en el idioma activo, sin decimales: "92%". Es el
+ *  único redondeo de la autonomía. */
+export const formatPercent = (ratio: number) =>
+  formatNumber(ratio, { style: "percent", maximumFractionDigits: 0 });
 
 type Options = {
   profileId?: string;
@@ -122,20 +133,16 @@ export function buildLunitoDashboard({
     (companion.needsId === profile.id
       ? companion.companionId
       : companion.needsId);
-  const outcomes =
-    co2 === "resuelto"
-      ? [...DEMO_OUTCOMES, "resuelto a bordo" as const]
-      : DEMO_OUTCOMES;
+  // El mismo cálculo que la autonomía de Equipo (AutonomyCard).
+  const { ratio, wellHandled, closed } = autonomy(
+    casesWithCo2(co2).map((c) => c.outcome),
+  );
 
   return {
     source: "demo",
-    capabilities: {
-      backend: false,
-      remoteEncouragement: false,
-      liveSensor: false,
-    },
     profile: { id: profile.id, name: profile.name, role: profile.role },
     reading: { ...reading, time: DEMO_READING_TIME },
+    baseline: DASHBOARD_BASELINE,
     status: assessment.overall,
     reason: assessment.top?.reason ?? null,
     metrics: metrics.map((m) => ({
@@ -154,11 +161,11 @@ export function buildLunitoDashboard({
           ? {
               id: buddyId,
               name: crewMember(buddyId).name,
-              action: "Compartan un café y conversen un momento",
+              action: t("data.companion.shareCoffee"),
             }
           : null,
-      autonomy: Math.round(autonomy(outcomes).ratio * 100),
-      target: Math.round(PHASE_GOAL * 100),
+      autonomy: { ratio, wellHandled, closed },
+      target: PHASE_GOAL,
       ridge: canViewRidge
         ? HAZARDS.map((key) => ({
             key,

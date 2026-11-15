@@ -1,6 +1,12 @@
-import { ChevronDown, ChevronUp, Heart } from "lucide-react";
-import type { LunitoDashboard } from "@/data/lunitoDashboard";
+// "Tu misión" (referencia 05): el compañero del día con "Enviar ánimo", la
+// autonomía de la fase (la misma que en Equipo) y, solo para el comandante,
+// el panel RIDGE. La meta es 100 % (DECISIONS.md): el medidor no lleva marca
+// de meta, que caería sobre el extremo del arco; la dice el texto.
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { formatPercent, type LunitoDashboard } from "@/data/lunitoDashboard";
 import { STATUS_LABEL } from "@/domain/status";
+import { EncourageButton } from "@/features/crew/EncourageButton";
+import { t } from "@/i18n";
 import { Marea } from "./Marea";
 
 export function MissionSection({
@@ -13,19 +19,19 @@ export function MissionSection({
   onToggle: () => void;
 }) {
   const { mission } = data;
-  // Target tick on the 84-radius arc centered at (100,100): 0 % left, 100 % right.
-  const angle = Math.PI * (1 - mission.target / 100);
-  const tick = (r: number) =>
-    `${100 + r * Math.cos(angle)} ${100 - r * Math.sin(angle)}`;
+  const { autonomy, companion } = mission;
+  const value = formatPercent(autonomy.ratio);
+  const target = formatPercent(mission.target);
   return (
     <section className="mission-section" aria-labelledby="mission-heading">
       <Marea variant="mission" />
       <button
+        type="button"
         className="mission-toggle"
         onClick={onToggle}
         aria-controls="mission-content"
       >
-        <h2 id="mission-heading">Tu misión</h2>
+        <h2 id="mission-heading">{t("home.mission.title")}</h2>
         {scrolled ? (
           <ChevronUp aria-hidden="true" />
         ) : (
@@ -35,38 +41,34 @@ export function MissionSection({
       <div id="mission-content" className="mission-content">
         <article className="companion-panel">
           <div>
-            <p className="mission-eyebrow">Compañero del día</p>
+            <p className="mission-eyebrow">{t("home.mission.buddy")}</p>
             <h3>
-              {mission.companion
-                ? `Hoy acompañas a ${mission.companion.name}`
-                : "Tu compañero del día"}
+              {companion
+                ? t("home.mission.withBuddy", { name: companion.name })
+                : t("home.mission.noBuddyTitle")}
             </h3>
-            <p>
-              {mission.companion
-                ? "Pregúntale cómo durmió"
-                : "No hay una pareja disponible"}
-            </p>
+            <p>{companion ? companion.action : t("home.mission.noBuddy")}</p>
           </div>
-          <button
-            className="encouragement"
-            disabled={!data.capabilities.remoteEncouragement}
-            title="El envío de ánimo aún no está disponible: falta el backend"
-          >
-            <Heart aria-hidden="true" />
-            Enviar ánimo
-          </button>
+          {companion && (
+            <EncourageButton toId={companion.id} className="encouragement" />
+          )}
         </article>
         <article className="autonomy-panel">
           <div>
-            <p className="mission-eyebrow">Autonomía de la fase</p>
-            <p>Lo que resolvemos a bordo</p>
+            <p className="mission-eyebrow">{t("home.mission.autonomy")}</p>
+            <p>
+              {t("home.mission.wellHandled", {
+                count: autonomy.wellHandled,
+                total: autonomy.closed,
+              })}
+            </p>
             <p className="autonomy-target">
-              Objetivo <strong>{mission.target} %</strong>
+              {t("home.mission.target")} <strong>{target}</strong>
             </p>
           </div>
           <figure
             className="autonomy-gauge"
-            aria-label={`Autonomía ${mission.autonomy} %, objetivo ${mission.target} %`}
+            aria-label={t("home.mission.gauge", { value, target })}
           >
             <svg viewBox="0 0 200 112" aria-hidden="true">
               <defs>
@@ -92,32 +94,21 @@ export function MissionSection({
                 strokeWidth="15"
                 strokeLinecap="round"
                 pathLength="100"
-                strokeDasharray={`${mission.autonomy} 100`}
-              />
-              <path
-                d={`M${tick(76)} L${tick(96)}`}
-                style={{ stroke: "var(--reference-violet)" }}
-                strokeWidth="3"
+                strokeDasharray={`${Math.min(100, autonomy.ratio * 100)} 100`}
               />
             </svg>
-            <strong>{mission.autonomy} %</strong>
+            <strong>{value}</strong>
           </figure>
         </article>
         {data.isCommander && (
           <article className="ridge-panel">
-            <h3>Panel del comandante · RIDGE</h3>
-            <p>Vista comandante · Solo lectura</p>
-            <ul aria-label="Panel RIDGE">
+            <h3>{t("home.mission.ridgeTitle")}</h3>
+            <p>{t("home.mission.ridgeView")}</p>
+            <ul aria-label={t("home.mission.ridgeList")}>
               {mission.ridge.map((hazard) => (
                 <li key={hazard.key}>
                   <span className="ridge-key">{hazard.key}</span>
-                  <span>
-                    {hazard.key === "D"
-                      ? "Distancia de la Tierra"
-                      : hazard.key === "E"
-                        ? "Ambiente cerrado"
-                        : hazard.label}
-                  </span>
+                  <span>{hazard.label}</span>
                   <strong data-status={hazard.status}>
                     {STATUS_LABEL[hazard.status]}
                   </strong>
@@ -126,10 +117,6 @@ export function MissionSection({
             </ul>
           </article>
         )}
-        <p className="demo-disclosure">
-          Datos de demostración · Sin conexión a un backend. El envío de ánimo
-          no está disponible.
-        </p>
       </div>
     </section>
   );

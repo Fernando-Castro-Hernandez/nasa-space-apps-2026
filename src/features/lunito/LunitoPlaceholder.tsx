@@ -1,10 +1,13 @@
-// Lunito hecho con primitivas, con las mismas partes nombradas que debe traer
-// el GLB de Meshy (body, belly, gill_L_1..3, gill_R_1..3, eye_L, eye_R).
-// Sirve para construir y probar el dashboard mientras llega el modelo real.
+// Lunito hecho con primitivas, con las mismas partes que trae el GLB (body,
+// belly, branquias y ojos; sin boca, brazos ni cola). Se ve mientras carga el
+// modelo real en las pantallas que usan LunitoScene.
 import { useRef } from "react";
 import type { Group, Mesh } from "three";
 import type { Motion } from "@/features/lunito/motion";
-import { useLunitoMotion } from "@/features/lunito/useLunitoMotion";
+import {
+  type LunitoGills,
+  useLunitoMotion,
+} from "@/features/lunito/useLunitoMotion";
 import type { Status } from "@/domain/vitals";
 
 type Props = { motion: Motion; status: Status };
@@ -14,7 +17,7 @@ const GILL_ANGLES = [-0.5, 0, 0.5];
 export function LunitoPlaceholder({ motion, status }: Props) {
   const body = useRef<Group>(null);
   const belly = useRef<Mesh>(null);
-  const gills = useRef<Mesh[]>([]);
+  const gills = useRef<LunitoGills[]>([]);
   const eyes = useRef<Mesh[]>([]);
 
   useLunitoMotion(
@@ -23,6 +26,10 @@ export function LunitoPlaceholder({ motion, status }: Props) {
       belly: belly.current,
       gills: gills.current,
       eyes: eyes.current,
+      mouth: [],
+      armL: null,
+      armR: null,
+      tail: null,
     }),
     motion,
     status,
@@ -38,22 +45,32 @@ export function LunitoPlaceholder({ motion, status }: Props) {
         <sphereGeometry args={[1, 32, 32]} />
         <meshStandardMaterial color="#2FD6E0" roughness={0.35} />
       </mesh>
-      {([-1, 1] as const).map((side) =>
-        GILL_ANGLES.map((a, i) => (
-          <mesh
-            key={`${side}${i}`}
-            ref={(m) => {
-              if (m) gills.current[(side + 1) * 1.5 + i] = m;
-            }}
-            name={`gill_${side < 0 ? "L" : "R"}_${i + 1}`}
-            position={[side * 0.95, 1.05 + i * 0.12, -0.1]}
-            rotation={[0, 0, side * (0.9 + a)]}
-          >
-            <coneGeometry args={[0.14, 0.7, 12]} />
-            <meshStandardMaterial color="#E7A6E0" roughness={0.5} />
-          </mesh>
-        )),
-      )}
+      {([-1, 1] as const).map((side) => (
+        <group
+          key={side}
+          ref={(pivot) => {
+            if (pivot)
+              gills.current[side < 0 ? 0 : 1] = {
+                side,
+                pivot,
+                fins: pivot.children as Mesh[],
+              };
+          }}
+          position={[side * 0.95, 1.05, -0.1]}
+        >
+          {GILL_ANGLES.map((a, i) => (
+            <mesh
+              key={i}
+              name={`gill_${side < 0 ? "L" : "R"}_${i + 1}`}
+              position={[0, i * 0.12, 0]}
+              rotation={[0, 0, side * (0.9 + a)]}
+            >
+              <coneGeometry args={[0.14, 0.7, 12]} />
+              <meshStandardMaterial color="#E7A6E0" roughness={0.5} />
+            </mesh>
+          ))}
+        </group>
+      ))}
       {([-1, 1] as const).map((side) => (
         <mesh
           key={side}

@@ -8,6 +8,7 @@ import { EvolutionPanel } from "@/features/status/EvolutionPanel";
 import { prefersReducedMotion } from "./anim";
 import { useState } from "react";
 import { indicatorsFor, reasonFor, type IndicatorView } from "./dashboardData";
+import { LunitoChat } from "./LunitoChat";
 import { motionFor } from "./motion";
 import { StatusSummary } from "./StatusSummary";
 import { DASH_VARS } from "./theme";
@@ -50,6 +51,12 @@ export function HomeScreen() {
             mode: "rest",
             reducedMotion: prefersReducedMotion(),
           })}
+        />
+        {/* La frase de Lunito y la conversación con él (Fernando). */}
+        <LunitoChat
+          key={person.id}
+          status={vitals.overall}
+          reason={reasonFor(vitals)}
         />
         <StatusSummary
           key={`s${index}`}

@@ -2,8 +2,9 @@
 // Nombres y colores según DISENO.md (decisión del 2026-11-15, PR #22): Bien en
 // cian, el color natural de la pancita; el verde ya no se usa para estados.
 // Las claves internas (verde, ambar, rojo) se mantienen.
-// Sin dependencias: lo usa la interfaz sin cargar three.js.
+// Sin three.js: lo usa la interfaz sin cargar el modelo 3D.
 import type { Status } from "@/domain/vitals";
+import { t } from "@/i18n";
 
 /** Colores vivos para la pancita de Lunito, puntos y gráficas (no para texto
  *  chico: el cian de la referencia tiene contraste 2.2:1 sobre blanco). */
@@ -29,8 +30,15 @@ export const BELLY_HUE_SHIFT: Record<Status, number> = {
   rojo: 160,
 };
 
+/** Palabra del estado en el idioma activo: se lee al usarla, no al cargar. */
 export const STATUS_LABEL: Record<Status, string> = {
-  verde: "Bien",
-  ambar: "Precaución",
-  rojo: "Atención",
+  get verde() {
+    return t("common.status.verde");
+  },
+  get ambar() {
+    return t("common.status.ambar");
+  },
+  get rojo() {
+    return t("common.status.rojo");
+  },
 };

@@ -1,3 +1,6 @@
+// Onda de la referencia 04 mientras Lunito escucha. Sigue el volumen de la
+// misma sesión de voz que graba (no abre un segundo micrófono: en Android dos
+// capturas a la vez se pelean). Se anima sin volver a renderizar.
 import { useEffect, useRef } from "react";
 import { BAR_COUNT, barHeights } from "./waveform";
 
@@ -6,19 +9,21 @@ const STILL = barHeights(0.7, 0);
 
 export function VoiceWave({ getLevel, reducedMotion }: Props) {
   const bars = useRef<(HTMLSpanElement | null)[]>([]);
-  const frame = useRef(0);
   useEffect(() => {
     if (reducedMotion) return;
     const start = performance.now();
+    const frame = { id: 0, level: 0 };
     const draw = (now: number) => {
-      barHeights(getLevel(), (now - start) / 1000).forEach((height, i) => {
+      // Suaviza el volumen para que la onda no tiemble.
+      frame.level += (getLevel() - frame.level) * 0.35;
+      barHeights(frame.level, (now - start) / 1000).forEach((height, i) => {
         const bar = bars.current[i];
         if (bar) bar.style.transform = `scaleY(${height})`;
       });
-      frame.current = requestAnimationFrame(draw);
+      frame.id = requestAnimationFrame(draw);
     };
-    frame.current = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frame.current);
+    frame.id = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frame.id);
   }, [getLevel, reducedMotion]);
   return (
     <span className="day-voice-wave" aria-hidden="true">

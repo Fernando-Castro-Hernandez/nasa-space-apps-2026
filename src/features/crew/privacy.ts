@@ -5,6 +5,7 @@
 import type { CrewMember } from "@/data/crew";
 import { persistedStore } from "@/data/persisted";
 import type { Status } from "@/domain/vitals";
+import { t } from "@/i18n";
 
 /** id → false si esa persona dejó su estado privado. Por defecto se comparte. */
 export type Shared = Record<string, boolean>;
@@ -27,7 +28,9 @@ export const publicStatus = (m: CrewMember, shared: Shared): Status | null =>
 export const publicCrew = (crew: CrewMember[], shared: Shared) =>
   crew.filter((m) => publicStatus(m, shared) !== null);
 
-export const isCommander = (m: CrewMember) => m.role === "Comandante";
+// El rol viene traducido: se compara con el del idioma activo.
+export const isCommander = (m: CrewMember) =>
+  m.role === t("data.crew.roles.commander");
 
 const store = persistedStore<Shared>(
   "nostos.share",

@@ -20,6 +20,7 @@ import {
   spo2Rule,
 } from "@/domain/vitalRules";
 import type { Status } from "@/domain/vitals";
+import { t } from "@/i18n";
 
 /** Series diarias tomadas antes del vuelo (en la demo, simuladas). */
 export type Preflight = {
@@ -118,4 +119,8 @@ export function summarize(findings: Finding[]): DayAssessment {
 /** Motivo en una línea, con la letra del peligro: "G · Gravedad: …". La
  *  palabra del estado (Bien, Precaución, Atención) la pone la pantalla. */
 export const reasonLine = (f: Finding) =>
-  `${f.hazard} · ${HAZARD_NAME[f.hazard]}: ${f.reason}`;
+  t("domain.reasonLine", {
+    letter: f.hazard,
+    hazard: HAZARD_NAME[f.hazard],
+    reason: f.reason,
+  });

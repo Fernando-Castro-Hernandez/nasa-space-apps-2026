@@ -32,6 +32,6 @@ test("la etiqueta sigue al punto señalado", () => {
   const { container } = render(
     <MetricChart metric={metric([41, 46, 42, 45, 42, 51, 45])} period="week" />,
   );
-  fireEvent.mouseEnter(screen.getByRole("button", { name: "S: 51 ms" }));
+  fireEvent.mouseEnter(screen.getByRole("button", { name: "sáb: 51 ms" }));
   expect(valueLabels(container)).toEqual(["51"]);
 });
